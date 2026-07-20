@@ -1,8 +1,11 @@
 # Year-2-Sem-1-Java-Hospital-Assignment
 
 Admin - 
+
 Medical Manager - Brennan
+
 Doctor - Sascha
+
 Patient - Ian
 
 1. Database design
@@ -11,6 +14,7 @@ Patient - Ian
 4. Class diagram
 5. GUI components
 6. Classes and helper functions
+
 
 7. Output screenshots
 8. Text file database screenshots

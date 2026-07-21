@@ -1,0 +1,154 @@
+Users
+user_id, first_name, last_name, dob, gender, phone, email, password
+
+Admins extends Users
+admin_id
+
+MedicalManagers extends Users
+manager_id
+
+Doctors extends Users
+doctor_id, specialization, department_id, years_experience, off_days
+
+Patients extends Users
+patient_id, blood_type, allergies
+
+Departments
+department_id, department_name, description, manager_id
+department_name: General, Emergency, Cardiology, Oncology, Neurology, Orthopedics, Pediatrics, Radiology, Trauma
+
+Cases
+case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary
+doctor_in_charge ref doctor_id
+category: diagnosis, trauma, immunization, healthcheck
+type: walkin, scheduled, emergency
+
+Consultations
+consultation_id, case_id, doctor_id, complaint, vital_signs, notes, status
+status: booked, completed, cancelled
+
+Admissions
+admission_id, case_id, bed_id, admission_date, discharge_date, remarks
+Prescriptions
+prescription_id, consultation_id, medication_name, dosage, frequency, duration, instructions
+
+ConsultationRooms
+consult_room_id
+
+AppointmentSlots
+appointment_id, doctor_id, consultation_id, consultation_room_id, date, start_time, end_time
+
+InpatientWards
+ward_id, department_id, gender, capacity
+
+InpatientBeds
+bed_id, ward_id
+
+Labs
+lab_id, type
+type: hematology, chemistry, specimen test
+
+ImagingRooms
+imaging_room_id, type
+type: x-ray, ultrasound, CT scan
+
+ImagingSlots
+imaging_id, doctor_id, request_id, imaging_room_id, date, start_time, end_time
+
+DiagnosticServicePrices
+service_id, service_name, category, type, base_price
+category: laboratory, imaging
+subcategory: hematology, chemistry, specimen test, x-ray, ultrasound, CT scan
+
+DiagnosticServiceRequests
+request_id, consultation_id, service_id, request_date, request_remarks, result_date, results
+
+AcceptedInsuranceNetworks
+insurance_id, insurance_name
+
+TierMultipliers
+tier_id, tier_name, minimum_years, multiplier
+
+BaseConsultationFees
+base_fee
+
+Invoices
+invoice_id, case_id, date_issued, total_amount
+
+InvoiceItemizations
+item_id, invoice_id, item_name, quantity, amount_charged
+
+Receipts
+receipt_id, invoice_id, insurance_id, payment_method, amount_paid, payment_date
+
+CustomerReviews
+review_id, consultation_id, rating, comments
+
+DoctorShifts
+shift_id, doctor_ids, duty, date, start_time, end_time
+duty: consultation, surgery, patrol, diagnostics
+
+
+
+
+Database design:
+1.	Foreign keys Admin.admin_id, MedicalManager.manager_id, Doctor.doctor_id, Patient.patient_id ref User.user_id
+2.	Foreign key Case.doctor_in_charge ref Doctor.doctor_id
+Validation:
+1.	Department.department_name = { General, Emergency, Cardiology, Oncology, Neurology, Orthopedics, Pediatrics, Radiology, Trauma }
+2.	Case.category = { diagnosis, trauma, immunization, healthcheck }
+3.	Consultation.status = { booked, completed, cancelled }
+4.	Lab.type = { hematology, chemistry, specimen test }
+5.	ImagingRoom.type = { x-ray, ultrasound, CT scan }
+6.	DiagnosticServicePrice.category = { laboratory, imaging }
+7.	DiagnosticServicePrice.subcategory = { hematology, chemistry, specimen test, x-ray, ultrasound, CT scan }
+8.	DoctorShifts.duty = { consultation, surgery, patrol, diagnostics }
+Assumptions:
+Database rules
+1.	Deletion method is soft delete. Records are flagged as inactive instead of being permanently removed from the database, in order to preserve referential integrity.
+2.	All dates are stored in the format dd-mm-yyyy.
+3.	All times are stored in the format hh:mm in the 24-hour system.
+Users
+4.	One user can only hold one role at a time. 
+5.	Each medical manager is in charge of at least one department, and by extension in charge of all the doctors in the department. 
+Cases, Consultations, Prescriptions and Reviews
+6.	Each case represents a single and complete episode of care for one issue, including matters arising as a result of the issue and excluding unrelated problems. 
+7.	Each patient may have concurrent cases open for different issues. 
+8.	Each case must consist of at least one consultation. There may be more than one consultation as a case may require follow-up visits. 
+9.	Each case has a doctor-in-charge who coordinates and oversees the case. However, each consultation may have a different doctor. 
+10.	Each consultation is conducted by exactly one doctor.
+11.	Each consultation is for exactly one patient.
+12.	Each prescription is given for exactly one consultation. 
+13.	Each review is written for exactly one consultation, there is no option for reviewing a specific personnel or reviewing the overall case.
+Appointments and Consultation rooms
+14.	The appointment slots are the schedules of availability for each doctor. A slot is booked if the consultation ID attribute is populated; otherwise, a null consultation ID indicates an available slot. 
+15.	Each consultation must take up at least one appointment slot. There may be more than one appointment slot taken based on the estimated time taken for the consultation.
+16.	Each consultation must take place in only one consultation room. 
+17.	All consultation rooms are similar and shared by all departments. 
+18.	The consultation room list provides a list of all consultation rooms, with no relation to room availability, and is used in scheduling appointment slots.
+Admission, Wards, and Beds
+19.	Each admission records a patient being admitted for hospitalization.
+20.	Each admission assigns a patient to a bed.
+21.	Each ward is designated for a department and for a gender, and has a certain number of beds as indicated by the ward capacity.
+22.	Patients should be assigned to wards dedicated to their issue, that is, they should be assigned only to the appropriate department ward.
+23.	Patients may only be assigned to wards for their own gender.  
+24.	Occupancy of each bed can be deduced through the admission and discharge dates along with the bed_id given in the admission records. 
+Diagnostics, Labs and Imaging
+25.	The diagnostic service price list gives a complete list of all diagnostic services and their details offered by the hospital.
+26.	Laboratory tests do not need to be scheduled, the request for the laboratory test is sufficient. 
+27.	Imaging diagnostics need to be scheduled, the request for the imaging diagnostic must be completed along with booking an imaging slot.
+28.	The laboratory room list provides a list of all laboratory rooms only and is only used for managing laboratory rooms.
+29.	The imaging room list provides a list of all imaging rooms, with no relation to room availability, and is used in scheduling imaging slots.
+Consultation fees, Insurance, and Billing
+30.	Each doctor charges a consultation fee based on their years of experience. The years of experience is used to assign each doctor to a tier, with greater number of years resulting in a higher tier. Each tier has a multiplier, which is used to multiply with the base consultation fee to give the doctor’s consultation fee. 
+31.	Only one insurance provider may be accepted per patient.
+32.	Invoices are generated only after the case has been closed.
+33.	Invoices contain the itemized and total fees, including consultation fees as well as fees incurred from other services such as diagnostic services.
+34.	Fees charged are stored in the invoice itemization, allowing for charged prices to remain unaffected despite new changes in prices.  
+35.	Only one invoice is generated per case.
+36.	Only one receipt is generated per invoice. 
+Shifts Off-days Duties
+37.	Shifts are based on the doctor’s off day. Duties are assigned so that each department has doctors assigned to each of the duties.
+38.	Shifts should be assigned to doctors who are not on their day off, but shifts may be assigned to doctors on their day off. This allows doctors to exchange off days. 
+39.	Consultation slots are assigned to doctors with consultation duties. 
+40.	Imaging slots are assigned to doctors with imaging duties. 

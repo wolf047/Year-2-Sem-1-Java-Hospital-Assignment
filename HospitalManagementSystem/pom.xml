@@ -11,12 +11,16 @@
         <exec.mainClass>oodj.hospitalmanagementsystem.HospitalManagementSystem</exec.mainClass>
     </properties>
     
-    <plugin>
-        <groupId>org.apache.maven/plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.31</version>
-        <configuration>
-            <includeEmptyDirs>true</includeEmptyDirs>
-        </configuration>
-    </plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven/plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.31</version>
+                <configuration>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -74,6 +74,7 @@ public final class FileHandling {
     
     public static void ensureFileExists(String filename){
         try {
+            ensureDirectoryExists();
             if (FILENAME_HEADERS.containsKey(filename)){
                 Path filepath = DIRECTORY_PATH.resolve(filename);
                 if (!Files.exists(filepath)){
@@ -91,9 +92,12 @@ public final class FileHandling {
     
     
     public static Integer getNextID(String filename){
+        ensureDirectoryExists();
+        ensureFileExists(filename);
+        
         TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
         Integer lastID = 0;
-        if (!recordsMap.isEmpty()){
+        if (recordsMap != null && !recordsMap.isEmpty()){
             lastID = recordsMap.lastKey();
         }
         
@@ -113,12 +117,14 @@ public final class FileHandling {
     
     public static void addRecord(String filename, ArrayList<String> record){
         try {
+            ensureDirectoryExists();
+            ensureFileExists(filename);
             Path filepath = DIRECTORY_PATH.resolve(filename);
             for (int i = 0; i < record.size(); i++){
                 String formattedAttribute = formatAttribute(record.get(i));
                 record.set(i, formattedAttribute);
             }
-            Files.writeString(filepath, String.join(",", record));
+            Files.writeString(filepath, String.join(",", record) + System.lineSeparator(), StandardOpenOption.APPEND);
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -128,11 +134,30 @@ public final class FileHandling {
     
     public static void editRecord(String filename, ArrayList<String> record){
         try {
+            ensureDirectoryExists();
+            ensureFileExists(filename);
+    
             Path filepath = DIRECTORY_PATH.resolve(filename);
             TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-            Integer key = Integer.valueOf(record.get(0));
-            ArrayList<String> value = new ArrayList<>(record.subList(1, record.size()));
-            recordsMap.put(key, value);
+            
+            if (recordsMap == null){
+                System.out.println("Error: No records available.");
+            }
+            else {
+                Integer key = Integer.valueOf(record.get(0));
+                ArrayList<String> value = new ArrayList<>(record.subList(1, record.size()));
+                recordsMap.put(key, value);
+
+                ArrayList<String> updatedRecords = new ArrayList<>();
+
+                for (Map.Entry<Integer, ArrayList<String>> line : recordsMap.entrySet()){
+                    ArrayList<String> completeLine = new ArrayList<>(line.getValue());
+                    completeLine.add(0, String.valueOf(line.getKey()));
+                    updatedRecords.add(String.join(",", completeLine));            
+                }
+
+                Files.write(filepath, updatedRecords, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -142,10 +167,36 @@ public final class FileHandling {
     
     public static void removeRecord(String filename, int recordID){
         try {
+            ensureDirectoryExists();
+            ensureFileExists(filename);
+            
             Path filepath = DIRECTORY_PATH.resolve(filename);
             TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-            ArrayList<String> removedRecord = recordsMap.remove(recordID);        
-            removedRecord.add(0, String.valueOf(recordID));
+            
+            if (recordsMap == null){
+                System.out.println("Error: No records available.");
+            }
+            else {
+                
+                if (recordsMap.containsKey(recordID)){
+                    ArrayList<String> removedRecord = recordsMap.remove(recordID);        
+                    removedRecord.add(0, String.valueOf(recordID));
+
+                    ArrayList<String> updatedRecords = new ArrayList<>();
+
+                    for (Map.Entry<Integer, ArrayList<String>> line : recordsMap.entrySet()){
+                        ArrayList<String> completeLine = new ArrayList<>(line.getValue());
+                        completeLine.add(0, String.valueOf(line.getKey()));
+                        updatedRecords.add(String.join(",", completeLine));            
+                    }
+
+                    Files.write(filepath, updatedRecords, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                }
+                else {
+                    System.out.println("Error: Record does not exist.");
+                }
+                
+            }
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -187,31 +238,45 @@ public final class FileHandling {
         TreeMap<Integer, ArrayList<String>> recordsMap = new TreeMap<>();
         
         try {
+            ensureDirectoryExists();
+            ensureFileExists(filename);
+            
             Path filepath = DIRECTORY_PATH.resolve(filename);
             ArrayList<String> records = new ArrayList<>(Files.readAllLines(filepath));
             
-            for (String record : records){
-                ArrayList<String> parsedRecord = parseRecordString(record);
-                
-                Integer key = Integer.valueOf(parsedRecord.get(0));
-                ArrayList<String> value = new ArrayList<>(parsedRecord.subList(1, parsedRecord.size()));
-                
-                recordsMap.put(key, value);
+            if (records.isEmpty()){
+                return null;
+            }
+            else {
+                for (String record : records){
+                    ArrayList<String> parsedRecord = parseRecordString(record);
+
+                    Integer key = Integer.valueOf(parsedRecord.get(0));
+                    ArrayList<String> value = new ArrayList<>(parsedRecord.subList(1, parsedRecord.size()));
+
+                    recordsMap.put(key, value);
+                }
+                return recordsMap;
             }
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
-        }
-        
-        return recordsMap;
+            return null;
+        } 
     }
     
     
     public static ArrayList<String> readSpecificRecord(String filename, int recordID){
         TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-        ArrayList<String> specificRecord = recordsMap.get(recordID);
-        specificRecord.add(0, String.valueOf(recordID));
         
-        return specificRecord;
+        if (recordsMap == null){
+            System.out.println("Error: No records available.");
+            return null;
+        }
+        else {
+            ArrayList<String> specificRecord = recordsMap.get(recordID);
+            specificRecord.add(0, String.valueOf(recordID));
+            return specificRecord;
+        }
     }
 }

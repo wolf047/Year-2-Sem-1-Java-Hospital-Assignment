@@ -28,7 +28,7 @@ import java.util.*;
 */
 
 
-public class FileHandling {
+public final class FileHandling {
     private static final Path DIRECTORY_PATH = Path.of("../../Database/");
     private static final Map<String, List<String>> FILENAME_HEADERS = new LinkedHashMap<>();
     static {
@@ -90,38 +90,76 @@ public class FileHandling {
     }
     
     
-    public void getNextID(String filename){
+    public static Integer getNextID(String filename){
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+        Integer lastID = 0;
+        if (!recordsMap.isEmpty()){
+            lastID = recordsMap.lastKey();
+        }
         
+        return lastID + 1;
     }
     
     
-    public void formatAttribute(String attribute){
-        
+    public static String formatAttribute(String attribute){
+        if (attribute.contains(",") || attribute.contains(" ")){
+            return "\"" + attribute.strip() + "\"";
+        }
+        else {
+            return attribute.strip();
+        }
     }
     
     
-    public void addRecord(String filename, ArrayList<String> record){
-        
+    public static void addRecord(String filename, ArrayList<String> record){
+        try {
+            Path filepath = DIRECTORY_PATH.resolve(filename);
+            for (int i = 0; i < record.size(); i++){
+                String formattedAttribute = formatAttribute(record.get(i));
+                record.set(i, formattedAttribute);
+            }
+            Files.writeString(filepath, String.join(",", record));
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
     }
     
     
-    public void editRecord(String filename, ArrayList<String> record){
-        
+    public static void editRecord(String filename, ArrayList<String> record){
+        try {
+            Path filepath = DIRECTORY_PATH.resolve(filename);
+            TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+            Integer key = Integer.valueOf(record.get(0));
+            ArrayList<String> value = new ArrayList<>(record.subList(1, record.size()));
+            recordsMap.put(key, value);
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
     }
     
     
-    public void removeRecord(String filename, int recordID){
-        
+    public static void removeRecord(String filename, int recordID){
+        try {
+            Path filepath = DIRECTORY_PATH.resolve(filename);
+            TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+            ArrayList<String> removedRecord = recordsMap.remove(recordID);        
+            removedRecord.add(0, String.valueOf(recordID));
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
     }
     
     
-    public List<String> readHeader(String filename){
+    public static List<String> readHeader(String filename){
         return FILENAME_HEADERS.get(filename);
     }
     
     
-    public List<String> parseRecordString(String record){
-        List<String> parsedRecord = new ArrayList<>();
+    public static ArrayList<String> parseRecordString(String record){
+        ArrayList<String> parsedRecord = new ArrayList<>();
         String placeholder = "";
         boolean inQuotes = false;
         
@@ -145,18 +183,18 @@ public class FileHandling {
     }
     
     
-    public Map<Integer, List<String>> readAllRecords(String filename){
-        Map<Integer, List<String>> recordsMap = new LinkedHashMap<>();
+    public static TreeMap<Integer, ArrayList<String>> readAllRecords(String filename){
+        TreeMap<Integer, ArrayList<String>> recordsMap = new TreeMap<>();
         
         try {
             Path filepath = DIRECTORY_PATH.resolve(filename);
-            List<String> records = Files.readAllLines(filepath);
+            ArrayList<String> records = new ArrayList<>(Files.readAllLines(filepath));
             
             for (String record : records){
-                List<String> parsedRecord = parseRecordString(record);
+                ArrayList<String> parsedRecord = parseRecordString(record);
                 
                 Integer key = Integer.valueOf(parsedRecord.get(0));
-                List<String> value = parsedRecord.subList(1, parsedRecord.size());
+                ArrayList<String> value = new ArrayList<>(parsedRecord.subList(1, parsedRecord.size()));
                 
                 recordsMap.put(key, value);
             }
@@ -169,8 +207,11 @@ public class FileHandling {
     }
     
     
-    public List<String> readSpecificRecord(String filename, int recordID){
-        Map<Integer, List<String>> recordsMap = readAllRecords(filename);
-        return recordsMap.get(recordID);
+    public static ArrayList<String> readSpecificRecord(String filename, int recordID){
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+        ArrayList<String> specificRecord = recordsMap.get(recordID);
+        specificRecord.add(0, String.valueOf(recordID));
+        
+        return specificRecord;
     }
 }

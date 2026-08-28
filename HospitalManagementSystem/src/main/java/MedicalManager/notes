@@ -1,0 +1,19 @@
+
+REPORTS ??
+- Financial revenue summary
+    > total revenue (consultations, labs, imaging), revenue by
+      department, insurance provider, total outstanding invoices
+    > Invoices, InvoiceItemizations, Receipts, BaseConsultationFees
+      TierMultipliers
+- Patient volume and occupancy metrics
+    > total consultations per day/week/month, number of walk-ins
+      vs scheduled vs emergency visits, current bed occupancy (%),
+      average length of inpatient stay, total admissions/discharge
+    > Consultations, Admissions, InpatientWards, InpatientBeds, Cases
+- Doctor performance and patient satisfaction
+    > number of patients handled per doctor, avg consultation duration
+      average patient rating (CustomerReviews), no of prescriptions
+      issued per doctor
+    > Doctors, Consultations, CustomerReviews, Prescriptions
+- Diagnostic Service Utilization
+    > asdf

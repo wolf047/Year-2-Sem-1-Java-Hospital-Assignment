@@ -11,7 +11,7 @@ public class Doctor extends User{
     private int years_experience;
     private OffDay off_day;
     
-    public Doctor(String user_id, String first_name, String last_name, String phone,
+    public Doctor(int user_id, String first_name, String last_name, String phone,
             String password, int gender, LocalDate dob, Role role, String department_id,
             String specialization, int years_experience, OffDay off_day){
         super(user_id, first_name, last_name, phone, password, gender, dob, role);

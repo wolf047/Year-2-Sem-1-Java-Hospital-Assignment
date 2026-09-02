@@ -107,6 +107,7 @@ public class User {
             values.set(5, email);
             values.set(6, password);
             
+            values.add(0, String.valueOf(this.user_id));
             FileHandling.editRecord("Users.txt", values);
             
             // update current class memory of user properties

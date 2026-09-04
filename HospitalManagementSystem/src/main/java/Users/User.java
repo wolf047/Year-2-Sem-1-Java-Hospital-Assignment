@@ -6,8 +6,8 @@ import java.util.*;
 import HelperFunction.FileHandling;
 
 public class User {
-    protected String first_name, last_name, phone, password;
-    protected int user_id, gender;
+    protected String first_name, last_name, phone, password, gender;
+    protected int user_id;
     protected LocalDate dob;
     protected Role role;
     
@@ -16,7 +16,7 @@ public class User {
     }
     
     public User(int user_id, String first_name, String last_name, String phone,
-            String password, int gender, LocalDate dob, Role role){
+            String password, String gender, LocalDate dob, Role role){
         this.user_id = user_id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -47,7 +47,7 @@ public class User {
         return this.password;
     }
 
-    public int getGender() {
+    public String getGender() {
         return this.gender;
     }
     
@@ -79,7 +79,7 @@ public class User {
         this.password = password;
     }
 
-    public void setGender(int gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -95,7 +95,7 @@ public class User {
     // update profile method that updates Users.txt directly
     // return type boolean, true = success; false = error message
     public boolean updateProfile(String firstName, String lastName, String phone, String email,
-            String password, int gender, LocalDate dob){
+            String password, String gender, LocalDate dob){
         TreeMap<Integer, ArrayList<String>> usersMap = FileHandling.readAllRecords("Users.txt");
         int userID = this.user_id;
         
@@ -106,7 +106,7 @@ public class User {
             details.set(0, firstName);
             details.set(1, lastName);
             details.set(2, dob.toString());
-            details.set(3, String.valueOf(gender));
+            details.set(3, gender);
             details.set(4, phone);
             details.set(5, email);
             details.set(6, password);

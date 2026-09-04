@@ -29,7 +29,7 @@ import java.util.*;
 
 
 public final class FileHandling {
-    private static final Path DIRECTORY_PATH = Path.of("../../Database/");
+    private static final Path DIRECTORY_PATH = Path.of("src/main/java/Database/");
     private static final Map<String, List<String>> FILENAME_HEADERS = new LinkedHashMap<>();
     static {
         FILENAME_HEADERS.put("AcceptedInsuranceNetworks.txt", List.of("insurance_id", "insurance_name", "deleted"));

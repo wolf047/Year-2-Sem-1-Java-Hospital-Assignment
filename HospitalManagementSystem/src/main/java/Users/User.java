@@ -11,6 +11,10 @@ public class User {
     protected LocalDate dob;
     protected Role role;
     
+    public User(){
+        
+    }
+    
     public User(int user_id, String first_name, String last_name, String phone,
             String password, int gender, LocalDate dob, Role role){
         this.user_id = user_id;
@@ -98,17 +102,17 @@ public class User {
         // if records not empty and current id exists in record
         // update to Users.txt using FileHandling editRecord method
         if (usersMap != null && usersMap.containsKey(userID)) {
-            ArrayList<String> values = usersMap.get(userID);
-            values.set(0, firstName);
-            values.set(1, lastName);
-            values.set(2, dob.toString());
-            values.set(3, String.valueOf(gender));
-            values.set(4, phone);
-            values.set(5, email);
-            values.set(6, password);
+            ArrayList<String> details = usersMap.get(userID);
+            details.set(0, firstName);
+            details.set(1, lastName);
+            details.set(2, dob.toString());
+            details.set(3, String.valueOf(gender));
+            details.set(4, phone);
+            details.set(5, email);
+            details.set(6, password);
             
-            values.add(0, String.valueOf(this.user_id));
-            FileHandling.editRecord("Users.txt", values);
+            details.add(0, String.valueOf(this.user_id));
+            FileHandling.editRecord("Users.txt", details);
             
             // update current class memory of user properties
             this.first_name = firstName;

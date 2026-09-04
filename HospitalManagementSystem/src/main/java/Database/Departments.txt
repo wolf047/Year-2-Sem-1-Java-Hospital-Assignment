@@ -1,0 +1,6 @@
+1,"General Medicine","Outpatient and inpatient management of adult medical conditions",4,0
+2,Emergency,"Round-the-clock emergency, trauma and resuscitation services",5,0
+3,Cardiology,"Diagnosis and treatment of cardiovascular disease",6,0
+4,Orthopedics,"Musculoskeletal trauma, joint and spine surgical care",5,0
+5,Pediatrics,"Medical care for infants, children and adolescents",7,0
+6,Radiology,"Diagnostic imaging and image-guided procedures",4,0

@@ -1,0 +1,30 @@
+1,58,9,28-05-2026,02-06-2026,diagnosis,walkin,"Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution",0
+2,61,9,20-05-2026,23-06-2026,diagnosis,scheduled,"Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given",0
+3,56,27,16-06-2026,26-06-2026,diagnosis,scheduled,"Stable angina pectoris investigated with functional and structural cardiac assessment, medical therapy optimised",0
+4,53,31,08-06-2026,24-06-2026,trauma,emergency,"Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union",0
+5,46,35,02-06-2026,03-07-2026,diagnosis,walkin,"Dengue fever without warning signs monitored with serial blood counts until platelet recovery",0
+6,45,32,18-06-2026,13-07-2026,immunization,scheduled,"Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction",0
+7,65,10,28-05-2026,13-06-2026,healthcheck,scheduled,"Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results",0
+8,59,20,21-05-2026,12-06-2026,trauma,emergency,"Minor head injury with soft tissue abrasions, observed for twenty four hours with no neurological deterioration",0
+9,57,18,20-06-2026,02-08-2026,trauma,walkin,"Palmar laceration explored and sutured under local anaesthesia, healed without infection",0
+10,52,28,16-06-2026,07-07-2026,diagnosis,scheduled,"Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy",0
+11,63,11,21-06-2026,26-06-2026,immunization,walkin,"Seasonal influenza vaccination administered with no immediate adverse reaction reported",0
+12,64,37,04-05-2026,17-05-2026,diagnosis,scheduled,"Symptomatic gallstones identified on ultrasound, managed medically with dietary advice and surgical referral",0
+13,60,20,30-05-2026,23-06-2026,diagnosis,emergency,"Acute appendicitis confirmed on imaging and managed operatively with an uneventful postoperative recovery",0
+14,48,28,19-06-2026,28-07-2026,trauma,walkin,"Mechanical lumbar strain without neurological deficit, resolved with analgesia and activity modification",0
+15,55,9,13-05-2026,18-05-2026,diagnosis,scheduled,"Primary hypothyroidism confirmed biochemically and stabilised on thyroid hormone replacement",0
+16,62,16,12-05-2026,17-05-2026,trauma,emergency,"Superficial partial thickness scald to the right forearm managed with dressings until complete epithelialisation",0
+17,50,8,08-08-2026,13-08-2026,diagnosis,walkin,"Bacterial conjunctivitis treated with topical antibiotic and resolved without complication",0
+18,40,35,19-08-2026,29-08-2026,healthcheck,scheduled,"Well child assessment with growth parameters and developmental milestones within expected range for age",0
+19,54,8,18-08-2026,20-08-2026,immunization,scheduled,"Hepatitis B immunisation course commenced for occupational exposure with baseline liver function checked",0
+20,51,25,17-08-2026,21-08-2026,healthcheck,scheduled,"Newly diagnosed essential hypertension with cardiovascular risk stratification and antihypertensive therapy started",0
+21,49,37,08-08-2026,14-08-2026,healthcheck,scheduled,"Interval surveillance imaging of an incidental pulmonary nodule showing no growth over the follow up period",0
+22,58,25,13-08-2026,,diagnosis,emergency,"Non ST elevation myocardial infarction managed with dual antiplatelet therapy and inpatient cardiac monitoring",0
+23,61,8,08-08-2026,,diagnosis,walkin,"Deep vein thrombosis of the left popliteal vein confirmed on Doppler imaging and anticoagulated",0
+24,41,33,25-07-2026,,diagnosis,walkin,"Childhood asthma with intermittent exacerbations, inhaled therapy commenced with written asthma action plan",0
+25,56,8,21-07-2026,,diagnosis,scheduled,"Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given",0
+26,53,31,02-08-2026,,diagnosis,scheduled,"Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy",0
+27,65,31,06-08-2026,,trauma,emergency,"Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union",0
+28,59,10,05-08-2026,,healthcheck,scheduled,"Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results",0
+29,57,10,16-08-2026,,diagnosis,walkin,"Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution",0
+30,43,33,26-08-2026,,immunization,scheduled,"Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction",0

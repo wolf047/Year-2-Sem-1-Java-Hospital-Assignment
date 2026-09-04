@@ -1,0 +1,32 @@
+8,1,"Internal Medicine",2008,MONDAY
+9,1,"Family Medicine",2003,TUESDAY
+10,1,Endocrinology,2018,WEDNESDAY
+11,1,"Infectious Diseases",2009,THURSDAY
+12,2,"Emergency Medicine",2008,MONDAY
+13,2,"Trauma and Resuscitation",2003,TUESDAY
+14,2,"Critical Care Medicine",2011,WEDNESDAY
+15,2,"Emergency Medicine",2013,THURSDAY
+16,2,"Toxicology and Emergency Care",2015,FRIDAY
+17,2,"Emergency Medicine",2016,SATURDAY
+18,2,"Trauma and Resuscitation",2016,SUNDAY
+19,2,"Emergency Medicine",2021,MONDAY
+20,2,"Critical Care Medicine",2009,TUESDAY
+21,2,"Emergency Medicine",2007,WEDNESDAY
+22,2,"Trauma and Resuscitation",2020,THURSDAY
+23,2,"Emergency Medicine",2022,FRIDAY
+24,3,"Interventional Cardiology",1999,TUESDAY
+25,3,"Cardiac Electrophysiology",2014,WEDNESDAY
+26,3,"Heart Failure Cardiology",2006,THURSDAY
+27,3,"General Cardiology",2003,FRIDAY
+28,4,"Trauma and Orthopaedic Surgery",2022,WEDNESDAY
+29,4,"Spine Surgery",2016,THURSDAY
+30,4,"Sports Medicine",2011,FRIDAY
+31,4,"Hand and Microsurgery",2022,SATURDAY
+32,5,"General Paediatrics",2007,THURSDAY
+33,5,"Paediatric Cardiology",2018,FRIDAY
+34,5,Neonatology,2011,SATURDAY
+35,5,"Paediatric Neurology",2013,SUNDAY
+36,6,"Diagnostic Radiology",2010,FRIDAY
+37,6,"Interventional Radiology",2011,SATURDAY
+38,6,Neuroradiology,2021,SUNDAY
+39,6,"Musculoskeletal Radiology",2011,MONDAY

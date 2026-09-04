@@ -1,0 +1,27 @@
+1,"Full Blood Count",laboratory,hematology,25.00,0
+2,"Coagulation Profile",laboratory,hematology,45.00,0
+3,"Erythrocyte Sedimentation Rate",laboratory,hematology,20.00,0
+4,"Peripheral Blood Film",laboratory,hematology,40.00,0
+5,"Renal Profile",laboratory,chemistry,38.00,0
+6,"Liver Function Test",laboratory,chemistry,42.00,0
+7,"Lipid Profile",laboratory,chemistry,45.00,0
+8,"Glycated Haemoglobin HbA1c",laboratory,chemistry,55.00,0
+9,"Fasting Blood Glucose",laboratory,chemistry,18.00,0
+10,"Cardiac Troponin I",laboratory,chemistry,95.00,0
+11,"Serum Electrolytes",laboratory,chemistry,35.00,0
+12,"Thyroid Function Test",laboratory,chemistry,68.00,0
+13,"Urine Full Examination",laboratory,"specimen test",22.00,0
+14,"Sputum Culture and Sensitivity",laboratory,"specimen test",60.00,0
+15,"Dengue NS1 Antigen",laboratory,"specimen test",65.00,0
+16,"Stool Occult Blood",laboratory,"specimen test",25.00,0
+17,"Wound Swab Culture",laboratory,"specimen test",55.00,0
+18,"Chest X-Ray",imaging,x-ray,60.00,0
+19,"X-Ray Forearm",imaging,x-ray,55.00,0
+20,"X-Ray Knee",imaging,x-ray,55.00,0
+21,"X-Ray Lumbar Spine",imaging,x-ray,75.00,0
+22,"Abdominal Ultrasound",imaging,ultrasound,130.00,0
+23,Echocardiogram,imaging,ultrasound,220.00,0
+24,"Doppler Ultrasound Lower Limb",imaging,ultrasound,180.00,0
+25,"CT Brain",imaging,"CT scan",450.00,0
+26,"CT Thorax",imaging,"CT scan",520.00,0
+27,"CT Abdomen and Pelvis",imaging,"CT scan",620.00,0

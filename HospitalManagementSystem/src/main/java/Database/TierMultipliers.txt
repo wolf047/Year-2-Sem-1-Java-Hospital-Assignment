@@ -1,0 +1,5 @@
+1,"Junior Consultant",0,1.00,0
+2,Consultant,5,1.30,0
+3,"Senior Consultant",10,1.60,0
+4,"Specialist Consultant",15,1.90,0
+5,"Principal Consultant",20,2.30,0

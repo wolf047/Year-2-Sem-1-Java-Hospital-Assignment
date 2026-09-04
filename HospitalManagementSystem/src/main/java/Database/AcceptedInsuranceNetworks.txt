@@ -1,0 +1,9 @@
+1,"Great Eastern Life Assurance (Malaysia) Berhad",0
+2,"AIA Bhd",0
+3,"Prudential Assurance Malaysia Berhad",0
+4,"Allianz Life Insurance Malaysia Berhad",0
+5,"Etiqa Family Takaful Berhad",0
+6,"Zurich Life Insurance Malaysia Berhad",0
+7,"Hong Leong Assurance Berhad",0
+8,"Syarikat Takaful Malaysia Keluarga Berhad",0
+9,"MSIG Insurance (Malaysia) Bhd",0

@@ -1,0 +1,65 @@
+1,"Wei Ming",Cheah,04-08-1982,male,019-8055659,wei.cheah@sriaman-hospital.com.my,Angkasa@1677G,Admin,0
+2,"Siew Ling",Cheah,22-09-1994,female,013-3483695,siew.cheah@sriaman-hospital.com.my,Langkawi@5944H,Admin,0
+3,Priyadarshini,"a/p Ramasamy",10-04-1979,female,017-3854861,priyadarshini.ramasamy@sriaman-hospital.com.my,Nilam@3936Y,Admin,0
+4,"Nur Adriana","binti Hassan",15-03-1975,female,019-5041439,nur.hassan@sriaman-hospital.com.my,Pualam@3484U,MedicalManager,0
+5,"Khairul Anuar","bin Yusof",24-01-1970,male,012-8197084,khairul.yusof@sriaman-hospital.com.my,Kinabalu@4753B,MedicalManager,0
+6,Arumugam,"a/l Subramaniam",28-08-1968,male,011-7403156,arumugam.subramaniam@sriaman-hospital.com.my,Bunga@3604P,MedicalManager,0
+7,Ravindran,"a/l Subramaniam",19-05-1979,male,013-8304541,ravindran.subramaniam@sriaman-hospital.com.my,Rimba@5943A,MedicalManager,0
+8,"Amirul Syafiq","bin Ismail",02-05-1983,male,019-3967749,amirul.ismail@sriaman-hospital.com.my,Harimau@2519N,Doctor,0
+9,Kavitha,"a/p Rajendran",21-01-1978,female,012-7681694,kavitha.rajendran@sriaman-hospital.com.my,Pualam@8075C,Doctor,0
+10,"Kok Wai",Ooi,11-10-1993,male,017-6838648,kok.ooi@sriaman-hospital.com.my,Merdeka@7838R,Doctor,0
+11,"Nur Adriana","binti Salleh",28-01-1974,female,016-2408803,nur.salleh@sriaman-hospital.com.my,Pualam@8071A,Doctor,0
+12,Suriani,"binti Zainal",07-05-1983,female,011-5401992,suriani.zainal@sriaman-hospital.com.my,Cempaka@5698G,Doctor,0
+13,"Intan Nadhirah","binti Salleh",13-11-1971,female,013-8167557,intan.salleh@sriaman-hospital.com.my,Bunga@7177F,Doctor,0
+14,"Suet Fong",Ng,26-07-1968,female,017-4059568,suet.ng@sriaman-hospital.com.my,Angkasa@2207B,Doctor,0
+15,Ganesh,"a/l Muthusamy",11-06-1966,male,019-3445344,ganesh.muthusamy@sriaman-hospital.com.my,Langkawi@4057P,Doctor,0
+16,Arumugam,"a/l Rajendran",26-11-1980,male,019-3946934,arumugam.rajendran@sriaman-hospital.com.my,Cempaka@7046M,Doctor,0
+17,"Shahrul Nizam","bin Zainal",11-12-1991,male,019-4246775,shahrul.zainal@sriaman-hospital.com.my,Rimba@1783W,Doctor,0
+18,Kumaran,"a/l Subramaniam",19-06-1982,male,016-3055581,kumaran.subramaniam@sriaman-hospital.com.my,Langkawi@3615P,Doctor,0
+19,"Boon Hock",Ooi,24-12-1979,male,016-6214788,boon.ooi@sriaman-hospital.com.my,Angkasa@5454J,Doctor,0
+20,"Boon Hock",Chong,23-01-1966,male,019-9814259,boon.chong@sriaman-hospital.com.my,Rimba@9772G,Doctor,0
+21,Kavitha,"a/p Subramaniam",17-05-1965,female,017-6985142,kavitha.subramaniam@sriaman-hospital.com.my,Cempaka@9691C,Doctor,0
+22,Suriani,"binti Abdullah",26-06-1992,female,019-5952316,suriani.abdullah@sriaman-hospital.com.my,Bunga@8793F,Doctor,0
+23,Prakash,"a/l Ramasamy",13-05-1983,male,013-6637543,prakash.ramasamy@sriaman-hospital.com.my,Kinabalu@6827C,Doctor,0
+24,"Khairul Anuar","bin Salleh",24-09-1965,male,019-5865404,khairul.salleh@sriaman-hospital.com.my,Nilam@1797X,Doctor,0
+25,Meenakshi,"a/p Muthusamy",13-10-1984,female,017-5509006,meenakshi.muthusamy@sriaman-hospital.com.my,Melur@8050W,Doctor,0
+26,Priyadarshini,"a/p Rajendran",16-01-1970,female,018-3627023,priyadarshini.rajendran@sriaman-hospital.com.my,Pualam@9712X,Doctor,0
+27,Rosli,"bin Zainal",28-12-1971,male,013-3864328,rosli.zainal@sriaman-hospital.com.my,Zamrud@1339B,Doctor,0
+28,"Nurul Aisyah","binti Ismail",08-12-1983,female,016-2706510,nurul.ismail@sriaman-hospital.com.my,Nilam@7403R,Doctor,0
+29,"Siti Zubaidah","binti Yusof",03-12-1982,female,018-4128765,siti.yusof@sriaman-hospital.com.my,Delima@7110B,Doctor,0
+30,"Wei Ming",Chan,17-06-1967,male,012-7694512,wei.chan@sriaman-hospital.com.my,Nilam@6142G,Doctor,0
+31,"Farah Hidayah","binti Mahmud",02-07-1987,female,012-6763748,farah.mahmud@sriaman-hospital.com.my,Nilam@1317S,Doctor,0
+32,"Chun Meng",Cheah,19-02-1981,male,011-6479798,chun.cheah@sriaman-hospital.com.my,Pualam@6662M,Doctor,0
+33,Zarina,"binti Salleh",23-04-1980,female,018-6096594,zarina.salleh@sriaman-hospital.com.my,Delima@1607Y,Doctor,0
+34,"Intan Nadhirah","binti Mahmud",09-04-1980,female,012-4302951,intan.mahmud@sriaman-hospital.com.my,Merdeka@6271N,Doctor,0
+35,Prakash,"a/l Krishnan",04-05-1978,male,018-9785655,prakash.krishnan@sriaman-hospital.com.my,Langkawi@6988P,Doctor,0
+36,"Xiao Ting",Chong,06-11-1975,female,018-7123130,xiao.chong@sriaman-hospital.com.my,Zamrud@8598U,Doctor,0
+37,"Suet Fong",Goh,03-08-1977,female,011-9955734,suet.goh@sriaman-hospital.com.my,Melur@8187W,Doctor,0
+38,"Yee Ling",Cheah,14-07-1971,female,019-7861229,yee.cheah@sriaman-hospital.com.my,Kinabalu@4849W,Doctor,0
+39,"Haziq Danial","bin Ismail",05-06-1986,male,011-4013240,haziq.ismail@sriaman-hospital.com.my,Teratai@9162G,Doctor,0
+40,"Farah Hidayah","binti Hassan",05-03-2012,female,019-6255771,farah.hassan@hotmail.com,Melur@5066E,Patient,0
+41,"Muhammad Hafiz","bin Ismail",26-08-2012,male,012-9783369,muhammad.ismail@gmail.com,Melur@9515Y,Patient,0
+42,"Nurul Aisyah","binti Hassan",27-10-2017,female,018-9385955,nurul.hassan@gmail.com,Harimau@3086C,Patient,0
+43,Nirmala,"a/p Rajendran",18-09-2015,female,016-9091376,nirmala.rajendran@hotmail.com,Pualam@5742Z,Patient,0
+44,"Nur Adriana","binti Othman",24-07-2021,female,018-4697516,nur.othman@outlook.com,Kinabalu@2474X,Patient,0
+45,"Siew Ling",Ng,04-02-2011,female,011-9724958,siew.ng@yahoo.com,Teratai@3513C,Patient,0
+46,Nirmala,"a/p Subramaniam",13-12-2014,female,019-5416953,nirmala.subramaniam@gmail.com,Melur@2737U,Patient,0
+47,Firdaus,"bin Othman",15-09-2010,male,016-8095289,firdaus.othman@outlook.com,Zamrud@8591E,Patient,0
+48,"Mohd Ridzuan","bin Hassan",28-10-1950,male,019-9137492,mohd.hassan@hotmail.com,Angkasa@8266E,Patient,0
+49,"Nur Adriana","binti Ismail",11-06-1970,female,016-7864087,nur.ismail@yahoo.com,Rimba@8079M,Patient,0
+50,Kumaran,"a/l Rajendran",22-06-1982,male,016-6166928,kumaran.rajendran@yahoo.com,Melur@5900M,Patient,0
+51,"Amirah Sofea","binti Mahmud",06-02-1979,female,019-6666231,amirah.mahmud@yahoo.com,Pualam@6063T,Patient,0
+52,Rosli,"bin Kamaruddin",19-11-1991,male,012-7575986,rosli.kamaruddin@gmail.com,Langkawi@3325H,Patient,0
+53,"Mei Ling",Lee,10-04-1951,female,012-6285512,mei.lee@hotmail.com,Melur@9023X,Patient,0
+54,"Syed Aiman","bin Rahman",22-04-2004,male,011-5875508,syed.rahman@hotmail.com,Melur@1636U,Patient,0
+55,"Xiao Ting",Lim,13-09-1988,female,012-9418960,xiao.lim@gmail.com,Rimba@2025N,Patient,0
+56,"Muhammad Hafiz","bin Zainal",01-09-2003,male,011-3526656,muhammad.zainal@outlook.com,Kencana@3050P,Patient,0
+57,"Devi Anjali","a/p Ramasamy",13-10-1974,female,016-9627462,devi.ramasamy@outlook.com,Zamrud@6075C,Patient,0
+58,Firdaus,"bin Mahmud",15-01-1959,male,011-9451702,firdaus.mahmud@outlook.com,Pualam@8470E,Patient,0
+59,"Siti Zubaidah","binti Hassan",02-01-1984,female,012-4458517,siti.hassan@hotmail.com,Selasih@8625H,Patient,0
+60,"Ahmad Faizal","bin Hassan",08-02-1975,male,012-4421425,ahmad.hassan@outlook.com,Zamrud@4143F,Patient,0
+61,Hasnah,"binti Rahman",23-01-1949,female,018-5626911,hasnah.rahman@outlook.com,Teratai@9447H,Patient,0
+62,"Nazrin Shah","bin Salleh",20-11-1950,male,017-2301390,nazrin.salleh@hotmail.com,Harimau@2328C,Patient,0
+63,"Intan Nadhirah","binti Kamaruddin",02-01-1975,female,012-5297839,intan.kamaruddin@hotmail.com,Zamrud@5332T,Patient,0
+64,"Mohd Ridzuan","bin Ismail",20-02-1965,male,017-8615611,mohd.ismail@yahoo.com,Zamrud@1378X,Patient,0
+65,"Intan Nadhirah","binti Ismail",26-01-1953,female,018-2611822,intan.ismail@outlook.com,Kencana@4571N,Patient,0

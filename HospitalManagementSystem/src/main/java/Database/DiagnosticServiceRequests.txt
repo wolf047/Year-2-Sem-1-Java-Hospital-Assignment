@@ -1,0 +1,70 @@
+1,1,1,28-05-2026,"Repeat investigation to monitor treatment response",28-05-2026,"Haemoglobin 13.8 g per dL, white cell count 16.7 x10^9 per L, platelet 366 x10^9 per L",0
+2,1,14,28-05-2026,"Requested to support the working diagnosis",28-05-2026,"Streptococcus pneumoniae isolated and sensitive to amoxicillin",0
+3,1,18,28-05-2026,"Requested to support the working diagnosis",28-05-2026,"Patchy consolidation in the right lower zone with clear costophrenic angles elsewhere",0
+4,4,8,20-05-2026,"Baseline assessment prior to commencing therapy",22-05-2026,"HbA1c 9.0 percent",0
+5,4,5,20-05-2026,"Baseline assessment prior to commencing therapy",22-05-2026,"Sodium 139 mmol per L, potassium 4.3 mmol per L, urea 3.2 mmol per L, creatinine 75 umol per L",0
+6,4,9,20-05-2026,"Repeat investigation to monitor treatment response",22-05-2026,"Fasting plasma glucose 6.9 mmol per L",0
+7,6,7,16-06-2026,"Repeat investigation to monitor treatment response",17-06-2026,"Total cholesterol 3.9 mmol per L, LDL 3.8 mmol per L, HDL 1.6 mmol per L, triglycerides 1.6 mmol per L",0
+8,6,10,16-06-2026,"Routine screening investigation as part of the assessment",17-06-2026,"High sensitivity troponin I 8 ng per L",0
+9,6,23,16-06-2026,"Requested to exclude an alternative diagnosis",16-06-2026,"Ejection fraction 49 percent with no regional wall motion abnormality",0
+10,6,18,16-06-2026,"Routine screening investigation as part of the assessment",17-06-2026,"Lung fields are clear with a normal cardiothoracic ratio and no pleural effusion",0
+11,8,1,08-06-2026,"Routine screening investigation as part of the assessment",10-06-2026,"Haemoglobin 12.7 g per dL, white cell count 10.4 x10^9 per L, platelet 147 x10^9 per L",0
+12,8,19,08-06-2026,"Routine screening investigation as part of the assessment",08-06-2026,"Transverse fracture of the distal radius with acceptable alignment after reduction",0
+13,9,1,24-06-2026,"Requested to exclude an alternative diagnosis",24-06-2026,"Haemoglobin 14.3 g per dL, white cell count 7.5 x10^9 per L, platelet 291 x10^9 per L",0
+14,10,1,02-06-2026,"Baseline assessment prior to commencing therapy",04-06-2026,"Haemoglobin 11.0 g per dL, white cell count 8.1 x10^9 per L, platelet 216 x10^9 per L",0
+15,10,15,02-06-2026,"Repeat investigation to monitor treatment response",04-06-2026,"NS1 antigen reactive, IgM reactive, IgG non reactive",0
+16,14,1,28-05-2026,"Urgent investigation requested for the emergency presentation",29-05-2026,"Haemoglobin 14.7 g per dL, white cell count 4.6 x10^9 per L, platelet 342 x10^9 per L",0
+17,14,7,28-05-2026,"Repeat investigation to monitor treatment response",29-05-2026,"Total cholesterol 6.5 mmol per L, LDL 4.0 mmol per L, HDL 1.6 mmol per L, triglycerides 1.6 mmol per L",0
+18,14,5,28-05-2026,"Urgent investigation requested for the emergency presentation",30-05-2026,"Sodium 135 mmol per L, potassium 4.4 mmol per L, urea 6.4 mmol per L, creatinine 72 umol per L",0
+19,14,6,28-05-2026,"Urgent investigation requested for the emergency presentation",28-05-2026,"Total bilirubin 15 umol per L, ALT 25 U per L, AST 19 U per L, albumin 36 g per L",0
+20,14,18,28-05-2026,"Baseline assessment prior to commencing therapy",28-05-2026,"Lung fields are clear with a normal cardiothoracic ratio and no pleural effusion",0
+21,15,18,13-06-2026,"Routine screening investigation as part of the assessment",14-06-2026,"Lung fields are clear with a normal cardiothoracic ratio and no pleural effusion",0
+22,16,1,21-05-2026,"Requested to exclude an alternative diagnosis",22-05-2026,"Haemoglobin 12.4 g per dL, white cell count 11.7 x10^9 per L, platelet 371 x10^9 per L",0
+23,16,2,21-05-2026,"Repeat investigation to monitor treatment response",21-05-2026,"Prothrombin time 13.0 seconds, INR 1.28, APTT 26.8 seconds",0
+24,16,25,21-05-2026,"Baseline assessment prior to commencing therapy",22-05-2026,"No intracranial haemorrhage, mass effect or midline shift identified",0
+25,19,17,20-06-2026,"Requested to support the working diagnosis",20-06-2026,"Light growth of Staphylococcus aureus sensitive to cloxacillin",0
+26,21,3,16-06-2026,"Routine screening investigation as part of the assessment",17-06-2026,"ESR 16 mm per hour",0
+27,21,20,16-06-2026,"Repeat investigation to monitor treatment response",17-06-2026,"Medial joint space narrowing with marginal osteophytes consistent with osteoarthritis",0
+28,25,6,04-05-2026,"Baseline assessment prior to commencing therapy",06-05-2026,"Total bilirubin 14 umol per L, ALT 29 U per L, AST 16 U per L, albumin 47 g per L",0
+29,25,22,04-05-2026,"Urgent investigation requested for the emergency presentation",04-05-2026,"Multiple mobile gallstones within the gallbladder with no wall thickening or duct dilatation",0
+30,26,1,30-05-2026,"Baseline assessment prior to commencing therapy",01-06-2026,"Haemoglobin 12.7 g per dL, white cell count 15.1 x10^9 per L, platelet 216 x10^9 per L",0
+31,26,13,30-05-2026,"Requested to support the working diagnosis",31-05-2026,"No bacterial growth, 4 white cells per high power field, no casts seen",0
+32,26,27,30-05-2026,"Repeat investigation to monitor treatment response",30-05-2026,"Dilated appendix with periappendiceal fat stranding consistent with acute appendicitis",0
+33,28,21,19-06-2026,"Urgent investigation requested for the emergency presentation",20-06-2026,"Preserved vertebral body heights with mild degenerative disc changes at L4 and L5",0
+34,29,21,29-06-2026,"Repeat investigation to monitor treatment response",29-06-2026,"Preserved vertebral body heights with mild degenerative disc changes at L4 and L5",0
+35,33,12,13-05-2026,"Baseline assessment prior to commencing therapy",13-05-2026,"TSH 9.44 mIU per L, free T4 12.3 pmol per L",0
+36,33,1,13-05-2026,"Repeat investigation to monitor treatment response",15-05-2026,"Haemoglobin 12.2 g per dL, white cell count 4.3 x10^9 per L, platelet 295 x10^9 per L",0
+37,34,1,12-05-2026,"Requested to support the working diagnosis",13-05-2026,"Haemoglobin 10.6 g per dL, white cell count 8.2 x10^9 per L, platelet 164 x10^9 per L",0
+38,38,1,17-05-2026,"Urgent investigation requested for the emergency presentation",17-05-2026,"Haemoglobin 11.7 g per dL, white cell count 15.3 x10^9 per L, platelet 302 x10^9 per L",0
+39,40,1,19-08-2026,"Urgent investigation requested for the emergency presentation",19-08-2026,"Haemoglobin 11.4 g per dL, white cell count 10.3 x10^9 per L, platelet 254 x10^9 per L",0
+40,41,6,18-08-2026,"Repeat investigation to monitor treatment response",18-08-2026,"Total bilirubin 7 umol per L, ALT 46 U per L, AST 43 U per L, albumin 45 g per L",0
+41,42,7,17-08-2026,"Urgent investigation requested for the emergency presentation",19-08-2026,"Total cholesterol 6.7 mmol per L, LDL 3.2 mmol per L, HDL 1.4 mmol per L, triglycerides 1.5 mmol per L",0
+42,42,5,17-08-2026,"Requested to exclude an alternative diagnosis",18-08-2026,"Sodium 135 mmol per L, potassium 4.2 mmol per L, urea 3.5 mmol per L, creatinine 105 umol per L",0
+43,42,23,17-08-2026,"Repeat investigation to monitor treatment response",18-08-2026,"Ejection fraction 46 percent with no regional wall motion abnormality",0
+44,43,26,08-08-2026,"Routine screening investigation as part of the assessment",09-08-2026,"Stable eight millimetre right upper lobe nodule with no interval growth",0
+45,44,10,13-08-2026,"Urgent investigation requested for the emergency presentation",13-08-2026,"High sensitivity troponin I 1828 ng per L",0
+46,44,1,13-08-2026,"Requested to support the working diagnosis",13-08-2026,"Haemoglobin 11.6 g per dL, white cell count 15.6 x10^9 per L, platelet 317 x10^9 per L",0
+47,44,5,13-08-2026,"Requested to exclude an alternative diagnosis",14-08-2026,"Sodium 143 mmol per L, potassium 4.8 mmol per L, urea 4.8 mmol per L, creatinine 71 umol per L",0
+48,44,23,13-08-2026,"Routine screening investigation as part of the assessment",13-08-2026,"Ejection fraction 62 percent with no regional wall motion abnormality",0
+49,45,5,21-08-2026,"Requested to support the working diagnosis",21-08-2026,"Sodium 137 mmol per L, potassium 3.4 mmol per L, urea 3.9 mmol per L, creatinine 111 umol per L",0
+50,47,2,08-08-2026,"Requested to support the working diagnosis",08-08-2026,"Prothrombin time 13.5 seconds, INR 1.22, APTT 34.6 seconds",0
+51,47,1,08-08-2026,"Routine screening investigation as part of the assessment",08-08-2026,"Haemoglobin 11.0 g per dL, white cell count 10.2 x10^9 per L, platelet 233 x10^9 per L",0
+52,47,24,08-08-2026,"Requested to support the working diagnosis",09-08-2026,"Non compressible left popliteal vein consistent with acute deep vein thrombosis",0
+53,49,1,25-07-2026,"Requested to exclude an alternative diagnosis",27-07-2026,"Haemoglobin 11.7 g per dL, white cell count 6.4 x10^9 per L, platelet 156 x10^9 per L",0
+54,49,18,25-07-2026,"Repeat investigation to monitor treatment response",26-07-2026,"Patchy consolidation in the right lower zone with clear costophrenic angles elsewhere",0
+55,51,8,21-07-2026,"Baseline assessment prior to commencing therapy",22-07-2026,"HbA1c 7.6 percent",0
+56,51,5,21-07-2026,"Baseline assessment prior to commencing therapy",22-07-2026,"Sodium 135 mmol per L, potassium 3.9 mmol per L, urea 2.9 mmol per L, creatinine 102 umol per L",0
+57,51,9,21-07-2026,"Repeat investigation to monitor treatment response",22-07-2026,"Fasting plasma glucose 7.4 mmol per L",0
+58,53,3,02-08-2026,"Requested to exclude an alternative diagnosis",03-08-2026,"ESR 55 mm per hour",0
+59,53,20,02-08-2026,"Requested to support the working diagnosis",03-08-2026,"Medial joint space narrowing with marginal osteophytes consistent with osteoarthritis",0
+60,55,1,06-08-2026,"Baseline assessment prior to commencing therapy",07-08-2026,"Haemoglobin 11.1 g per dL, white cell count 12.0 x10^9 per L, platelet 183 x10^9 per L",0
+61,55,19,06-08-2026,"Baseline assessment prior to commencing therapy",07-08-2026,"Transverse fracture of the distal radius with acceptable alignment after reduction",0
+62,57,19,21-08-2026,"Requested to exclude an alternative diagnosis",22-08-2026,"Transverse fracture of the distal radius with acceptable alignment after reduction",0
+63,59,1,05-08-2026,"Urgent investigation requested for the emergency presentation",06-08-2026,"Haemoglobin 14.6 g per dL, white cell count 15.5 x10^9 per L, platelet 351 x10^9 per L",0
+64,59,7,05-08-2026,"Requested to exclude an alternative diagnosis",07-08-2026,"Total cholesterol 6.6 mmol per L, LDL 2.8 mmol per L, HDL 0.9 mmol per L, triglycerides 1.1 mmol per L",0
+65,59,5,05-08-2026,"Requested to support the working diagnosis",06-08-2026,"Sodium 139 mmol per L, potassium 3.9 mmol per L, urea 4.4 mmol per L, creatinine 93 umol per L",0
+66,59,6,05-08-2026,"Repeat investigation to monitor treatment response",06-08-2026,"Total bilirubin 20 umol per L, ALT 47 U per L, AST 22 U per L, albumin 42 g per L",0
+67,59,18,05-08-2026,"Requested to exclude an alternative diagnosis",06-08-2026,"Lung fields are clear with a normal cardiothoracic ratio and no pleural effusion",0
+68,63,1,16-08-2026,"Baseline assessment prior to commencing therapy",17-08-2026,"Haemoglobin 10.5 g per dL, white cell count 15.7 x10^9 per L, platelet 249 x10^9 per L",0
+69,63,14,16-08-2026,"Requested to support the working diagnosis",18-08-2026,"Streptococcus pneumoniae isolated and sensitive to amoxicillin",0
+70,63,18,16-08-2026,"Repeat investigation to monitor treatment response",16-08-2026,"Patchy consolidation in the right lower zone with clear costophrenic angles elsewhere",0

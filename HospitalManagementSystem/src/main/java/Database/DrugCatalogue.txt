@@ -1,0 +1,40 @@
+1,"Amoxicillin 500mg Capsule",tablet/capsule,0.45,0
+2,"Paracetamol 500mg Tablet",tablet/capsule,0.15,0
+3,"Ibuprofen 400mg Tablet",tablet/capsule,0.25,0
+4,"Metformin 500mg Tablet",tablet/capsule,0.20,0
+5,"Gliclazide 80mg Tablet",tablet/capsule,0.35,0
+6,"Atorvastatin 20mg Tablet",tablet/capsule,0.80,0
+7,"Amlodipine 5mg Tablet",tablet/capsule,0.30,0
+8,"Perindopril 4mg Tablet",tablet/capsule,0.95,0
+9,"Aspirin 100mg Tablet",tablet/capsule,0.12,0
+10,"Clopidogrel 75mg Tablet",tablet/capsule,1.85,0
+11,"Isosorbide Dinitrate 10mg Tablet",tablet/capsule,0.28,0
+12,"Omeprazole 20mg Capsule",tablet/capsule,0.55,0
+13,"Cetirizine 10mg Tablet",tablet/capsule,0.22,0
+14,"Tramadol 50mg Capsule",tablet/capsule,0.65,0
+15,"Metronidazole 400mg Tablet",tablet/capsule,0.30,0
+16,"Furosemide 40mg Tablet",tablet/capsule,0.18,0
+17,"Levothyroxine 50mcg Tablet",tablet/capsule,0.26,0
+18,"Prednisolone 5mg Tablet",tablet/capsule,0.24,0
+19,"Cefuroxime 250mg Tablet",tablet/capsule,1.10,0
+20,"Bisoprolol 5mg Tablet",tablet/capsule,0.42,0
+21,"Salbutamol Nebuliser Solution",syrup/solution,2.40,0
+22,"Paracetamol 120mg per 5mL Syrup",syrup/solution,4.90,0
+23,"Amoxicillin 125mg per 5mL Suspension",syrup/solution,7.50,0
+24,"Ibuprofen 100mg per 5mL Suspension",syrup/solution,6.20,0
+25,"Oral Rehydration Salt Sachet",powder,1.20,0
+26,"Cefuroxime 750mg Powder for Injection",powder,10.80,0
+27,"Ceftriaxone 1g Injection",injection,12.60,0
+28,"Tranexamic Acid 500mg Injection",injection,6.30,0
+29,"Hydrocortisone 100mg Injection",injection,9.80,0
+30,"Tetanus Toxoid Vaccine Injection",injection,18.50,0
+31,"Measles Mumps Rubella Vaccine Injection",injection,45.00,0
+32,"Influenza Vaccine Injection",injection,38.00,0
+33,"Hepatitis B Vaccine Injection",injection,42.00,0
+34,"Pneumococcal Conjugate Vaccine Injection",injection,165.00,0
+35,"Chloramphenicol Eye Drops 0.5 percent",drops,6.80,0
+36,"Timolol Eye Drops 0.5 percent",drops,14.20,0
+37,"Silver Sulfadiazine Cream 1 percent",cream/ointment/gel,11.40,0
+38,"Diclofenac Gel 1 percent",cream/ointment/gel,9.60,0
+39,"Mupirocin Ointment 2 percent",cream/ointment/gel,13.90,0
+40,"Hydrocortisone Cream 1 percent",cream/ointment/gel,8.70,0

@@ -1,0 +1,30 @@
+1,2,5,"Excellent care from start to finish. The consultation started right on time.",0
+2,3,5,"Highly professional service and the follow up arrangements were well organised.",0
+3,8,3,"Average experience. The appointment started later than the scheduled time.",0
+4,9,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+5,10,5,"Very thorough examination and the treatment plan was easy to understand.",0
+6,12,4,"Satisfied with the treatment given and the explanation provided.",0
+7,14,5,"Highly professional service and the follow up arrangements were well organised.",0
+8,17,5,"Highly professional service and the follow up arrangements were well organised.",0
+9,18,3,"Average experience. The appointment started later than the scheduled time.",0
+10,19,5,"Excellent care from start to finish. The consultation started right on time.",0
+11,22,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+12,25,4,"Satisfied with the treatment given and the explanation provided.",0
+13,26,5,"Highly professional service and the follow up arrangements were well organised.",0
+14,28,5,"Highly professional service and the follow up arrangements were well organised.",0
+15,30,5,"Very thorough examination and the treatment plan was easy to understand.",0
+16,32,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+17,34,3,"Treatment was appropriate although I would have appreciated more explanation.",0
+18,37,5,"Excellent care from start to finish. The consultation started right on time.",0
+19,39,5,"Highly professional service and the follow up arrangements were well organised.",0
+20,40,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+21,41,3,"Treatment was appropriate although I would have appreciated more explanation.",0
+22,42,5,"Very thorough examination and the treatment plan was easy to understand.",0
+23,43,5,"Very thorough examination and the treatment plan was easy to understand.",0
+24,44,5,"The doctor was attentive and made my child feel completely at ease.",0
+25,47,5,"Very thorough examination and the treatment plan was easy to understand.",0
+26,49,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+27,53,5,"Doctor explained the condition clearly and answered every question patiently.",0
+28,55,5,"Very thorough examination and the treatment plan was easy to understand.",0
+29,59,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
+30,65,4,"Clear advice given and my symptoms improved after the medication was started.",0

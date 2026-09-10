@@ -1,15 +1,22 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
 package MedicalManager;
 
-
+/**
+ *
+ * @author lmao
+ */
 public class ManageDepartments extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageDepartments.class.getName());
 
+    /**
+     * Creates new form ManagerDashboard
+     */
     public ManageDepartments() {
         initComponents();
-        
-        this.getContentPane().setBackground(new java.awt.Color(248,250,252));
     }
 
     /**
@@ -21,58 +28,66 @@ public class ManageDepartments extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        overviewBtn = new javax.swing.JButton();
-        departmentsBtn = new javax.swing.JButton();
-        rostersBtn = new javax.swing.JButton();
-        reportsBtn = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        shiftBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
         profileBtn = new javax.swing.JButton();
-        logoutBtn = new javax.swing.JButton();
+        dashboardBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        saveBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        jLabel4.setText("jLabel3");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(248, 250, 252));
-        getContentPane().setLayout(null);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Create or update specialised clinical departments and edit department details.");
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(10, 80, 420, 16);
+        shiftBtn.setText("Shift Rosters");
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
-        overviewBtn.setText("Overview");
-        getContentPane().add(overviewBtn);
-        overviewBtn.setBounds(200, 10, 79, 23);
+        departmentBtn.setText("Departments");
+        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
 
-        departmentsBtn.setText("Departments");
-        getContentPane().add(departmentsBtn);
-        departmentsBtn.setBounds(300, 10, 98, 23);
-
-        rostersBtn.setText("Rosters");
-        getContentPane().add(rostersBtn);
-        rostersBtn.setBounds(420, 10, 72, 23);
-
-        reportsBtn.setText("Reports");
-        getContentPane().add(reportsBtn);
-        reportsBtn.setBounds(500, 10, 72, 23);
+        reportBtn.setText("Reports");
+        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
 
         profileBtn.setText("Profile");
-        getContentPane().add(profileBtn);
-        profileBtn.setBounds(590, 10, 72, 23);
+        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
 
-        logoutBtn.setText("Logout");
-        getContentPane().add(logoutBtn);
-        logoutBtn.setBounds(680, 10, 72, 23);
+        dashboardBtn.setText("Dashboard");
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel2.setText("Clinical Departments Management");
-        getContentPane().add(jLabel2);
-        jLabel2.setBounds(10, 50, 290, 25);
+        jLabel1.setText("Manage Clinical Departments");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
 
-        jLabel3.setText("APU Medical Centre");
-        getContentPane().add(jLabel3);
-        jLabel3.setBounds(10, 10, 106, 16);
+        jLabel2.setText("Create / Edit Department");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+
+        jLabel3.setText("Description");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, -1));
+
+        jLabel5.setText("Managed Departments List");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, -1, -1));
+
+        jTextField1.setText("jTextField1");
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 190, -1));
+
+        jTextField2.setText("jTextField1");
+        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, 260, -1));
+
+        jLabel6.setText("Department Name");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 110, -1));
+
+        saveBtn.setText("Save");
+        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -87,8 +102,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(420, 130, 400, 280);
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 610, 220));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -119,16 +133,21 @@ public class ManageDepartments extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton departmentsBtn;
+    private javax.swing.JButton dashboardBtn;
+    private javax.swing.JButton departmentBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JButton logoutBtn;
-    private javax.swing.JButton overviewBtn;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JButton reportsBtn;
-    private javax.swing.JButton rostersBtn;
+    private javax.swing.JButton reportBtn;
+    private javax.swing.JButton saveBtn;
+    private javax.swing.JButton shiftBtn;
     // End of variables declaration//GEN-END:variables
 }

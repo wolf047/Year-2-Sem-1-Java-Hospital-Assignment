@@ -1,8 +1,13 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
 package MedicalManager;
 
-import java.awt.*;
-
+/**
+ *
+ * @author lmao
+ */
 public class ManagerDashboard extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagerDashboard.class.getName());
@@ -12,8 +17,6 @@ public class ManagerDashboard extends javax.swing.JFrame {
      */
     public ManagerDashboard() {
         initComponents();
-        
-        this.getContentPane().setBackground(new java.awt.Color(248,250,252));
     }
 
     /**
@@ -25,219 +28,52 @@ public class ManagerDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel4 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        logoutBtn = new javax.swing.JButton();
-        reportsBtn = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        shiftBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
         profileBtn = new javax.swing.JButton();
-        rostersBtn = new javax.swing.JButton();
-        departmentsBtn = new javax.swing.JButton();
-        overviewBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        dashboardBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        revenueLbl = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
 
-        jPanel4.setBackground(new java.awt.Color(204, 204, 225));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 226, Short.MAX_VALUE)
-        );
+        jLabel4.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(248, 250, 252));
-        getContentPane().setLayout(null);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("APU Medical Centre");
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(6, 9, 104, 16);
+        shiftBtn.setText("Shift Rosters");
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
-        logoutBtn.setText("Logout");
-        getContentPane().add(logoutBtn);
-        logoutBtn.setBounds(751, 6, 72, 23);
+        departmentBtn.setText("Departments");
+        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
 
-        reportsBtn.setText("Reports");
-        getContentPane().add(reportsBtn);
-        reportsBtn.setBounds(571, 6, 72, 23);
+        reportBtn.setText("Reports");
+        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
 
         profileBtn.setText("Profile");
-        getContentPane().add(profileBtn);
-        profileBtn.setBounds(661, 6, 72, 23);
+        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
 
-        rostersBtn.setText("Rosters");
-        getContentPane().add(rostersBtn);
-        rostersBtn.setBounds(487, 6, 72, 23);
+        dashboardBtn.setText("Dashboard");
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
-        departmentsBtn.setText("Departments");
-        getContentPane().add(departmentsBtn);
-        departmentsBtn.setBounds(370, 6, 99, 23);
+        jLabel1.setText("revenue blabla");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
 
-        overviewBtn.setText("Overview");
-        getContentPane().add(overviewBtn);
-        overviewBtn.setBounds(273, 6, 79, 23);
+        jLabel2.setText("metrics blabla");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 130, -1, -1));
 
-        jPanel2.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
+        jLabel3.setText("cases blabla");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 130, -1, -1));
 
-        jLabel2.setText("Monthly Revenue");
+        jLabel5.setText("profile details");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 250, -1, -1));
 
-        revenueLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        revenueLbl.setText("RM 10, 000");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(revenueLbl))
-                .addContainerGap(116, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(revenueLbl)
-                .addContainerGap(99, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(jPanel2);
-        jPanel2.setBounds(37, 63, 257, 177);
-
-        jPanel3.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(jPanel3);
-        jPanel3.setBounds(577, 63, 252, 177);
-
-        jPanel6.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel3.setText("Departments");
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addContainerGap(143, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addContainerGap(101, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(jPanel6);
-        jPanel6.setBounds(37, 267, 257, 138);
-
-        jPanel7.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-
-        jLabel5.setText("Performance");
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5)
-                .addContainerGap(171, Short.MAX_VALUE))
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(jPanel7);
-        jPanel7.setBounds(580, 60, 250, 177);
-
-        jPanel8.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 246, Short.MAX_VALUE)
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 132, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(jPanel8);
-        jPanel8.setBounds(307, 267, 252, 138);
-
-        jPanel9.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel9.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 246, Short.MAX_VALUE)
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(jPanel9);
-        jPanel9.setBounds(577, 267, 252, 138);
-
-        jPanel10.setBackground(new java.awt.Color(248, 250, 252));
-        jPanel10.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(226, 232, 240), 3, true));
-
-        jLabel6.setText("Patient Volume and Occupancy");
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addContainerGap(73, Short.MAX_VALUE))
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(jPanel10);
-        jPanel10.setBounds(307, 63, 250, 177);
+        jLabel6.setText("departments blabla");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 220, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -268,25 +104,16 @@ public class ManagerDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton departmentsBtn;
+    private javax.swing.JButton dashboardBtn;
+    private javax.swing.JButton departmentBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
-    private javax.swing.JButton logoutBtn;
-    private javax.swing.JButton overviewBtn;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JButton reportsBtn;
-    private javax.swing.JLabel revenueLbl;
-    private javax.swing.JButton rostersBtn;
+    private javax.swing.JButton reportBtn;
+    private javax.swing.JButton shiftBtn;
     // End of variables declaration//GEN-END:variables
 }

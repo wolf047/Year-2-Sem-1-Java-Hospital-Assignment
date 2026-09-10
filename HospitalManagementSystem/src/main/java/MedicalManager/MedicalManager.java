@@ -111,6 +111,33 @@ public class MedicalManager extends User{
         return false;
     }
     
+    public boolean deleteShift(int shiftID) {
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
+        if (shifts != null && shifts.containsKey(shiftID)){
+            ArrayList<String> record = shifts.get(shiftID);
+            record.set(5, "1"); // set delete to true (1)
+            
+            record.add(0, String.valueOf(shiftID));
+            FileHandling.editRecord("Shift.txt", record);
+            return true;
+        }
+        return false;
+    }
+    
+    public void assignDoctorToShift(int shiftID, int doctorID){
+        int newID = FileHandling.getNextID("ShiftDoctors");
+        ArrayList<String> record = new ArrayList<>();
+        record.add(String.valueOf(newID));
+        record.add(String.valueOf(shiftID));
+        record.add(String.valueOf(doctorID));
+        
+        FileHandling.addRecord("ShiftDoctors.txt", record);
+    }
+    
+    public void removeDoctorShift(int shiftID){
+        FileHandling.removeRecord("ShiftDoctors", shiftID);
+    }
+    
     
 }
 

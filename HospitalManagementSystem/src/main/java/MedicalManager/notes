@@ -19,3 +19,5 @@ REPORTS ??
     > asdf
 
 TODO:
+1) for manage shift date, use JFormattedField with SimpleDateFormat("yyyy-MM-dd")
+2) assigned doctors column (number of doctors assigned) count by ShiftDoctors shiftid

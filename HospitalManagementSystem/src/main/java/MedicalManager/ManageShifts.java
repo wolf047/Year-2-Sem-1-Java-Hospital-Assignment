@@ -37,19 +37,19 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         saveBtn = new javax.swing.JButton();
-        jTextField3 = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        dobFtf = new javax.swing.JFormattedTextField();
+        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        jFormattedTextField2 = new javax.swing.JFormattedTextField();
 
         jLabel4.setText("jLabel3");
 
@@ -91,34 +91,22 @@ public class ManageShifts extends javax.swing.JFrame {
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
         jLabel3.setText("Date (dd-mm-yyyy)");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 80, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 80, -1, -1));
 
         jLabel5.setText("Scheduled Shifts");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
-        jTextField1.setText("jTextField1");
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 240, -1));
-
-        jTextField2.setText("use formatted field ??");
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 160, 260, -1));
-
         jLabel6.setText("End Time (hh:mm)");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 140, 110, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 110, -1));
 
         saveBtn.setText("Save");
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 195, -1, -1));
-
-        jTextField3.setText("use formatted field ??");
-        getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 100, 260, -1));
 
         jLabel7.setText("Department");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 110, -1));
 
         jLabel8.setText("Start Time (hh:mm)");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 110, -1));
-
-        jTextField4.setText("use formatted field ??");
-        getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 240, -1));
 
         updateBtn.setText("Update");
         getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 195, -1, -1));
@@ -143,6 +131,31 @@ public class ManageShifts extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTable2);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 610, 170));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 260, -1));
+
+        dobFtf.setColumns(9);
+        try {
+            dobFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##-##-####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 100, 260, -1));
+
+        try {
+            jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        getContentPane().add(jFormattedTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 260, -1));
+
+        try {
+            jFormattedTextField2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        getContentPane().add(jFormattedTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 160, 260, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -176,7 +189,11 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
+    private javax.swing.JFormattedTextField dobFtf;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JFormattedTextField jFormattedTextField1;
+    private javax.swing.JFormattedTextField jFormattedTextField2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -189,10 +206,6 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;

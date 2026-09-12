@@ -1,21 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package MedicalManager;
 
-/**
- *
- * @author lmao
- */
-public class ManagerDashboard extends javax.swing.JFrame {
+public class ViewReports extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagerDashboard.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ViewReports.class.getName());
 
     /**
      * Creates new form ManagerDashboard
      */
-    public ManagerDashboard() {
+    public ViewReports() {
         initComponents();
     }
 
@@ -29,54 +22,28 @@ public class ManagerDashboard extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel4 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        dashboardBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
         shiftBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
         reportBtn = new javax.swing.JButton();
         profileBtn = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        dashboardBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
 
         jLabel4.setText("jLabel3");
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Medical Manager Dashboard");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
-
-        jLabel5.setText("some profile details");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
-
-        jLabel7.setText("my departments");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, 110, -1));
-
-        dashboardBtn.setText("Dashboard");
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
+        shiftBtn.setText("Shift Rosters");
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
         departmentBtn.setText("Departments");
         getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
-
-        shiftBtn.setText("Shift Rosters");
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
         reportBtn.setText("Reports");
         getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
@@ -84,11 +51,18 @@ public class ManagerDashboard extends javax.swing.JFrame {
         profileBtn.setText("Profile");
         getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
 
-        jLabel9.setText("total revenue");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 240, 110, -1));
+        dashboardBtn.setText("Dashboard");
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
-        jLabel10.setText("total cases");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 410, 110, -1));
+        jLabel1.setText("Hospital Reports & Analytics");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jTabbedPane1.addTab("tab1", jPanel1);
+        jTabbedPane1.addTab("tab2", jPanel2);
+        jTabbedPane1.addTab("tab3", jPanel3);
+        jTabbedPane1.addTab("tab4", jPanel4);
+
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 610, 350));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -115,20 +89,19 @@ public class ManagerDashboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ManagerDashboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new ViewReports().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton shiftBtn;

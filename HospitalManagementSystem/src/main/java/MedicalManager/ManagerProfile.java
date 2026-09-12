@@ -1,10 +1,7 @@
 
 package MedicalManager;
 
-/**
- *
- * @author lmao
- */
+
 public class ManagerProfile extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagerProfile.class.getName());
@@ -37,13 +34,11 @@ public class ManagerProfile extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        lastNameTf = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        firstNameTf = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel10 = new javax.swing.JLabel();
@@ -52,6 +47,8 @@ public class ManagerProfile extends javax.swing.JFrame {
         jRadioButton2 = new javax.swing.JRadioButton();
         jTextField5 = new javax.swing.JTextField();
         saveBtn = new javax.swing.JButton();
+        phoneFtf = new javax.swing.JFormattedTextField();
+        dobFtf = new javax.swing.JFormattedTextField();
 
         jLabel4.setText("jLabel3");
 
@@ -72,18 +69,22 @@ public class ManagerProfile extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
         getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
         departmentBtn.setText("Departments");
+        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
         getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
 
         reportBtn.setText("Reports");
+        reportBtn.addActionListener(this::reportBtnActionPerformed);
         getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
 
         profileBtn.setText("Profile");
         getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
 
         dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
         getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         jLabel1.setText("Edit Personal Profile");
@@ -93,58 +94,92 @@ public class ManagerProfile extends javax.swing.JFrame {
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
         jLabel3.setText("LAST NAME");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 110, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 100, -1, -1));
 
         jLabel5.setText("PASSWORD");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
-
-        jTextField1.setText("use formatted field ??");
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 380, 220, -1));
-
-        jTextField2.setText("use formatted field ??");
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 470, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, -1, -1));
 
         jLabel6.setText("EMAIL ADDRESS");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 110, -1));
-
-        jTextField3.setText("use formatted field ??");
-        getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 130, 260, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 110, -1));
+        getContentPane().add(lastNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 120, 260, -1));
 
         jLabel7.setText("USER001");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 110, -1));
 
         jLabel8.setText("DATE OF BIRTH");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 350, 110, -1));
-
-        jTextField4.setText("use formatted field ??");
-        getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 200, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, 110, -1));
+        getContentPane().add(firstNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 200, -1));
 
         jLabel9.setText("PHONE NUMBER");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 110, -1));
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 110, -1));
 
         jPasswordField1.setText("jPasswordField1");
-        getContentPane().add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 250, -1));
+        getContentPane().add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 250, -1));
 
         jLabel10.setText("FIRST NAME");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 110, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 110, -1));
 
         jLabel11.setText("GENDER");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 110, -1));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, 110, -1));
 
         jRadioButton1.setText("jRadioButton1");
-        getContentPane().add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 370, -1, -1));
+        getContentPane().add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, -1, -1));
 
         jRadioButton2.setText("jRadioButton2");
-        getContentPane().add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, -1, -1));
+        getContentPane().add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 370, -1, -1));
 
         jTextField5.setText("use formatted field ??");
-        getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 480, -1));
+        getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 480, -1));
 
         saveBtn.setText("Save Profile Changes");
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 390, -1, -1));
+        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 390, -1, -1));
+
+        phoneFtf.setColumns(12);
+        try {
+            phoneFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###-###-####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        getContentPane().add(phoneFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
+
+        dobFtf.setColumns(9);
+        try {
+            dobFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##-##-####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 350, 190, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
+        // TODO add your handling code here:
+        ManagerDashboard dashboard = new ManagerDashboard();
+        dashboard.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_dashboardBtnActionPerformed
+
+    private void departmentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_departmentBtnActionPerformed
+        // TODO add your handling code here:
+        ManageDepartments departmentPage = new ManageDepartments();
+        departmentPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_departmentBtnActionPerformed
+
+    private void shiftBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shiftBtnActionPerformed
+        // TODO add your handling code here:
+        ManageShifts shiftPage = new ManageShifts();
+        shiftPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_shiftBtnActionPerformed
+
+    private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
+        // TODO add your handling code here:
+        ViewReports reportPage = new ViewReports();
+        reportPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_reportBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,6 +209,8 @@ public class ManagerProfile extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
+    private javax.swing.JFormattedTextField dobFtf;
+    private javax.swing.JTextField firstNameTf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -190,11 +227,9 @@ public class ManagerProfile extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField lastNameTf;
+    private javax.swing.JFormattedTextField phoneFtf;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;

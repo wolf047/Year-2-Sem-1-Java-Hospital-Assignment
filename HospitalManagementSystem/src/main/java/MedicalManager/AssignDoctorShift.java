@@ -36,10 +36,11 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        assignBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jComboBox1 = new javax.swing.JComboBox<>();
+        deleteBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
@@ -74,8 +75,8 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jLabel8.setText("Assign New Doctor");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 110, -1));
 
-        jButton1.setText("Assign");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 110, -1, -1));
+        assignBtn.setText("Assign");
+        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 110, -1, -1));
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -93,7 +94,10 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 600, 230));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 230, -1));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 340, -1));
+
+        deleteBtn.setText("Delete");
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 110, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -124,7 +128,8 @@ public class AssignDoctorShift extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton assignBtn;
+    private javax.swing.JButton deleteBtn;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

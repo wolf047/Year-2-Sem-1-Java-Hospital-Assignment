@@ -26,7 +26,7 @@ public class MedicalManager extends User{
     //// MANAGING DEPARTMENTS ////
 
     public List<ArrayList<String>> viewManagingDepartments(){
-            List<ArrayList<String>> result = new ArrayList();
+            List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
             TreeMap<Integer, ArrayList<String>> departments = FileHandling.readAllRecords("Departments.txt");
             if(departments != null){
                 for(Map.Entry<Integer, ArrayList<String>> department : departments.entrySet()){
@@ -35,7 +35,7 @@ public class MedicalManager extends User{
                     
                     // if is managed by current user and not deleted
                     if(Integer.parseInt(details.get(2)) == this.user_id && "0".equals(details.get(3))){
-                        ArrayList<String> record = new ArrayList();
+                        ArrayList<String> record = new ArrayList<>();
                         record.add(String.valueOf(deptID));
                         record.addAll(details);
                         
@@ -123,6 +123,26 @@ public class MedicalManager extends User{
         }
         return false;
     }
+    
+    public List<ArrayList<String>> viewAllShifts() {
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
+        List<ArrayList<String>> results = new ArrayList<>(); // create list to store list of records
+        if(shifts != null) {
+            for(Map.Entry<Integer, ArrayList<String>> entry : shifts.entrySet()){
+                Integer shiftID = entry.getKey();
+                ArrayList<String> details = entry.getValue();
+                if("0".equals(details.get(4))) { // TreeMap -> { shiftID = [deptID, date, start_time, end_time, deleted] }
+                    ArrayList<String> record = new ArrayList<>();
+                    record.add(String.valueOf(shiftID));
+                    record.addAll(details);
+                    results.add(record);
+                }
+            }
+        }
+        return results;
+    }
+    
+    
     
     public void assignDoctorToShift(int shiftID, int doctorID){
         int newID = FileHandling.getNextID("ShiftDoctors");

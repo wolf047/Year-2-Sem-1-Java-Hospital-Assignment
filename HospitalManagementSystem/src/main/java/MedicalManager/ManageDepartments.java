@@ -50,18 +50,22 @@ public class ManageDepartments extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
         getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
 
         departmentBtn.setText("Departments");
         getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
 
         reportBtn.setText("Reports");
+        reportBtn.addActionListener(this::reportBtnActionPerformed);
         getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
 
         profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
         getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
 
         dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
         getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         jLabel1.setText("Manage Clinical Departments");
@@ -111,6 +115,34 @@ public class ManageDepartments extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
+        // TODO add your handling code here:
+        ManagerDashboard dashboard = new ManagerDashboard();
+        dashboard.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_dashboardBtnActionPerformed
+
+    private void shiftBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shiftBtnActionPerformed
+        // TODO add your handling code here:
+        ManageShifts shiftPage = new ManageShifts();
+        shiftPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_shiftBtnActionPerformed
+
+    private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
+        // TODO add your handling code here:
+        ViewReports reportPage = new ViewReports();
+        reportPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_reportBtnActionPerformed
+
+    private void profileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileBtnActionPerformed
+        // TODO add your handling code here:
+        ManagerProfile profile = new ManagerProfile();
+        profile.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_profileBtnActionPerformed
 
     /**
      * @param args the command line arguments

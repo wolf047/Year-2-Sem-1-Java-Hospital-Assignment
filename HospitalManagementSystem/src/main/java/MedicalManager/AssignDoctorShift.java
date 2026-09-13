@@ -41,6 +41,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jTable2 = new javax.swing.JTable();
         jComboBox1 = new javax.swing.JComboBox<>();
         deleteBtn = new javax.swing.JButton();
+        backBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
@@ -99,6 +100,9 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         deleteBtn.setText("Delete");
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, -1, -1));
 
+        backBtn.setText("Back");
+        getContentPane().add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 10, -1, -1));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -129,6 +133,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton assignBtn;
+    private javax.swing.JButton backBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;

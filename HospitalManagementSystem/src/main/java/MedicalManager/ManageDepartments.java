@@ -47,50 +47,66 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel4.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(800, 600));
+        setPreferredSize(new java.awt.Dimension(800, 600));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         shiftBtn.setText("Shift Rosters");
         shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 6, -1, -1));
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, -1, -1));
 
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         departmentBtn.setText("Departments");
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 6, -1, -1));
+        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, -1, -1));
 
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         reportBtn.setText("Reports");
         reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 6, -1, -1));
+        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, -1, -1));
 
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         profileBtn.setText("Profile");
         profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(546, 6, -1, -1));
+        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
 
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dashboardBtn.setText("Dashboard");
         dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Manage Clinical Departments");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
         jLabel2.setText("Create / Edit Department");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
-        jLabel3.setText("Description");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, -1));
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("DESCRIPTION");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 160, -1, -1));
 
-        jLabel5.setText("Managed Departments List");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, -1, -1));
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setText("MANAGING DEPARTMENTS");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
+        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTextField1.setText("jTextField1");
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 190, -1));
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 250, -1));
 
+        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTextField2.setText("jTextField1");
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, 260, -1));
+        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 390, -1));
 
-        jLabel6.setText("Department Name");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 110, -1));
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setText("DEPARTMENT NAME");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 170, -1));
 
+        saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveBtn.setText("Save");
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -105,13 +121,15 @@ public class ManageDepartments extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 610, 220));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 780, 270));
 
+        updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
-        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, -1, -1));
+        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, -1, -1));
 
+        deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 140, -1, -1));
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 240, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

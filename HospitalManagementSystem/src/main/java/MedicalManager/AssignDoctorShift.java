@@ -59,25 +59,34 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(800, 600));
+        setPreferredSize(new java.awt.Dimension(800, 600));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Assign Doctor");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
         jLabel2.setText("Managing Doctors for SHIFT001");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, -1, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Currently Assigned Doctors");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, -1, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Department: bla bla");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 110, -1));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 140, -1));
 
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Assign New Doctor");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 110, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 120, -1));
 
+        assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         assignBtn.setText("Assign");
-        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -92,16 +101,19 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable2);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 600, 220));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 780, 320));
 
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 340, -1));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 340, -1));
 
+        deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, -1, -1));
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 190, -1, -1));
 
+        backBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         backBtn.setText("Back");
-        getContentPane().add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 10, -1, -1));
+        getContentPane().add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

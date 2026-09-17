@@ -198,7 +198,6 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         btnLogout.setBackground(new java.awt.Color(30, 95, 125));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnLogout.setForeground(new java.awt.Color(204, 204, 204));
         btnLogout.setText("LOGOUT");
         btnLogout.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         pnlNav.add(btnLogout);

@@ -23,6 +23,8 @@ public class PatientLogin extends javax.swing.JFrame {
      */
     public PatientLogin() {
         initComponents();
+        setLocationRelativeTo(null);
+        getRootPane().setDefaultButton(btnLogin);
     }
 
     /**
@@ -94,6 +96,8 @@ public class PatientLogin extends javax.swing.JFrame {
         btnLogin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnLogin.setForeground(new java.awt.Color(255, 255, 255));
         btnLogin.setText("LOGIN");
+        btnLogin.setFocusPainted(false);
+        btnLogin.setRolloverEnabled(false);
         btnLogin.addActionListener(this::btnLoginActionPerformed);
         pnlRight.add(btnLogin);
         btnLogin.setBounds(80, 410, 240, 32);
@@ -140,13 +144,20 @@ public class PatientLogin extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
+       
+
+       javax.swing.UIManager.put("Button.focus", new java.awt.Color(0, 0, 0, 0));
+       javax.swing.UIManager.put("RadioButton.focus", new java.awt.Color(0, 0, 0, 0));
+
+       /* Create and display the form */
+       
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }

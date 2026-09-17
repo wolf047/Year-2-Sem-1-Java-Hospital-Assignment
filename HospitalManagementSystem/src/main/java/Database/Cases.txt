@@ -28,3 +28,5 @@
 28,59,10,05-08-2026,,healthcheck,scheduled,"Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results",0
 29,57,10,16-08-2026,,diagnosis,walkin,"Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution",0
 30,43,33,26-08-2026,,immunization,scheduled,"Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction",0
+31,40,10,17-09-2026,,diagnosis,scheduled,,1
+32,40,33,17-09-2026,,diagnosis,scheduled,,1

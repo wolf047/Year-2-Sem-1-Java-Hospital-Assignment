@@ -1,5 +1,10 @@
 package Patient;
 
+import HelperFunction.FileHandling;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -35,10 +40,10 @@ public class PatientLogin extends javax.swing.JFrame {
         pnlRight = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
         lblPassword = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JTextField();
         lblUserID1 = new javax.swing.JLabel();
-        txtUserID1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        txtUserID = new javax.swing.JTextField();
+        btnLogin = new javax.swing.JButton();
+        pwdPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HMS Patient Portal v1.0 ");
@@ -77,25 +82,23 @@ public class PatientLogin extends javax.swing.JFrame {
         pnlRight.add(lblPassword);
         lblPassword.setBounds(40, 290, 120, 16);
 
-        txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pnlRight.add(txtPassword);
-        txtPassword.setBounds(40, 310, 320, 30);
-
         lblUserID1.setText("E-Mail");
         pnlRight.add(lblUserID1);
         lblUserID1.setBounds(40, 220, 120, 16);
 
-        txtUserID1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pnlRight.add(txtUserID1);
-        txtUserID1.setBounds(40, 240, 320, 30);
+        txtUserID.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pnlRight.add(txtUserID);
+        txtUserID.setBounds(40, 240, 320, 30);
 
-        jButton1.setBackground(new java.awt.Color(38, 117, 154));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("LOGIN");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
-        pnlRight.add(jButton1);
-        jButton1.setBounds(80, 410, 240, 32);
+        btnLogin.setBackground(new java.awt.Color(38, 117, 154));
+        btnLogin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnLogin.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogin.setText("LOGIN");
+        btnLogin.addActionListener(this::btnLoginActionPerformed);
+        pnlRight.add(btnLogin);
+        btnLogin.setBounds(80, 410, 240, 32);
+        pnlRight.add(pwdPassword);
+        pwdPassword.setBounds(40, 310, 320, 30);
 
         getContentPane().add(pnlRight);
         pnlRight.setBounds(393, 0, 407, 600);
@@ -103,9 +106,34 @@ public class PatientLogin extends javax.swing.JFrame {
         setBounds(0, 0, 800, 600);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        String input = txtUserID.getText().trim();
+        String password = new String(pwdPassword.getPassword());
+        
+        if (input.isEmpty() || password.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Please enter your email and password.");
+            return;
+        }
+        
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
+        //u: 0 is first, 1 is last, 2 dob, 3 gender, 4 phone, 5 email, 6 password, 7 role, 8 deleted
+        if (users !=null){
+            for (Integer id : users.keySet()){
+                ArrayList<String> u = users.get(id);
+                boolean emailMatch = u.get(5).equalsIgnoreCase(input);
+                
+                if(emailMatch && u.get(6).equals(password)
+                    && u.get(7).equals("Patient") && u.get(8).equals("0")){
+                    new PatientDashboard(id).setVisible(true);
+                    dispose();
+                    return;
+                }
+                
+            }
+        }
+        
+        JOptionPane.showMessageDialog(this, "Invalid email or password.");
+    }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
      * @param args the command line arguments
@@ -133,7 +161,7 @@ public class PatientLogin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JLabel lblHospitalName;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblPassword;
@@ -141,7 +169,7 @@ public class PatientLogin extends javax.swing.JFrame {
     private javax.swing.JLabel lblUserID1;
     private javax.swing.JPanel pnlLeft;
     private javax.swing.JPanel pnlRight;
-    private javax.swing.JTextField txtPassword;
-    private javax.swing.JTextField txtUserID1;
+    private javax.swing.JPasswordField pwdPassword;
+    private javax.swing.JTextField txtUserID;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,5 +1,12 @@
 package Patient;
 
+import HelperFunction.FileHandling;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -16,8 +23,36 @@ public class PatientDashboard extends javax.swing.JFrame {
     /**
      * Creates new form PatientBrowse
      */
-    public PatientDashboard() {
+    private int patientId;
+    private final Color NAV_BG =new Color(30, 95, 125);
+    private final Color BLUE = new Color(38,117,154);
+    
+    public PatientDashboard(int patientId) {
         initComponents();
+        this.patientId = patientId;
+        setLocationRelativeTo(null);
+        loadWelcomeName();
+        showPage("bookings", btnNavBookings);
+    }
+    
+    private void loadWelcomeName(){
+        ArrayList<String> user = FileHandling.readSpecificRecord("Users.txt", patientId);
+        if (user !=null){
+            lblWelcome.setText("Welcome, "+ user.get(1) + " " + user.get(2));
+        }
+    }
+    
+    private void showPage(String cardName, JButton activeButton){
+        CardLayout c1 = (CardLayout) pnlContent.getLayout();
+        c1.show(pnlContent, cardName);
+        
+        JButton[] menu = {btnNavBookings, btnNavHistory, btnNavRatings, btnNavProfile};
+        for (JButton b : menu){
+            b.setBackground(NAV_BG);
+            b.setForeground(Color.WHITE);
+        }
+        activeButton.setBackground(Color.WHITE);
+        activeButton.setForeground(BLUE);
     }
 
     /**
@@ -32,7 +67,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         grpRating = new javax.swing.ButtonGroup();
         pnlHeader = new javax.swing.JPanel();
         lblPortalTitle = new javax.swing.JLabel();
-        lblwelcome = new javax.swing.JLabel();
+        lblWelcome = new javax.swing.JLabel();
         pnlNav = new javax.swing.JPanel();
         btnNavBookings = new javax.swing.JButton();
         btnNavHistory = new javax.swing.JButton();
@@ -148,12 +183,12 @@ public class PatientDashboard extends javax.swing.JFrame {
         pnlHeader.add(lblPortalTitle);
         lblPortalTitle.setBounds(20, 10, 450, 30);
 
-        lblwelcome.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblwelcome.setForeground(new java.awt.Color(255, 255, 255));
-        lblwelcome.setText("Welcome, Patient");
-        lblwelcome.setToolTipText("");
-        pnlHeader.add(lblwelcome);
-        lblwelcome.setBounds(470, 10, 300, 30);
+        lblWelcome.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
+        lblWelcome.setText("Welcome, Patient");
+        lblWelcome.setToolTipText("");
+        pnlHeader.add(lblWelcome);
+        lblWelcome.setBounds(470, 10, 300, 30);
 
         getContentPane().add(pnlHeader);
         pnlHeader.setBounds(0, 0, 800, 50);
@@ -166,6 +201,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         btnNavBookings.setText("Bookings and Slots");
         btnNavBookings.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
         btnNavBookings.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavBookings.addActionListener(this::btnNavBookingsActionPerformed);
         pnlNav.add(btnNavBookings);
         btnNavBookings.setBounds(10, 20, 160, 40);
 
@@ -175,6 +211,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         btnNavHistory.setText("Medical History");
         btnNavHistory.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
         btnNavHistory.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavHistory.addActionListener(this::btnNavHistoryActionPerformed);
         pnlNav.add(btnNavHistory);
         btnNavHistory.setBounds(10, 70, 160, 40);
 
@@ -184,6 +221,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         btnNavRatings.setText("Submit Ratings");
         btnNavRatings.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
         btnNavRatings.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavRatings.addActionListener(this::btnNavRatingsActionPerformed);
         pnlNav.add(btnNavRatings);
         btnNavRatings.setBounds(10, 120, 160, 40);
 
@@ -193,6 +231,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         btnNavProfile.setText("My Profile");
         btnNavProfile.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
         btnNavProfile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavProfile.addActionListener(this::btnNavProfileActionPerformed);
         pnlNav.add(btnNavProfile);
         btnNavProfile.setBounds(10, 170, 160, 40);
 
@@ -201,6 +240,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         btnLogout.setForeground(new java.awt.Color(204, 204, 204));
         btnLogout.setText("LOGOUT");
         btnLogout.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        btnLogout.addActionListener(this::btnLogoutActionPerformed);
         pnlNav.add(btnLogout);
         btnLogout.setBounds(10, 450, 160, 40);
 
@@ -718,6 +758,31 @@ public class PatientDashboard extends javax.swing.JFrame {
         setBounds(0, 0, 816, 609);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnNavBookingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavBookingsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavBookingsActionPerformed
+
+    private void btnNavHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavHistoryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavHistoryActionPerformed
+
+    private void btnNavRatingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavRatingsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavRatingsActionPerformed
+
+    private void btnNavProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavProfileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavProfileActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        // TODO add your handling code here:
+        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (choice == JOptionPane.YES_OPTION){
+            new PatientLogin().setVisible(true);
+            dispose();
+        }
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -740,7 +805,7 @@ public class PatientDashboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new PatientDashboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new PatientDashboard(40).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -795,7 +860,7 @@ public class PatientDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblRxDetails;
     private javax.swing.JLabel lblTestDetails;
     private javax.swing.JLabel lblVisitDetails;
-    private javax.swing.JLabel lblwelcome;
+    private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel pnlBookings;
     private javax.swing.JPanel pnlContent;
     private javax.swing.JPanel pnlHeader;

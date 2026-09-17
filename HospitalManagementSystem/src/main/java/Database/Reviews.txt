@@ -28,3 +28,4 @@
 28,55,5,"Very thorough examination and the treatment plan was easy to understand.",0
 29,59,4,"Doctor was knowledgeable and helpful. Registration took slightly longer than expected.",0
 30,65,4,"Clear advice given and my symptoms improved after the medication was started.",0
+31,61,5,good,0

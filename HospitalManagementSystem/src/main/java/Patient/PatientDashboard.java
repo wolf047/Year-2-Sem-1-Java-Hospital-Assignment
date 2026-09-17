@@ -50,6 +50,15 @@ public class PatientDashboard extends javax.swing.JFrame {
     // =====================================================================
     public PatientDashboard(int patientId) {
         initComponents();
+        javax.swing.JTable[] tables = {tblSlots, tblVisits, tblPrescriptions, tblTests, tblPending, tblMyReviews};
+        for (javax.swing.JTable t : tables) {
+            t.setDefaultEditor(Object.class, null);                // no cell can be edited
+            t.getTableHeader().setReorderingAllowed(false);        // columns can't be dragged around
+            t.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            t.setRowHeight(25);
+            t.setSelectionBackground(BLUE);
+            t.setSelectionForeground(Color.WHITE);
+        }
         this.patientId = patientId;
         setLocationRelativeTo(null);
         loadWelcomeName();
@@ -1333,6 +1342,7 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         setBounds(0, 0, 816, 609);
     }// </editor-fold>//GEN-END:initComponents
+
 // ===== EVENTS: NAVIGATION & LOGOUT =====
     private void btnNavBookingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavBookingsActionPerformed
         loadSlots();

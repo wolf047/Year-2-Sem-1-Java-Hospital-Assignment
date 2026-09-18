@@ -30,36 +30,36 @@ public class PatientDashboard extends javax.swing.JFrame {
     // 1. FIELDS
     // =====================================================================
     private int patientId;                                // logged-in patient (from PatientLogin)
+    private PatientServices patient;                      // the patient object, seen through the interface
     private final Color NAV_BG = new Color(30, 95, 125);  // menu background
     private final Color BLUE = new Color(38, 117, 154);   // theme blue
-
-    // Medical History: one details text per table row (same order as the rows)
-    private ArrayList<String> visitDetails = new ArrayList<>();
-    private ArrayList<String> rxDetails = new ArrayList<>();
-    private ArrayList<String> testDetails = new ArrayList<>();
 
     // Bookings: the combos show names, these lists hold the matching ids (same order)
     private ArrayList<String> deptIds = new ArrayList<>();
     private ArrayList<String> doctorIds = new ArrayList<>();
-    // Bookings: hidden info for each table row
+    // Bookings: hidden info per table row
     //   {"booked", consultId, doctorId}  or  {"available", doctorId, date, start, end}
-    private ArrayList<String[]> slotRows = new ArrayList<>();
 
     // =====================================================================
-    // 2. CONSTRUCTOR - opens the dashboard for one patient and loads every page
+    // 2. CONSTRUCTOR
     // =====================================================================
     public PatientDashboard(int patientId) {
         initComponents();
+
+        // make every table read-only and consistent
         javax.swing.JTable[] tables = {tblSlots, tblVisits, tblPrescriptions, tblTests, tblPending, tblMyReviews};
         for (javax.swing.JTable t : tables) {
-            t.setDefaultEditor(Object.class, null);                // no cell can be edited
-            t.getTableHeader().setReorderingAllowed(false);        // columns can't be dragged around
+            t.setDefaultEditor(Object.class, null);
+            t.getTableHeader().setReorderingAllowed(false);
             t.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
             t.setRowHeight(25);
             t.setSelectionBackground(BLUE);
             t.setSelectionForeground(Color.WHITE);
         }
+
         this.patientId = patientId;
+        this.patient = new Patient(patientId);
+
         setLocationRelativeTo(null);
         loadWelcomeName();
         loadProfile();
@@ -73,31 +73,12 @@ public class PatientDashboard extends javax.swing.JFrame {
     }
 
     // =====================================================================
-    // 3. SHARED HELPERS - used by more than one page
+    // 3. HEADER & NAVIGATION
     // =====================================================================
-    // Returns "Dr. First Last" for a doctor id, or "Unknown"
-    private String getDoctorName(String doctorId) {
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        int id = Integer.parseInt(doctorId);
-        if (users == null || !users.containsKey(id)) {
-            return "Unknown";
-        }
-        // no id: 0 first name, 1 last name
-        return "Dr. " + users.get(id).get(0) + " " + users.get(id).get(1);
-    }
-
-    // =====================================================================
-    // 4. HEADER & NAVIGATION
-    // =====================================================================
-    // Shows "Welcome, First Last" in the header
     private void loadWelcomeName() {
-        ArrayList<String> user = FileHandling.readSpecificRecord("Users.txt", patientId);
-        if (user != null) {
-            lblWelcome.setText("Welcome, " + user.get(1) + " " + user.get(2));
-        }
+        lblWelcome.setText("Welcome, " + patient.getFullName());
     }
 
-    // Switches the card and highlights the active menu button
     private void showPage(String cardName, JButton activeButton) {
         CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
         cardLayout.show(pnlContent, cardName);
@@ -110,7 +91,6 @@ public class PatientDashboard extends javax.swing.JFrame {
         activeButton.setBackground(Color.WHITE);
         activeButton.setForeground(BLUE);
 
-        // Enter = Save, only on the Profile page
         if (cardName.equals("profile")) {
             getRootPane().setDefaultButton(btnSaveProfile);
         } else {
@@ -119,422 +99,94 @@ public class PatientDashboard extends javax.swing.JFrame {
     }
 
     // =====================================================================
-    // 5. BOOKINGS PAGE
+    // 4. BOOKINGS PAGE (screen only - the Patient does the work)
     // =====================================================================
-    // "09:30" -> 570
-    private int toMinutes(String time) {
-        return Integer.parseInt(time.substring(0, 2)) * 60 + Integer.parseInt(time.substring(3, 5));
-    }
-
-// 570 -> "09:30"
-    private String toTime(int minutes) {
-        return String.format("%02d:%02d", minutes / 60, minutes % 60);
-    }
-
-// "22-09-2026", "09:30" -> "202609220930" (year first, so it can be compared as text)
-    private String sortKey(String date, String time) {
-        return date.substring(6, 10) + date.substring(3, 5) + date.substring(0, 2) + time.replace(":", "");
-    }
-
-// Doctors.txt (no id): 0 department_id, 1 specialization
-    private String getSpecialization(TreeMap<Integer, ArrayList<String>> doctors, String doctorId) {
-        ArrayList<String> d = doctors.get(Integer.parseInt(doctorId));
-        if (d == null) {
-            return "-";
-        }
-        return d.get(1);
-    }
-
-    // Department combo: "All" + departments (no Emergency, no deleted)
     private void loadDepartments() {
         cmbDepartment.removeAllItems();
         deptIds.clear();
-        deptIds.add("all");            // add the id FIRST: addItem fires the combo's event
-        cmbDepartment.addItem("All");
-
-        TreeMap<Integer, ArrayList<String>> depts = FileHandling.readAllRecords("Departments.txt");
-        if (depts == null) {
-            return;
-        }
-        for (Integer id : depts.keySet()) {
-            ArrayList<String> d = depts.get(id); // 0 name, 1 description, 2 manager_id, 3 deleted
-            if (d.get(3).equals("1") || d.get(0).equals("Emergency")) {
-                continue; // patients don't book emergency
-            }
-            deptIds.add(String.valueOf(id));
-            cmbDepartment.addItem(d.get(0));
+        for (String[] d : patient.getDepartments()) {   // {id, name}
+            deptIds.add(d[0]);                          // id FIRST: addItem fires the combo's event
+            cmbDepartment.addItem(d[1]);
         }
     }
 
-// Doctor combo: "Any" + doctors in the chosen department
     private void loadDoctorCombo() {
         int index = cmbDepartment.getSelectedIndex();
         if (index < 0) {
             return;
         }
-        String deptId = deptIds.get(index);
-
         cmbDoctor.removeAllItems();
         doctorIds.clear();
-        doctorIds.add("any");
-        cmbDoctor.addItem("Any");
-
-        TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readAllRecords("Doctors.txt");
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        if (doctors == null || users == null) {
-            return;
-        }
-        for (Integer id : doctors.keySet()) {
-            ArrayList<String> d = doctors.get(id); // 0 department_id
-            ArrayList<String> u = users.get(id);   // 0 first, 1 last, 8 deleted
-            if (u == null || u.get(8).equals("1")) {
-                continue;
-            }
-            if (!deptIds.contains(d.get(0))) {
-                continue; // hides Emergency doctors
-            }
-            if (!deptId.equals("all") && !d.get(0).equals(deptId)) {
-                continue;
-            }
-            doctorIds.add(String.valueOf(id));
-            cmbDoctor.addItem("Dr. " + u.get(0) + " " + u.get(1));
+        for (String[] d : patient.getDoctors(deptIds.get(index))) {
+            doctorIds.add(d[0]);
+            cmbDoctor.addItem(d[1]);
         }
     }
 
-    // true if the doctor AND this patient are both free for that time
-    private boolean isFree(TreeMap<Integer, ArrayList<String>> consults, TreeMap<Integer, ArrayList<String>> cases,
-            String doctorId, String date, String start, String end, int ignoreId) {
-        for (Integer id : consults.keySet()) {
-            if (id == ignoreId) {
-                continue; // Reschedule: ignore the booking being moved
-            }
-            ArrayList<String> c = consults.get(id); // 0 case, 1 doctor, 5 status, 7 date, 8 start, 9 end, 10 deleted
-            if (c.get(10).equals("1") || c.get(5).equals("cancelled") || !c.get(7).equals(date)) {
-                continue;
-            }
-            // two times overlap if A starts before B ends AND B starts before A ends
-            boolean overlap = toMinutes(start) < toMinutes(c.get(9)) && toMinutes(c.get(8)) < toMinutes(end);
-            if (!overlap) {
-                continue;
-            }
-            if (c.get(1).equals(doctorId)) {
-                return false; // doctor is busy
-            }
-            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0)));
-            if (k != null && k.get(0).equals(String.valueOf(patientId))) {
-                return false; // I already have something at this time
-            }
-        }
-        return true;
-    }
-
-    // Table = my upcoming bookings + free 30-minute slots on the chosen date
     private void loadSlots() {
         DefaultTableModel model = (DefaultTableModel) tblSlots.getModel();
         model.setRowCount(0);
-        slotRows.clear();
 
         int deptIndex = cmbDepartment.getSelectedIndex();
         int docIndex = cmbDoctor.getSelectedIndex();
         if (deptIndex < 0 || docIndex < 0) {
             return;
         }
-        String deptId = deptIds.get(deptIndex);
-        String doctorFilter = doctorIds.get(docIndex);
         String date = new SimpleDateFormat("dd-MM-yyyy").format((Date) spnDate.getValue());
-        String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        patient.loadSlots(deptIds.get(deptIndex), doctorIds.get(docIndex), date);
 
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
-        TreeMap<Integer, ArrayList<String>> shiftDocs = FileHandling.readAllRecords("ShiftDoctors.txt");
-        TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readAllRecords("Doctors.txt");
-        if (cases == null) {
-            cases = new TreeMap<>();
+        for (Object[] row : patient.getSlotRows()) {
+            model.addRow(row);
         }
-        if (consults == null) {
-            consults = new TreeMap<>();
-        }
-        if (shifts == null || shiftDocs == null || doctors == null) {
-            return;
-        }
-
-        // 1) My upcoming bookings (any date)
-        for (Integer consultId : consults.keySet()) {
-            ArrayList<String> c = consults.get(consultId);
-            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0)));
-            if (k == null || !k.get(0).equals(String.valueOf(patientId))) {
-                continue;
-            }
-            if (!c.get(5).equals("booked") || c.get(10).equals("1")) {
-                continue;
-            }
-            if (sortKey(c.get(7), c.get(8)).compareTo(now) <= 0) {
-                continue; // already passed
-            }
-            model.addRow(new Object[]{c.get(7), c.get(8) + " - " + c.get(9),
-                getDoctorName(c.get(1)), getSpecialization(doctors, c.get(1)), "Room " + c.get(6), "Booked (You)"});
-            slotRows.add(new String[]{"booked", String.valueOf(consultId), c.get(1)});
-        }
-
-        // 2) Free 30-minute slots on the chosen date
-        for (Integer shiftId : shifts.keySet()) {
-            ArrayList<String> s = shifts.get(shiftId); // 0 department_id, 1 date, 2 start, 3 end, 4 deleted
-            if (!s.get(1).equals(date) || s.get(4).equals("1")) {
-                continue;
-            }
-            if (!deptIds.contains(s.get(0))) {
-                continue; // Emergency or deleted department
-            }
-            if (!deptId.equals("all") && !s.get(0).equals(deptId)) {
-                continue;
-            }
-
-            for (ArrayList<String> a : shiftDocs.values()) { // 0 shift_id, 1 doctor_id
-                if (!a.get(0).equals(String.valueOf(shiftId))) {
-                    continue;
-                }
-                String doctorId = a.get(1);
-                if (!doctorFilter.equals("any") && !doctorFilter.equals(doctorId)) {
-                    continue;
-                }
-                String doctorName = getDoctorName(doctorId);
-                String spec = getSpecialization(doctors, doctorId);
-
-                // step through the shift in 30-minute jumps
-                for (int m = toMinutes(s.get(2)); m + 30 <= toMinutes(s.get(3)); m += 30) {
-                    String start = toTime(m);
-                    String end = toTime(m + 30);
-                    if (sortKey(date, start).compareTo(now) <= 0) {
-                        continue; // time already passed
-                    }
-                    if (!isFree(consults, cases, doctorId, date, start, end, -1)) {
-                        continue;
-                    }
-                    model.addRow(new Object[]{date, start + " - " + end, doctorName, spec, "-", "Available"});
-                    slotRows.add(new String[]{"available", doctorId, date, start, end});
-                }
-            }
-        }
-    }
-
-    // Room can be used: status "ok" and not deleted
-    private boolean isRoomUsable(TreeMap<Integer, ArrayList<String>> rooms, String roomId) {
-        ArrayList<String> r = rooms.get(Integer.parseInt(roomId)); // 0 status, 1 deleted
-        return r != null && r.get(0).equals("ok") && r.get(1).equals("0");
-    }
-
-// Room has no other booking overlapping this time
-    private boolean isRoomFree(TreeMap<Integer, ArrayList<String>> consults, String roomId,
-            String date, String start, String end, int ignoreId) {
-        for (Integer id : consults.keySet()) {
-            if (id == ignoreId) {
-                continue;
-            }
-            ArrayList<String> c = consults.get(id); // 5 status, 6 room, 7 date, 8 start, 9 end, 10 deleted
-            if (c.get(10).equals("1") || c.get(5).equals("cancelled")) {
-                continue;
-            }
-            if (!c.get(6).equals(roomId) || !c.get(7).equals(date)) {
-                continue;
-            }
-            if (toMinutes(start) < toMinutes(c.get(9)) && toMinutes(c.get(8)) < toMinutes(end)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-// 1st choice: the room this doctor already uses that day. 2nd choice: first free working room
-    private String pickRoom(TreeMap<Integer, ArrayList<String>> consults, String doctorId,
-            String date, String start, String end, int ignoreId) {
-        TreeMap<Integer, ArrayList<String>> rooms = FileHandling.readAllRecords("ConsultationRooms.txt");
-        if (rooms == null) {
-            return "";
-        }
-        for (Integer id : consults.keySet()) {
-            ArrayList<String> c = consults.get(id);
-            if (id == ignoreId || c.get(10).equals("1") || c.get(5).equals("cancelled")) {
-                continue;
-            }
-            if (c.get(1).equals(doctorId) && c.get(7).equals(date)) {
-                String room = c.get(6);
-                if (isRoomUsable(rooms, room) && isRoomFree(consults, room, date, start, end, ignoreId)) {
-                    return room;
-                }
-            }
-        }
-        for (Integer id : rooms.keySet()) {
-            String room = String.valueOf(id);
-            if (isRoomUsable(rooms, room) && isRoomFree(consults, room, date, start, end, ignoreId)) {
-                return room;
-            }
-        }
-        return ""; // no room free
     }
 
     // =====================================================================
     // 6. MEDICAL HISTORY PAGE
     // =====================================================================
-    // Fills the Visits, Prescriptions and Test Results tabs
     private void loadHistory() {
+        patient.loadHistory();   // the Patient reads the files and builds the rows
+
         DefaultTableModel visits = (DefaultTableModel) tblVisits.getModel();
         DefaultTableModel rx = (DefaultTableModel) tblPrescriptions.getModel();
         DefaultTableModel tests = (DefaultTableModel) tblTests.getModel();
 
-        // start clean
         visits.setRowCount(0);
         rx.setRowCount(0);
         tests.setRowCount(0);
-        visitDetails.clear();
-        rxDetails.clear();
-        testDetails.clear();
         txtVisitDetails.setText("");
         txtRxDetails.setText("");
         txtTestDetails.setText("");
 
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readAllRecords("Prescriptions.txt");
-        TreeMap<Integer, ArrayList<String>> items = FileHandling.readAllRecords("PrescriptionItems.txt");
-        TreeMap<Integer, ArrayList<String>> drugs = FileHandling.readAllRecords("DrugCatalogue.txt");
-        TreeMap<Integer, ArrayList<String>> requests = FileHandling.readAllRecords("DiagnosticServiceRequests.txt");
-        TreeMap<Integer, ArrayList<String>> services = FileHandling.readAllRecords("DiagnosticServiceCatalogue.txt");
-
-        if (cases == null || consults == null) {
-            return;
+        for (Object[] row : patient.getVisitRows()) {
+            visits.addRow(row);
         }
-
-        for (Integer consultId : consults.keySet()) {
-            // c: 0 case_id, 1 doctor_id, 2 complaint, 3 vital_signs, 4 notes, 5 status, 6 room, 7 date, 8 start, 9 end, 10 deleted
-            ArrayList<String> c = consults.get(consultId);
-            // k: 0 patient_id, 1 doctor_in_charge, 2 open_date, 3 close_date, 4 category, 5 type, 6 case_summary, 7 deleted
-            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0)));
-
-            // skip visits that are not mine, not completed, or deleted
-            if (k == null || !k.get(0).equals(String.valueOf(patientId))) {
-                continue;
-            }
-            if (!c.get(5).equals("completed") || c.get(10).equals("1")) {
-                continue;
-            }
-
-            String date = c.get(7);
-            String doctor = getDoctorName(c.get(1));
-
-            // ---- Visits tab ----
-            visits.addRow(new Object[]{date, doctor, k.get(4), c.get(2)});
-            visitDetails.add("Vital signs: " + c.get(3)
-                    + "\n\nDoctor's notes: " + c.get(4)
-                    + "\n\nCase summary: " + k.get(6));
-
-            // ---- Prescriptions tab ----
-            if (prescriptions != null && items != null && drugs != null) {
-                for (Integer rxId : prescriptions.keySet()) {
-                    ArrayList<String> p = prescriptions.get(rxId); // 0 consultation_id, 1 deleted
-                    if (!p.get(0).equals(String.valueOf(consultId)) || p.get(1).equals("1")) {
-                        continue;
-                    }
-                    for (ArrayList<String> it : items.values()) {
-                        // it: 0 prescription_id, 1 drug_id, 2 dosage, 3 frequency, 4 duration, 5 instructions, 6 deleted
-                        if (!it.get(0).equals(String.valueOf(rxId)) || it.get(6).equals("1")) {
-                            continue;
-                        }
-                        String medicine = "Unknown";
-                        ArrayList<String> d = drugs.get(Integer.parseInt(it.get(1))); // 0 drug_name
-                        if (d != null) {
-                            medicine = d.get(0);
-                        }
-                        rx.addRow(new Object[]{date, medicine, it.get(2), it.get(3), it.get(4) + " days"});
-                        rxDetails.add(medicine
-                                + "\n\nInstructions: " + it.get(5)
-                                + "\n\nPrescribed by " + doctor + " on " + date);
-                    }
-                }
-            }
-
-            // ---- Test Results tab ----
-            if (requests != null && services != null) {
-                for (ArrayList<String> r : requests.values()) {
-                    // r: 0 consultation_id, 1 service_id, 2 request_date, 3 remarks, 4 result_date, 5 results, 6 deleted
-                    if (!r.get(0).equals(String.valueOf(consultId)) || r.get(6).equals("1")) {
-                        continue;
-                    }
-                    String testName = "Unknown";
-                    String category = "-";
-                    ArrayList<String> s = services.get(Integer.parseInt(r.get(1))); // 0 service_name, 1 category
-                    if (s != null) {
-                        testName = s.get(0);
-                        category = s.get(1);
-                    }
-                    String status = "Ready";
-                    String results = r.get(5);
-                    if (r.get(4).isEmpty()) {
-                        status = "Pending";
-                        results = "Not available yet";
-                    }
-                    tests.addRow(new Object[]{r.get(2), testName, category, r.get(4), status});
-                    testDetails.add(testName
-                            + "\n\nRequest remarks: " + r.get(3)
-                            + "\n\nResults: " + results);
-                }
-            }
+        for (Object[] row : patient.getPrescriptionRows()) {
+            rx.addRow(row);
+        }
+        for (Object[] row : patient.getTestRows()) {
+            tests.addRow(row);
         }
     }
 
     // =====================================================================
     // 7. SUBMIT RATINGS PAGE
     // =====================================================================
-    // Splits my completed visits into "waiting for rating" and "already rated"
     private void loadRatings() {
         DefaultTableModel pending = (DefaultTableModel) tblPending.getModel();
         DefaultTableModel past = (DefaultTableModel) tblMyReviews.getModel();
         pending.setRowCount(0);
         past.setRowCount(0);
 
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readAllRecords("Reviews.txt");
-
-        if (cases == null || consults == null) {
-            return;
+        for (Object[] row : patient.getPendingRatings()) {
+            pending.addRow(row);
         }
-
-        for (Integer consultId : consults.keySet()) {
-            ArrayList<String> c = consults.get(consultId);
-            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0)));
-
-            // same filter as History: mine, completed, not deleted
-            if (k == null || !k.get(0).equals(String.valueOf(patientId))) {
-                continue;
-            }
-            if (!c.get(5).equals("completed") || c.get(10).equals("1")) {
-                continue;
-            }
-
-            // look for a review of this visit
-            ArrayList<String> myReview = null;
-            if (reviews != null) {
-                for (ArrayList<String> r : reviews.values()) {
-                    // r: 0 consultation_id, 1 rating, 2 comments, 3 deleted
-                    if (r.get(0).equals(String.valueOf(consultId)) && r.get(3).equals("0")) {
-                        myReview = r;
-                    }
-                }
-            }
-
-            String doctor = getDoctorName(c.get(1));
-            if (myReview == null) {
-                pending.addRow(new Object[]{consultId, c.get(7), doctor, c.get(2)});
-            } else {
-                past.addRow(new Object[]{c.get(7), doctor, myReview.get(1), myReview.get(2)});
-            }
+        for (Object[] row : patient.getPastRatings()) {
+            past.addRow(row);
         }
     }
 
-    // Resets the rating form
     private void clearRatingForm() {
-        grpRating.clearSelection();   // un-tick all 5 radio buttons
+        grpRating.clearSelection();
         txtComment.setText("");
         tblPending.clearSelection();
     }
@@ -542,34 +194,22 @@ public class PatientDashboard extends javax.swing.JFrame {
     // =====================================================================
     // 8. MY PROFILE PAGE
     // =====================================================================
-    // Fills the profile page from Users.txt and Patients.txt
     private void loadProfile() {
-        // readSpecificRecord keeps the id: 0 id, 1 first, 2 last, 3 dob, 4 gender, 5 phone, 6 email
-        ArrayList<String> user = FileHandling.readSpecificRecord("Users.txt", patientId);
-        if (user == null) {
-            return;
-        }
-        txtPatientID.setText(String.valueOf(patientId));
-        txtFirstName.setText(user.get(1));
-        txtLastName.setText(user.get(2));
-        txtDOB.setText(user.get(3));
-        txtGender.setText(user.get(4));
-        txtPhone.setText(user.get(5));
-        txtEmail.setText(user.get(6));
-
-        // Patients.txt (no id): 0 blood type, 1 allergies
-        TreeMap<Integer, ArrayList<String>> patients = FileHandling.readAllRecords("Patients.txt");
-        if (patients != null && patients.containsKey(patientId)) {
-            txtBloodType.setText(patients.get(patientId).get(0));
-            txtAllergies.setText(patients.get(patientId).get(1));
-        }
+        txtPatientID.setText(String.valueOf(patient.getUserID()));
+        txtFirstName.setText(patient.getFirst());
+        txtLastName.setText(patient.getLast());
+        txtDOB.setText(patient.getDobText());
+        txtGender.setText(patient.getGender());
+        txtPhone.setText(patient.getPhone());
+        txtEmail.setText(patient.getEmail());
+        txtBloodType.setText(patient.getBloodType());
+        txtAllergies.setText(patient.getAllergies());
 
         pwdCurrent.setText("");
         pwdNew.setText("");
         pwdConfirm.setText("");
     }
 
-    // Shows an error, then puts back the saved (valid) values
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message);
         loadProfile();
@@ -1377,62 +1017,17 @@ public class PatientDashboard extends javax.swing.JFrame {
 
     private void btnSaveProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProfileActionPerformed
 
-        String phone = txtPhone.getText().trim();
-        String email = txtEmail.getText().trim();
-        String current = new String(pwdCurrent.getPassword());
-        String newPwd = new String(pwdNew.getPassword());
-        String confirm = new String(pwdConfirm.getPassword());
+        String result = patient.saveProfile(
+                txtPhone.getText().trim(),
+                txtEmail.getText().trim(),
+                new String(pwdCurrent.getPassword()),
+                new String(pwdNew.getPassword()),
+                new String(pwdConfirm.getPassword()));
 
-        //1.For Phone and Email
-        if (!phone.matches("01\\d-\\d{7,8}")) {
-            showError("Phone must look like 012-3456789.");
+        if (result != null) {
+            showError(result);
             return;
         }
-        //if (!email.contains("@") || !email.contains(".")) { can be used but can accept any as long as they are @ and .
-        if (!email.matches("[A-Za-z0-9._-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.(com|net|org|edu|gov|my)")) {
-            showError("Please enter a valid email");
-            return;
-        }
-
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        for (Integer id : users.keySet()) {
-            if (id != patientId && users.get(id).get(5).equalsIgnoreCase(email)) {
-                showError("This email is already used by another account.");
-                return;
-            }
-        }
-        // 3. Password (only if any password box is filled)
-        ArrayList<String> me = users.get(patientId); // no id: 5 email, 6 password
-        String password = me.get(6);
-
-        if (!current.isEmpty() || !newPwd.isEmpty() || !confirm.isEmpty()) {
-            if (!current.equals(password)) {
-                showError("Current password is incorrect.");
-                return;
-            }
-            if (newPwd.length() < 8) {
-                showError("New password must be at least 8 characters long.");
-                return;
-            }
-            if (newPwd.contains(",") || newPwd.contains("\"")) {
-                showError("Password cannot contain commas or quotes.");
-                return;
-            }
-            if (!newPwd.equals(confirm)) {
-                showError("New passwords do not match.");
-                return;
-            }
-            password = newPwd;
-        }
-
-        // 4. Build the full row (editRecord needs the id at position 0) and save
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(patientId));
-        record.addAll(me);
-        record.set(5, phone);
-        record.set(6, email);
-        record.set(7, password);
-        FileHandling.editRecord("Users.txt", record);
 
         JOptionPane.showMessageDialog(this, "Profile updated.");
         loadProfile();
@@ -1440,6 +1035,7 @@ public class PatientDashboard extends javax.swing.JFrame {
 
     private void btnResetProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetProfileActionPerformed
 
+        patient.reload();
         loadProfile();
     }//GEN-LAST:event_btnResetProfileActionPerformed
 // ===== EVENTS: MEDICAL HISTORY =====
@@ -1447,8 +1043,8 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         int row = tblVisits.getSelectedRow();
         if (row >= 0) {
-            txtVisitDetails.setText(visitDetails.get(row));
-            txtVisitDetails.setCaretPosition(0); // scroll the box back to the top
+            txtVisitDetails.setText(patient.getVisitDetails().get(row));
+            txtVisitDetails.setCaretPosition(0);
         }
     }//GEN-LAST:event_tblVisitsMouseClicked
 
@@ -1456,8 +1052,8 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         int row = tblPrescriptions.getSelectedRow();
         if (row >= 0) {
-            txtRxDetails.setText(rxDetails.get(row));
-            txtRxDetails.setCaretPosition(0); // scroll the box back to the top
+            txtRxDetails.setText(patient.getPrescriptionDetails().get(row));
+            txtRxDetails.setCaretPosition(0);
         }
     }//GEN-LAST:event_tblPrescriptionsMouseClicked
 
@@ -1465,21 +1061,19 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         int row = tblTests.getSelectedRow();
         if (row >= 0) {
-            txtTestDetails.setText(testDetails.get(row));
-            txtTestDetails.setCaretPosition(0); // scroll the box back to the top
+            txtTestDetails.setText(patient.getTestDetails().get(row));
+            txtTestDetails.setCaretPosition(0);
         }
     }//GEN-LAST:event_tblTestsMouseClicked
 // ===== EVENTS: SUBMIT RATINGS =====
     private void btnSubmitRatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitRatingActionPerformed
 
-        // 1. A visit must be selected
         int row = tblPending.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a visit to rate.");
-            return;
+        String consultId = "";
+        if (row >= 0) {
+            consultId = tblPending.getValueAt(row, 0).toString();
         }
 
-// 2. A rating must be chosen
         int rating = 0;
         if (rdoRating1.isSelected()) {
             rating = 1;
@@ -1496,29 +1090,12 @@ public class PatientDashboard extends javax.swing.JFrame {
         if (rdoRating5.isSelected()) {
             rating = 5;
         }
-        if (rating == 0) {
-            JOptionPane.showMessageDialog(this, "Please choose a rating from 1 to 5.");
+
+        String result = patient.submitRating(consultId, rating, txtComment.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
             return;
         }
-
-// 3. Comment is optional, but must be safe for the file
-        String comment = txtComment.getText().trim();
-        if (comment.contains("\"")) {
-            JOptionPane.showMessageDialog(this, "Comment cannot contain double quotes.");
-            return;
-        }
-        comment = comment.replace("\n", " "); // a new line would break the file
-
-// 4. Save to Reviews.txt
-        String consultId = tblPending.getValueAt(row, 0).toString();
-
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(FileHandling.getNextID("Reviews.txt")));
-        record.add(consultId);
-        record.add(String.valueOf(rating));
-        record.add(comment);
-        record.add("0");
-        FileHandling.addRecord("Reviews.txt", record);
 
         JOptionPane.showMessageDialog(this, "Thank you! Your rating has been submitted.");
         clearRatingForm();
@@ -1539,184 +1116,80 @@ public class PatientDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookActionPerformed
-        // 1. Must pick an Available row
         int row = tblSlots.getSelectedRow();
-        if (row < 0 || !slotRows.get(row)[0].equals("available")) {
+        String[] info = null;
+        if (row >= 0) {
+            info = patient.getSlotInfo().get(row);
+        }
+        if (info == null || !info[0].equals("available")) {
             JOptionPane.showMessageDialog(this, "Please select a slot marked Available.");
-            return;
-        }
-        String[] info = slotRows.get(row); // {"available", doctorId, date, start, end}
-        String doctorId = info[1];
-        String date = info[2];
-        String start = info[3];
-        String end = info[4];
-
-// 2. Reason is required and must be safe for the file
-        String reason = txtReason.getText().trim().replace("\n", " ");
-        if (reason.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter the reason for your visit.");
-            return;
-        }
-        if (reason.contains("\"")) {
-            JOptionPane.showMessageDialog(this, "Reason cannot contain double quotes.");
-            return;
-        }
-        String category = cmbCategory.getSelectedItem().toString().toLowerCase();
-
-// 3. Check again that the slot is still free, then pick a room
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        if (cases == null) {
-            cases = new TreeMap<>();
-        }
-        if (consults == null) {
-            consults = new TreeMap<>();
-        }
-        if (!isFree(consults, cases, doctorId, date, start, end, -1)) {
-            JOptionPane.showMessageDialog(this, "Sorry, this slot is no longer available.");
-            loadSlots();
-            return;
-        }
-        String room = pickRoom(consults, doctorId, date, start, end, -1);
-        if (room.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No consultation room is free at this time. Please choose another slot.");
             return;
         }
 
         int choice = JOptionPane.showConfirmDialog(this,
-                "Book " + getDoctorName(doctorId) + " on " + date + " at " + start + "?",
+                "Book " + patient.getDoctorName(info[1]) + " on " + info[2] + " at " + info[3] + "?",
                 "Confirm Booking", JOptionPane.YES_NO_OPTION);
         if (choice != JOptionPane.YES_OPTION) {
             return;
         }
 
-// 4. Save a new Case (every booking gets its own case)
-        String today = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        int caseId = FileHandling.getNextID("Cases.txt");
+        String result = patient.bookSlot(info, cmbCategory.getSelectedItem().toString(), txtReason.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            loadSlots();
+            return;
+        }
 
-        ArrayList<String> newCase = new ArrayList<>();
-        newCase.add(String.valueOf(caseId));
-        newCase.add(String.valueOf(patientId));
-        newCase.add(doctorId);      // doctor_in_charge
-        newCase.add(today);         // open_date
-        newCase.add("");            // close_date (doctor closes it later)
-        newCase.add(category);
-        newCase.add("scheduled");
-        newCase.add("");            // case_summary (doctor writes it later)
-        newCase.add("0");
-        FileHandling.addRecord("Cases.txt", newCase);
-
-// 5. Save the Consultation linked to that case
-        ArrayList<String> consult = new ArrayList<>();
-        consult.add(String.valueOf(FileHandling.getNextID("Consultations.txt")));
-        consult.add(String.valueOf(caseId));
-        consult.add(doctorId);
-        consult.add(reason);        // complaint
-        consult.add("");            // vital_signs (doctor fills in)
-        consult.add("");            // notes (doctor fills in)
-        consult.add("booked");
-        consult.add(room);
-        consult.add(date);
-        consult.add(start);
-        consult.add(end);
-        consult.add("0");
-        FileHandling.addRecord("Consultations.txt", consult);
-
-        JOptionPane.showMessageDialog(this, "Booked! Please go to Room " + room + ".");
+        JOptionPane.showMessageDialog(this, "Booked! Please go to Room " + patient.getLastBookedRoom() + ".");
         txtReason.setText("");
         loadSlots();
     }//GEN-LAST:event_btnBookActionPerformed
 
     private void btnRescheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRescheduleActionPerformed
-        // 1. Must pick one of my bookings
         int row = tblSlots.getSelectedRow();
-        if (row < 0 || !slotRows.get(row)[0].equals("booked")) {
+        if (row < 0 || !patient.getSlotInfo().get(row)[0].equals("booked")) {
             JOptionPane.showMessageDialog(this, "Please select one of your bookings (Booked (You)).");
             return;
         }
-        int consultId = Integer.parseInt(slotRows.get(row)[1]);
-        String doctorId = slotRows.get(row)[2];
+        int consultId = Integer.parseInt(patient.getSlotInfo().get(row)[1]);
+        String doctorId = patient.getSlotInfo().get(row)[2];
         String date = new SimpleDateFormat("dd-MM-yyyy").format((Date) spnDate.getValue());
-        String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
-        TreeMap<Integer, ArrayList<String>> shiftDocs = FileHandling.readAllRecords("ShiftDoctors.txt");
-        if (cases == null || consults == null || shifts == null || shiftDocs == null) {
-            return;
-        }
-
-// 2. Collect the same doctor's free slots on the chosen date
-        ArrayList<String> options = new ArrayList<>();
-        for (Integer shiftId : shifts.keySet()) {
-            ArrayList<String> s = shifts.get(shiftId); // 1 date, 2 start, 3 end, 4 deleted
-            if (!s.get(1).equals(date) || s.get(4).equals("1")) {
-                continue;
-            }
-            boolean doctorOnShift = false;
-            for (ArrayList<String> a : shiftDocs.values()) { // 0 shift_id, 1 doctor_id
-                if (a.get(0).equals(String.valueOf(shiftId)) && a.get(1).equals(doctorId)) {
-                    doctorOnShift = true;
-                }
-            }
-            if (!doctorOnShift) {
-                continue;
-            }
-            for (int m = toMinutes(s.get(2)); m + 30 <= toMinutes(s.get(3)); m += 30) {
-                String start = toTime(m);
-                String end = toTime(m + 30);
-                if (sortKey(date, start).compareTo(now) <= 0) {
-                    continue;
-                }
-                if (isFree(consults, cases, doctorId, date, start, end, consultId)) { // ignore my old booking
-                    options.add(start + " - " + end);
-                }
-            }
-        }
+        ArrayList<String> options = patient.getFreeTimes(doctorId, date, consultId);
         if (options.isEmpty()) {
-            JOptionPane.showMessageDialog(this, getDoctorName(doctorId) + " has no free slots on " + date
+            JOptionPane.showMessageDialog(this, patient.getDoctorName(doctorId) + " has no free slots on " + date
                     + ".\nChange the Date above and try again.");
             return;
         }
 
-// 3. Let the patient choose from a drop-down
         Object picked = JOptionPane.showInputDialog(this,
-                "Choose a new time with " + getDoctorName(doctorId) + " on " + date
+                "Choose a new time with " + patient.getDoctorName(doctorId) + " on " + date
                 + "\n(Change the Date above to see other days)",
                 "Reschedule", JOptionPane.QUESTION_MESSAGE, null, options.toArray(), options.get(0));
         if (picked == null) {
-            return; // pressed Cancel
+            return;
         }
-        String start = picked.toString().substring(0, 5);  // "10:00 - 10:30" -> "10:00"
-        String end = picked.toString().substring(8, 13);   //                 -> "10:30"
+        String start = picked.toString().substring(0, 5);
+        String end = picked.toString().substring(8, 13);
 
-        String room = pickRoom(consults, doctorId, date, start, end, consultId);
-        if (room.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No consultation room is free at that time.");
+        String result = patient.rescheduleBooking(consultId, doctorId, date, start, end);
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
             return;
         }
 
-// 4. Update the same consultation row (with id: 7 room, 8 date, 9 start, 10 end)
-        ArrayList<String> record = FileHandling.readSpecificRecord("Consultations.txt", consultId);
-        record.set(7, room);
-        record.set(8, date);
-        record.set(9, start);
-        record.set(10, end);
-        FileHandling.editRecord("Consultations.txt", record);
-
-        JOptionPane.showMessageDialog(this, "Rescheduled to " + date + " at " + start + " (Room " + room + ").");
+        JOptionPane.showMessageDialog(this, "Rescheduled to " + date + " at " + start
+                + " (Room " + patient.getLastBookedRoom() + ").");
         loadSlots();
     }//GEN-LAST:event_btnRescheduleActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // 1. Must pick one of my bookings
         int row = tblSlots.getSelectedRow();
-        if (row < 0 || !slotRows.get(row)[0].equals("booked")) {
+        if (row < 0 || !patient.getSlotInfo().get(row)[0].equals("booked")) {
             JOptionPane.showMessageDialog(this, "Please select one of your bookings (Booked (You)).");
             return;
         }
-        int consultId = Integer.parseInt(slotRows.get(row)[1]);
+        int consultId = Integer.parseInt(patient.getSlotInfo().get(row)[1]);
 
         int choice = JOptionPane.showConfirmDialog(this, "Cancel this booking? This cannot be undone.",
                 "Cancel Booking", JOptionPane.YES_NO_OPTION);
@@ -1724,26 +1197,10 @@ public class PatientDashboard extends javax.swing.JFrame {
             return;
         }
 
-// 2. Soft-delete the consultation (with id: 1 case_id, 6 status, 11 deleted)
-        ArrayList<String> consult = FileHandling.readSpecificRecord("Consultations.txt", consultId);
-        String caseId = consult.get(1);
-        consult.set(6, "cancelled");
-        consult.set(11, "1");
-        FileHandling.editRecord("Consultations.txt", consult);
-
-// 3. Delete the case too, ONLY if no other visit uses it (keeps old history safe)
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        boolean caseStillUsed = false;
-        for (Integer id : consults.keySet()) {
-            ArrayList<String> c = consults.get(id); // 0 case_id, 10 deleted
-            if (id != consultId && c.get(0).equals(caseId) && c.get(10).equals("0")) {
-                caseStillUsed = true;
-            }
-        }
-        if (!caseStillUsed) {
-            ArrayList<String> k = FileHandling.readSpecificRecord("Cases.txt", Integer.parseInt(caseId)); // 8 deleted
-            k.set(8, "1");
-            FileHandling.editRecord("Cases.txt", k);
+        String result = patient.cancelBooking(consultId);
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
         }
 
         JOptionPane.showMessageDialog(this, "Booking cancelled.");

@@ -35,14 +35,16 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        deptNameTf = new javax.swing.JTextField();
+        descTf = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         saveBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        departmentsTable = new javax.swing.JTable();
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
 
         jLabel4.setText("jLabel3");
 
@@ -55,16 +57,16 @@ public class ManageDepartments extends javax.swing.JFrame {
         shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         shiftBtn.setText("Shift Rosters");
         shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, -1, -1));
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
 
         departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         departmentBtn.setText("Departments");
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, -1, -1));
+        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
 
         reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         reportBtn.setText("Reports");
         reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, -1, -1));
+        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
 
         profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         profileBtn.setText("Profile");
@@ -74,7 +76,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dashboardBtn.setText("Dashboard");
         dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Manage Clinical Departments");
@@ -92,13 +94,11 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel5.setText("MANAGING DEPARTMENTS");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jTextField1.setText("jTextField1");
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 250, -1));
+        deptNameTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        getContentPane().add(deptNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 250, -1));
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jTextField2.setText("jTextField1");
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 390, -1));
+        descTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        getContentPane().add(descTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 390, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("DEPARTMENT NAME");
@@ -108,7 +108,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         saveBtn.setText("Save");
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        departmentsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -119,7 +119,7 @@ public class ManageDepartments extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(departmentsTable);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 780, 270));
 
@@ -130,6 +130,13 @@ public class ManageDepartments extends javax.swing.JFrame {
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 240, -1, -1));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel7.setText("APU Medical Centre");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
+
+        jPanel2.setBackground(new java.awt.Color(38, 117, 154));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -191,16 +198,18 @@ public class ManageDepartments extends javax.swing.JFrame {
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
+    private javax.swing.JTable departmentsTable;
+    private javax.swing.JTextField deptNameTf;
+    private javax.swing.JTextField descTf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;

@@ -43,13 +43,15 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        assignBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        shiftsTable = new javax.swing.JTable();
+        deptCmb = new javax.swing.JComboBox<>();
         dobFtf = new javax.swing.JFormattedTextField();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
-        jFormattedTextField2 = new javax.swing.JFormattedTextField();
+        startFtf = new javax.swing.JFormattedTextField();
+        endFtf = new javax.swing.JFormattedTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
 
         jLabel4.setText("jLabel3");
 
@@ -74,17 +76,17 @@ public class ManageShifts extends javax.swing.JFrame {
 
         shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         shiftBtn.setText("Shift Rosters");
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, -1, -1));
+        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
 
         departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         departmentBtn.setText("Departments");
         departmentBtn.addActionListener(this::departmentBtnActionPerformed);
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, -1, -1));
+        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
 
         reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         reportBtn.setText("Reports");
         reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, -1, -1));
+        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
 
         profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         profileBtn.setText("Profile");
@@ -94,7 +96,7 @@ public class ManageShifts extends javax.swing.JFrame {
         dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dashboardBtn.setText("Dashboard");
         dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Operational Shift Rosters");
@@ -134,13 +136,14 @@ public class ManageShifts extends javax.swing.JFrame {
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 290, -1, -1));
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, -1, -1));
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton1.setText("Assign");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 290, -1, 30));
+        assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        assignBtn.setText("Assign");
+        assignBtn.addActionListener(this::assignBtnActionPerformed);
+        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 290, -1, 30));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        shiftsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -151,12 +154,12 @@ public class ManageShifts extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(shiftsTable);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 780, 240));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 290, -1));
+        deptCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(deptCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 290, -1));
 
         dobFtf.setColumns(9);
         try {
@@ -167,18 +170,25 @@ public class ManageShifts extends javax.swing.JFrame {
         getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 170, 260, -1));
 
         try {
-            jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
+            startFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        getContentPane().add(jFormattedTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 290, -1));
+        getContentPane().add(startFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 290, -1));
 
         try {
-            jFormattedTextField2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
+            endFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        getContentPane().add(jFormattedTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 240, 260, -1));
+        getContentPane().add(endFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 240, 260, -1));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel9.setText("APU Medical Centre");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
+
+        jPanel2.setBackground(new java.awt.Color(38, 117, 154));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -211,6 +221,13 @@ public class ManageShifts extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_profileBtnActionPerformed
 
+    private void assignBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignBtnActionPerformed
+        // TODO add your handling code here:
+        AssignDoctorShift assign = new AssignDoctorShift();
+        assign.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_assignBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -237,14 +254,13 @@ public class ManageShifts extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton assignBtn;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
+    private javax.swing.JComboBox<String> deptCmb;
     private javax.swing.JFormattedTextField dobFtf;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
-    private javax.swing.JFormattedTextField jFormattedTextField2;
+    private javax.swing.JFormattedTextField endFtf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -253,14 +269,17 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;
     private javax.swing.JButton shiftBtn;
+    private javax.swing.JTable shiftsTable;
+    private javax.swing.JFormattedTextField startFtf;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

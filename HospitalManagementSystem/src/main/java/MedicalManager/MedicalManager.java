@@ -142,7 +142,6 @@ public class MedicalManager extends User{
         return results;
     }
     
-    
     public void assignDoctorToShift(int shiftID, int doctorID){
         int newID = FileHandling.getNextID("ShiftDoctors");
         ArrayList<String> record = new ArrayList<>();
@@ -157,11 +156,32 @@ public class MedicalManager extends User{
         FileHandling.removeRecord("ShiftDoctors", shiftID);
     }
     
-    public double calcuateTotalRevenue() {
+    
+    public double calculateTotalRevenue() {
         TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readAllRecords("Invoices.txt");
-        return 0.0;
+        double total = 0.0;
+        if(invoices != null) {
+            for(ArrayList<String> invoice : invoices.values()) {
+                if("0".equals(invoice.get(3))){
+                    total += Double.parseDouble(invoice.get(2));
+                }
+            }
+        }
+        return total;
     }
     
+    public int getUsedBeds() {
+        TreeMap<Integer, ArrayList<String>> beds = FileHandling.readAllRecords("InpatientBeds.txt");
+        int totalBeds = 0;
+        if (beds != null) {
+            for(ArrayList<String> bed : beds.values()){
+                if("0".equals(bed.get(1))){
+                    totalBeds++;
+                }
+            }
+        }
+        return totalBeds;
+    }
+      
     
 }
-

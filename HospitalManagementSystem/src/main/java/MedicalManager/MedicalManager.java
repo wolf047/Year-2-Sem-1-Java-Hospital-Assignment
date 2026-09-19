@@ -10,8 +10,8 @@ import java.util.*;
 
 public class MedicalManager extends User{
     public MedicalManager(int user_id, String first_name, String last_name, String phone,
-            String password, String gender, LocalDate dob, Role role){
-        super(user_id, first_name, last_name, phone, password, gender, dob, role);
+            String email, String password, String gender, LocalDate dob, Role role){
+        super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
     }
     
     public MedicalManager(){
@@ -143,7 +143,6 @@ public class MedicalManager extends User{
     }
     
     
-    
     public void assignDoctorToShift(int shiftID, int doctorID){
         int newID = FileHandling.getNextID("ShiftDoctors");
         ArrayList<String> record = new ArrayList<>();
@@ -156,6 +155,11 @@ public class MedicalManager extends User{
     
     public void removeDoctorShift(int shiftID){
         FileHandling.removeRecord("ShiftDoctors", shiftID);
+    }
+    
+    public double calcuateTotalRevenue() {
+        TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readAllRecords("Invoices.txt");
+        return 0.0;
     }
     
     

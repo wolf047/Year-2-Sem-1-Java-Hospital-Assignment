@@ -6,7 +6,7 @@ import java.util.*;
 import HelperFunction.FileHandling;
 
 public class User {
-    protected String first_name, last_name, phone, password, gender;
+    protected String first_name, last_name, phone, email, password, gender;
     protected int user_id;
     protected LocalDate dob;
     protected Role role;
@@ -16,11 +16,12 @@ public class User {
     }
     
     public User(int user_id, String first_name, String last_name, String phone,
-            String password, String gender, LocalDate dob, Role role){
+            String emial, String password, String gender, LocalDate dob, Role role){
         this.user_id = user_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.phone = phone;
+        this.email = email;
         this.password = password;
         this.gender = gender;
         this.dob = dob;
@@ -41,6 +42,10 @@ public class User {
     
     public String getPhone(){
         return this.phone;
+    }
+    
+    public String getEmail(){
+        return this.email;
     }
 
     public String getPassword() {
@@ -73,6 +78,10 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setPassword(String password) {

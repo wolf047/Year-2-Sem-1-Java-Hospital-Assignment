@@ -39,9 +39,9 @@ public class Patient extends User implements PatientServices {
     // CONSTRUCTORS
     // =====================================================================
     // Original constructor (used by the rest of the group)
-    public Patient(int user_id, String first_name, String last_name, String phone,
+    public Patient(int user_id, String first_name, String last_name, String phone, String email,
             String password, String gender, LocalDate dob, Role role, String blood_type, String allergies) {
-        super(user_id, first_name, last_name, phone, password, gender, dob, role);
+        super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
         this.blood_type = blood_type;
         this.allergies = allergies;
     }

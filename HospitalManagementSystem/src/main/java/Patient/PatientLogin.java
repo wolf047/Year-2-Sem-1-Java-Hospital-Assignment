@@ -1,21 +1,17 @@
 package Patient;
 
-import HelperFunction.FileHandling;
-import java.util.ArrayList;
-import java.util.TreeMap;
 import javax.swing.JOptionPane;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author User
  */
 public class PatientLogin extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PatientLogin.class.getName());
 
     /**
@@ -113,30 +109,20 @@ public class PatientLogin extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String input = txtUserID.getText().trim();
         String password = new String(pwdPassword.getPassword());
-        
-        if (input.isEmpty() || password.isEmpty()){
+
+        if (input.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter your email and password.");
             return;
         }
-        
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        //u: 0 is first, 1 is last, 2 dob, 3 gender, 4 phone, 5 email, 6 password, 7 role, 8 deleted
-        if (users !=null){
-            for (Integer id : users.keySet()){
-                ArrayList<String> u = users.get(id);
-                boolean emailMatch = u.get(5).equalsIgnoreCase(input);
-                
-                if(emailMatch && u.get(6).equals(password)
-                    && u.get(7).equals("Patient") && u.get(8).equals("0")){
-                    new PatientDashboard(id).setVisible(true);
-                    dispose();
-                    return;
-                }
-                
-            }
+
+        int id = Patient.login(input, password);
+        if (id == -1) {
+            JOptionPane.showMessageDialog(this, "Invalid email or password.");
+            return;
         }
-        
-        JOptionPane.showMessageDialog(this, "Invalid email or password.");
+
+        new PatientDashboard(id).setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
@@ -144,13 +130,11 @@ public class PatientLogin extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-       
 
-       javax.swing.UIManager.put("Button.focus", new java.awt.Color(0, 0, 0, 0));
-       javax.swing.UIManager.put("RadioButton.focus", new java.awt.Color(0, 0, 0, 0));
+        javax.swing.UIManager.put("Button.focus", new java.awt.Color(0, 0, 0, 0));
+        javax.swing.UIManager.put("RadioButton.focus", new java.awt.Color(0, 0, 0, 0));
 
-       /* Create and display the form */
-       
+        /* Create and display the form */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 

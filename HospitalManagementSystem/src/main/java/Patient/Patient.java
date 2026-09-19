@@ -20,7 +20,6 @@ public class Patient extends User implements PatientServices {
     // FIELDS
     // =====================================================================
     private String blood_type, allergies;
-    private String email;   // User has no email field, so the Patient keeps it
 
     // Medical History: rows for the 3 tables + one details text per row (same order)
     private ArrayList<Object[]> visitRows = new ArrayList<>();
@@ -72,14 +71,6 @@ public class Patient extends User implements PatientServices {
         this.allergies = allergies;
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     // "Farah Hidayah binti Hassan"
     public String getFullName() {
         return this.first_name + " " + this.last_name;
@@ -108,7 +99,7 @@ public class Patient extends User implements PatientServices {
         this.last_name = u.get(1);
         this.gender = u.get(3);
         this.phone = u.get(4);
-        this.email = u.get(5);
+        setEmail(u.get(5));
         this.password = u.get(6);
 
         try {
@@ -173,7 +164,7 @@ public class Patient extends User implements PatientServices {
         FileHandling.editRecord("Users.txt", record);
 
         this.phone = phone;
-        this.email = newEmail;
+        setEmail(newEmail);
         this.password = newPassword;
         return null;   // null means success
     }
@@ -830,5 +821,25 @@ public class Patient extends User implements PatientServices {
             }
         }
         return null;
+    }
+
+    // =====================================================================
+    // LOGIN
+    // =====================================================================
+    // Returns the patient's id if the email and password match an active patient, or -1
+    public static int login(String email, String password) {
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
+        if (users == null) {
+            return -1;
+        }
+        for (Integer id : users.keySet()) {
+            // u: 5 email, 6 password, 7 role, 8 deleted
+            ArrayList<String> u = users.get(id);
+            if (u.get(5).equalsIgnoreCase(email) && u.get(6).equals(password)
+                    && u.get(7).equals("Patient") && u.get(8).equals("0")) {
+                return id;
+            }
+        }
+        return -1;
     }
 }

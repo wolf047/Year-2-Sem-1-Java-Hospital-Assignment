@@ -1,13 +1,14 @@
 package Users;
 
-import Patient.*;
+import Users.Role;
+import HelperFunction.SessionUser;
 import HelperFunction.FileHandling;
+import MedicalManager.*;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
-/**
- *
- * @author User
- */
+
 public class UserLogin extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserLogin.class.getName());
@@ -63,12 +64,14 @@ public class UserLogin extends javax.swing.JFrame {
         pnlLeft.setBounds(0, 0, 393, 600);
 
         pnlRight.setBackground(new java.awt.Color(255, 255, 255));
+        pnlRight.setMinimumSize(new java.awt.Dimension(800, 600));
+        pnlRight.setPreferredSize(new java.awt.Dimension(800, 600));
         pnlRight.setLayout(null);
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
-        lblTitle.setText("PATIENT PORTAL LOGIN");
+        lblTitle.setText("AMC LOGIN PORTAL");
         pnlRight.add(lblTitle);
-        lblTitle.setBounds(40, 130, 330, 80);
+        lblTitle.setBounds(70, 130, 272, 80);
 
         lblPassword.setText("Password");
         lblPassword.setToolTipText("");
@@ -96,9 +99,9 @@ public class UserLogin extends javax.swing.JFrame {
         pwdPassword.setBounds(40, 310, 320, 30);
 
         getContentPane().add(pnlRight);
-        pnlRight.setBounds(393, 0, 407, 600);
+        pnlRight.setBounds(393, 0, 410, 600);
 
-        setBounds(0, 0, 800, 600);
+        setBounds(0, 0, 816, 609);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
@@ -110,7 +113,61 @@ public class UserLogin extends javax.swing.JFrame {
             return;
         }
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-
+        if (users != null) {
+            for (Integer id : users.keySet()){
+                ArrayList<String> u = users.get(id);
+                
+                boolean emailMatch = u.get(5).equalsIgnoreCase(inputEmail);
+                boolean passMatch = u.get(6).equals(password);
+                boolean isActive = u.get(8).equals("0");
+                
+                if (emailMatch && passMatch && isActive) {
+                    
+                    // Extract user details
+                    String first = u.get(0);
+                    String last = u.get(1);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    LocalDate dob = LocalDate.parse(u.get(2), formatter);
+                    String gender = u.get(3);
+                    String phone = u.get(4);
+                    String email = u.get(5);
+                    Role role = Role.valueOf(u.get(7));
+                    
+                    switch (role) {
+                        case MedicalManager:
+                            MedicalManager manager = new MedicalManager(
+                                    id, first, last, phone, email,password, gender, dob, role);
+                            SessionUser.login(manager);
+                            
+                            new ManagerDashboard().setVisible(true);
+                            this.dispose();
+                            return;
+                            
+                        case Patient:
+                            // Patient patient = new Patient(id, first, last, phone, email, inputPass, gender, dob, role);
+                            // SessionUser.login(patient);
+                            // new PatientDashboard().setVisible(true);
+                            // this.dispose();
+                            return;
+                            
+                        case Admin:
+                            // Admin admin = new Admin(...);
+                            // SessionUser.login(admin);
+                            // new AdminDashboard().setVisible(true);
+                            // this.dispose();
+                            return;
+                            
+                        case Doctor:
+                            // Doctor doctor = new Doctor(...);
+                            // SessionUser.login(doctor);
+                            // new DoctorDashboard().setVisible(true);
+                            // this.dispose();
+                            return;
+                    }
+                }
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Invalid email of password.");
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
@@ -129,7 +186,7 @@ public class UserLogin extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
+                if ("FlatLaf Light".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }

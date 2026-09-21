@@ -1,6 +1,8 @@
 
 package MedicalManager;
 
+import HelperFunction.SessionUser;
+
 /**
  *
  * @author lmao
@@ -14,6 +16,16 @@ public class ManagerDashboard extends javax.swing.JFrame {
      */
     public ManagerDashboard() {
         initComponents();
+    }
+    
+    private void loadDashboardData(){
+        MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
+        
+        nameLbl.setText(manager.getFirst() + " " + manager.getLast());
+        userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
+        emailLbl.setText(manager.getEmail());
+        phoneLbl.setText(manager.getPhone());
+        
     }
 
     /**

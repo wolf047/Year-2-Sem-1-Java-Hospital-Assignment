@@ -148,8 +148,21 @@ public class MedicalManager extends User{
         record.add(String.valueOf(newID));
         record.add(String.valueOf(shiftID));
         record.add(String.valueOf(doctorID));
+        record.add("0");
         
         FileHandling.addRecord("ShiftDoctors.txt", record);
+    }
+    
+    public List<String[]> getDoctorsForShift(int targetShiftID) {
+        List<String[]> assignedDoctors = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readAllRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
+        
+        if(assignments != null) {
+            
+        }
+        
+        return assignedDoctors;
     }
     
     public void removeDoctorShift(int shiftID){

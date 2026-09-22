@@ -193,6 +193,11 @@ public class MedicalManager extends User{
         }
         return totalBeds;
     }
+    
+    public int[] getCaseSummary(){
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        return new int[]{1,2};
+    }
       
     
 }

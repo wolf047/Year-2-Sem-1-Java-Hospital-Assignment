@@ -29,6 +29,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         phoneLbl.setText(manager.getPhone());
         
         revenueLbl.setText(String.format("RM %.2f", manager.calculateTotalRevenue()));
+        
+        
     }
 
     /**

@@ -2,6 +2,8 @@
 package MedicalManager;
 
 import HelperFunction.SessionUser;
+import java.util.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -27,10 +29,31 @@ public class ManagerDashboard extends javax.swing.JFrame {
         userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
         emailLbl.setText(manager.getEmail());
         phoneLbl.setText(manager.getPhone());
-        
         revenueLbl.setText(String.format("RM %.2f", manager.calculateTotalRevenue()));
         
+        int[] cases = manager.getNumberCases();
+        casesLbl.setText(String.valueOf(cases[2]));
+        casesDesc.setText(String.valueOf(cases[0]) + " Open / " + String.valueOf(cases[1]) + " Closed");
         
+        usedBedsLbl.setText(manager.getUsedBedsCount() + " Beds In Use");
+        
+        List<ArrayList<String>> departments = manager.viewManagingDepartments();
+        departmentsLbl.setText(departments.size() + " Active");
+        
+        String[] columnNames = {"Dept ID", "Department Name", "Description"};
+        DefaultTableModel table = new DefaultTableModel(columnNames, 0);
+        
+        // departments -> list of lists of department
+        for(ArrayList<String> department : departments) {
+            String deptID = String.format("DEP%02d", Integer.parseInt(department.get(0)));
+            String deptName = department.get(1);
+            String desc = department.get(2);
+            table.addRow(new Object[]{deptID, deptName, desc});
+        }
+        departmentsTable.setModel(table);
+        departmentsTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+        departmentsTable.getColumnModel().getColumn(1).setPreferredWidth(150); 
+        departmentsTable.getColumnModel().getColumn(2).setPreferredWidth(400); 
     }
 
     /**
@@ -46,11 +69,6 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        dashboardBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
-        shiftBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
-        profileBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         nameLbl = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -75,12 +93,18 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         casesLbl = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
+        casesDesc = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         departmentsTable = new javax.swing.JTable();
         jLabel19 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        reportBtn = new javax.swing.JButton();
+        shiftBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        dashboardBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
+        logoutBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
@@ -107,30 +131,6 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jLabel1.setText("Dashboard Overview");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, -1, -1));
 
-        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        dashboardBtn.setText("Dashboard");
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
-
-        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        departmentBtn.setText("Departments");
-        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
-
-        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        shiftBtn.setText("Shift Rosters");
-        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
-
-        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        reportBtn.setText("Reports");
-        reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
-
-        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        profileBtn.setText("Profile");
-        profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -145,7 +145,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, -1, -1));
 
         jLabel13.setText("Email");
-        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
+        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 40, -1));
 
         jLabel11.setText("Phone");
         jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 110, -1));
@@ -156,7 +156,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
 
         emailLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         emailLbl.setText("zainab@sejahtera.my");
-        jPanel1.add(emailLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 110, 200, -1));
+        jPanel1.add(emailLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 190, -1));
 
         phoneLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         phoneLbl.setText("012-345 8877");
@@ -223,8 +223,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         casesLbl.setText("24 Cases");
         jPanel6.add(casesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
-        jLabel26.setText("16 Open / 8 Closed");
-        jPanel6.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+        casesDesc.setText("16 Open / 8 Closed");
+        jPanel6.add(casesDesc, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
         getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 200, 210, 90));
 
@@ -241,9 +241,9 @@ public class ManagerDashboard extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(departmentsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 760, 260));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 760, 230));
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel19.setText("Your Managed Departments Overview");
         getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 280, -1));
 
@@ -252,6 +252,37 @@ public class ManagerDashboard extends javax.swing.JFrame {
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        reportBtn.setText("Reports");
+        reportBtn.addActionListener(this::reportBtnActionPerformed);
+        jPanel2.add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
+        jPanel2.add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, -1, -1));
+
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentBtn.setText("Departments");
+        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
+        jPanel2.add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, -1, -1));
+
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dashboardBtn.setText("Dashboard");
+        jPanel2.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, -1, -1));
+
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
+
+        logoutBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn.setText("Logout");
+        logoutBtn.addActionListener(this::logoutBtnActionPerformed);
+        jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
+
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         pack();
@@ -285,6 +316,19 @@ public class ManagerDashboard extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_profileBtnActionPerformed
 
+    private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        // TODO add your handling code here:
+        int confirmLogout = javax.swing.JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to log out?",
+                "Logout Confirmation",
+                javax.swing.JOptionPane.YES_NO_OPTION);
+        if(confirmLogout == javax.swing.JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new Users.UserLogin().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_logoutBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -311,6 +355,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel casesDesc;
     private javax.swing.JLabel casesLbl;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
@@ -326,7 +371,6 @@ public class ManagerDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
@@ -342,6 +386,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton logoutBtn;
     private javax.swing.JLabel nameLbl;
     private javax.swing.JLabel phoneLbl;
     private javax.swing.JButton profileBtn;

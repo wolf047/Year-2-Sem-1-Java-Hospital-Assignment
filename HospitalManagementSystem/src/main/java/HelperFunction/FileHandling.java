@@ -10,12 +10,14 @@ package HelperFunction;
  */
 import java.nio.file.*;
 import java.util.*;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public final class FileHandling {
-
+    
+// DECLARATION OF CONSTANT VARIABLES
     private static final Path DIRECTORY_PATH = Path.of("src/main/java/Database/");
     private static final Map<String, List<String>> FILENAME_HEADERS = new LinkedHashMap<>();
-
     static {
         FILENAME_HEADERS.put("Users.txt", List.of("user_id", "first_name", "last_name", "dob", "gender", "phone", "email", "password", "role", "deleted"));
         FILENAME_HEADERS.put("Doctors.txt", List.of("doctor_id", "department_id", "specialization", "practice_start_year", "off_day"));
@@ -46,315 +48,321 @@ public final class FileHandling {
         FILENAME_HEADERS.put("ShiftDoctors.txt", List.of("assignment_id", "shift_id", "doctor_id", "deleted"));
     }
 
+    private static final Set<String> WITHOUT_ID = Set.of("ConsultationHospitalisationFees.txt");
+    private static final Set<String> WITHOUT_DELETE = Set.of("Doctors.txt", "Patients.txt", "ConsultationHospitalisationFees.txt");
+    
+ 
+// VALIDATION METHODS
+    private static void fileExists(String filename) {
+        if (filename == null) {
+            throw new NullPointerException("Filename must not be null.");
+        }
+        if (!FILENAME_HEADERS.containsKey(filename)) {
+            throw new IllegalArgumentException("Unknown file: " + filename);
+        }
+    }
+    
+    private static void methodSupported(String filename) {
+        fileExists(filename);
+        if (WITHOUT_ID.contains(filename)) {
+            throw new UnsupportedOperationException("Operation not supported for file: " + filename);
+        }
+    }
+    
+    private static void deletedSupported(String filename) {
+        fileExists(filename);
+        if (WITHOUT_DELETE.contains(filename)) {
+            throw new UnsupportedOperationException("Delete not supported for file: " + filename);
+        }
+    }
+    
+    private static void hasCorrectFieldCount(String filename, List<String> record) {
+        fileExists(filename);
+        List<String> header = FILENAME_HEADERS.get(filename);
+        if (header == null || record == null || record.size() != header.size()) {
+            throw new IllegalArgumentException("Number of attributes does not match fields for: " + filename);
+        }
+    }
+        
+ 
+// SETUP METHODS    
     private static void ensureDirectoryExists() {
         try {
             if (!Files.exists(DIRECTORY_PATH)) {
                 Files.createDirectories(DIRECTORY_PATH);
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to create directory: " + DIRECTORY_PATH, e);
         }
     }
 
     private static void ensureFileExists(String filename) {
+        fileExists(filename);
+        ensureDirectoryExists();
+        Path filepath = DIRECTORY_PATH.resolve(filename);
         try {
-            ensureDirectoryExists();
-            if (FILENAME_HEADERS.containsKey(filename)) {
-                Path filepath = DIRECTORY_PATH.resolve(filename);
-                if (!Files.exists(filepath)) {
-                    Files.createFile(filepath);
-                }
-            } else {
-                throw new IllegalArgumentException("File does not exist.");
+            if (!Files.exists(filepath)) {
+                Files.createFile(filepath);
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to create file: " + filename, e);
         }
     }
-
-    public static Integer getNextID(String filename) {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists(filename);
-            if (!filename.equals("ConsultationHospitalisationFees.txt")) {
-                TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-                Integer lastID = 0;
-                if (recordsMap == null) {
-                    throw new IllegalStateException("Error: Cannot read file.");
-                }
-                if (!recordsMap.isEmpty()) {
-                    lastID = recordsMap.lastKey();
-                }
-                return lastID + 1;
-            } else {
-                throw new IllegalArgumentException("File does not support ID numbering.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-    }
-
+    
+// FORMATTING AND PARSING METHODS
     private static String formatAttribute(String attribute) {
         if (attribute == null) {
-            return "";
-        } else if (attribute.contains(",") || attribute.contains(" ")) {
-            return "`" + attribute.strip() + "`";
-        } else {
-            return attribute.strip();
+            throw new NullPointerException("Attribute must not be null.");
+        } 
+        String escapedAttribute = attribute.strip().replace("\\", "\\\\").replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n");
+        if (escapedAttribute.contains(",") || escapedAttribute.contains(" ")) {
+            return "`" + escapedAttribute + "`";
         }
+        return escapedAttribute;
     }
     
-    private static boolean hasCorrectFieldCount(String filename, List<String> record) {
-        List<String> header = FILENAME_HEADERS.get(filename);
-        if (header == null || record == null || record.size() != header.size()) {
-            System.out.println("Error: Number of attributes do not match number of fields in file.");
-            return false;
-        }
-        return true;
-    }
-
-    public static void addRecord(String filename, ArrayList<String> record) {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists(filename);
-            if (!hasCorrectFieldCount(filename, record)) return;
-            if (!filename.equals("ConsultationHospitalisationFees.txt")) {
-                Path filepath = DIRECTORY_PATH.resolve(filename);
-                for (int i = 0; i < record.size(); i++) {
-                    String formattedAttribute = formatAttribute(record.get(i));
-                    record.set(i, formattedAttribute);
-                }
-                Files.writeString(filepath, String.join(",", record) + System.lineSeparator(), StandardOpenOption.APPEND);
-            } else {
-                throw new IllegalArgumentException("File does not support usage of this method.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-    
-    private static void addUpdatedRecords(Path filepath, TreeMap<Integer, ArrayList<String>> recordsMap) {
-        try {
-            ArrayList<String> updatedRecords = new ArrayList<>();
-
-            for (Map.Entry<Integer, ArrayList<String>> record : recordsMap.entrySet()) {
-                ArrayList<String> joinedRecord = new ArrayList<>(record.getValue());
-                joinedRecord.add(0, String.valueOf(record.getKey()));
-                joinedRecord.replaceAll(FileHandling::formatAttribute);
-                updatedRecords.add(String.join(",", joinedRecord));
-            }
-            Files.write(filepath, updatedRecords, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    public static void editRecord(String filename, ArrayList<String> updated) {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists(filename);  
-            if (!hasCorrectFieldCount(filename, updated)) return;
-            if (!filename.equals("ConsultationHospitalisationFees.txt")) {
-                Path filepath = DIRECTORY_PATH.resolve(filename);
-                TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-
-                if (recordsMap == null) {
-                    System.out.println("Error: No records available.");
-                } else {
-                    Integer key = Integer.valueOf(updated.get(0));
-                    ArrayList<String> specificRecord = readSpecificRecord(filename, key);
-                    if (specificRecord != null) {
-                        ArrayList<String> value = new ArrayList<>(updated.subList(1, updated.size()));
-                        recordsMap.put(key, value);
-                        addUpdatedRecords(filepath, recordsMap);
-                    } else {
-                        System.out.println("Error: Record does not exist.");
-                    }
-                }
-            } else {
-                throw new IllegalArgumentException("File does not support usage of this method.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-    
-    public static void updateConHosFees(ArrayList<Float> fees) {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists("ConsultationHospitalisationFees.txt");
-            if (fees != null && fees.size() == 2 && fees.get(0) != null && fees.get(1) != null) {
-                Path filepath = DIRECTORY_PATH.resolve("ConsultationHospitalisationFees.txt");
-                ArrayList<String> formattedFees = new ArrayList<>();
-                formattedFees.add(String.format(Locale.US, "%.2f", fees.get(0)));
-                formattedFees.add(String.format(Locale.US, "%.2f", fees.get(1)));
-                Files.write(filepath, formattedFees, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-            } else {
-                throw new IllegalArgumentException("Error: Need 2 non-null values.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    
-    public static ArrayList<Float> readConHosFees() {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists("ConsultationHospitalisationFees.txt");
-            Path filepath = DIRECTORY_PATH.resolve("ConsultationHospitalisationFees.txt");
-            ArrayList<Float> fees = new ArrayList<>();
-            for (String row : Files.readAllLines(filepath)) {
-                if (row.isBlank()) continue;
-                fees.add(Float.parseFloat(row.strip()));
-            }
-            if (fees.size() < 2) {
-                fees.clear();
-                fees.add(0.00F);
-                fees.add(0.00F);
-            }
-            return fees;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-    }
-    
-    public static void removeRecord(String filename, int recordID) {
-        try {
-            ensureDirectoryExists();
-            ensureFileExists(filename);       
-            if (!filename.equals("Patients.txt") && !filename.equals("Doctors.txt") && !filename.equals("ConsultationHospitalisationFees.txt")) {
-                Path filepath = DIRECTORY_PATH.resolve(filename);
-                TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-
-                if (recordsMap == null) {
-                    System.out.println("Error: No records available.");
-                } else {
-                    ArrayList<String> specificRecord = readSpecificRecord(filename, recordID);
-                    if (specificRecord != null) {
-                        ArrayList<String> value = new ArrayList<>(specificRecord.subList(1, specificRecord.size()));
-                        value.set(value.size() - 1, "1");
-                        recordsMap.put(recordID, value);
-                        addUpdatedRecords(filepath, recordsMap);
-                    } else {
-                        System.out.println("Error: Record does not exist.");
-                    }
-                }
-            } else {
-                throw new IllegalArgumentException("File does not support usage of this method.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    public static List<String> readHeader(String filename) {
-        return FILENAME_HEADERS.get(filename);
-    }
-
     private static ArrayList<String> parseRecordString(String record) {
         ArrayList<String> parsedRecord = new ArrayList<>();
-        String placeholder = "";
+        StringBuilder placeholder = new StringBuilder();
         boolean inQuotes = false;
 
         for (char character : record.toCharArray()) {
             if (character == '`') {
                 inQuotes = !inQuotes;
             } else if (character == ',' && !inQuotes) {
-                parsedRecord.add(placeholder.strip());
-                placeholder = "";
+                parsedRecord.add(placeholder.toString().strip());
+                placeholder.setLength(0);
             } else {
-                placeholder += character;
+                placeholder.append(character);
             }
         }
-            parsedRecord.add(placeholder.toString().strip());
-
+        parsedRecord.add(placeholder.toString().strip());
         return parsedRecord;
     }
 
-    public static TreeMap<Integer, ArrayList<String>> readAllRecords(String filename) {
-        try {
-            TreeMap<Integer, ArrayList<String>> recordsMap = new TreeMap<>();
-
-            ensureDirectoryExists();
-            ensureFileExists(filename);
-            if (!filename.equals("ConsultationHospitalisationFees.txt")) {
-                Path filepath = DIRECTORY_PATH.resolve(filename);
-                ArrayList<String> records = new ArrayList<>(Files.readAllLines(filepath));
-                for (String record : records) {
-                    if (record.isBlank()) continue;
-
-                    ArrayList<String> parsedRecord = parseRecordString(record);
-
-                    Integer key = Integer.valueOf(parsedRecord.get(0));
-                    ArrayList<String> value = new ArrayList<>(parsedRecord.subList(1, parsedRecord.size()));
-
-                    recordsMap.put(key, value);
-                }
-                return recordsMap;
-            }
-            else {
-                throw new IllegalArgumentException("File does not support usage of this method.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
+    
+// HELPER METHODS
+    private static void addUpdatedRecords(Path filepath, TreeMap<Integer, ArrayList<String>> recordsMap) {
+        ArrayList<String> updatedRecords = new ArrayList<>();
+        for (Map.Entry<Integer, ArrayList<String>> record : recordsMap.entrySet()) {
+            ArrayList<String> joinedRecord = new ArrayList<>(record.getValue());
+            joinedRecord.add(0, String.valueOf(record.getKey()));
+            joinedRecord.replaceAll(FileHandling::formatAttribute);
+            updatedRecords.add(String.join(",", joinedRecord));
         }
-    }
-
-    public static ArrayList<String> readSpecificRecord(String filename, int recordID) {
-        try{
-            TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
-
-            if (recordsMap == null || recordsMap.isEmpty()) {
-                System.out.println("Error: No records available.");
-                return null;
-            } else {
-                ArrayList<String> specificRecord = recordsMap.get(recordID);
-                if (specificRecord != null) {
-                    specificRecord.add(0, String.valueOf(recordID));
-                    return specificRecord;
-                } else {
-                    System.out.println("Error: Record does not exist.");
-                    return null;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null; 
+        try {
+            Files.write(filepath, updatedRecords, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to write to: " + filepath, e);
         }
     }
     
-    public static TreeMap<Integer, ArrayList<String>> readActiveRecords(String filename) {
-        try{
-            if (!filename.equals("Patients.txt") && !filename.equals("Doctors.txt") && !filename.equals("ConsultationHospitalisationFees.txt")) {
-                TreeMap<Integer, ArrayList<String>> allRecordsMap = readAllRecords(filename);
-
-                if (allRecordsMap == null || allRecordsMap.isEmpty()) {
-                    System.out.println("Error: No records available.");
-                    return null;
-                } else {
-                    int index = FILENAME_HEADERS.get(filename).indexOf("deleted") - 1;
-                    TreeMap<Integer, ArrayList<String>> activeRecordsMap = new TreeMap<>();
-
-                    for (Map.Entry<Integer, ArrayList<String>> entry : allRecordsMap.entrySet()) {
-                        Integer key = entry.getKey();
-                        ArrayList<String> value = entry.getValue();
-
-                        if (value.size() > index && value.get(index).equals("1")) {
-                            activeRecordsMap.put(key, value);
-                        }
-                    }
-                    return activeRecordsMap;
-                }
-            } else {
-                throw new IllegalArgumentException("File does not support usage of this method.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null; 
+    private static int deletedColIndex(String filename) {
+        List<String> header = FILENAME_HEADERS.get(filename);
+        int index = header.indexOf("deleted");
+        if (index < 0) {
+            throw new UnsupportedOperationException("File has no 'deleted' column: " + filename);
         }
+        return index - 1;
+    }
+    
+// USE HERE ===========================================================  
+// PUBLIC METHODS
+    public static Integer getNextID(String filename) {
+        methodSupported(filename);
+        ensureFileExists(filename);
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+        if (recordsMap.isEmpty()) {
+            return 1;
+        }
+        return recordsMap.lastKey() + 1;
+    }
+
+    public static void addRecord(String filename, ArrayList<String> record) {
+        methodSupported(filename);
+        if (record == null) {
+            throw new NullPointerException("Record must not be null.");
+        }
+        ensureFileExists(filename);
+        hasCorrectFieldCount(filename, record);
+        
+        ArrayList<String> formattedRecord = new ArrayList<>(record.size());
+        for (String attribute : record) {
+            formattedRecord.add(formatAttribute(attribute));
+        }
+
+        Path filepath = DIRECTORY_PATH.resolve(filename);
+        try {
+            Files.writeString(filepath, String.join(",", formattedRecord) + System.lineSeparator(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to write: " + filename, e);        }
+    }
+
+
+    public static void editRecord(String filename, ArrayList<String> updated) {
+        methodSupported(filename);
+        if (updated == null) {
+            throw new NullPointerException("Updated record must not be null.");
+        }
+        ensureFileExists(filename);  
+        hasCorrectFieldCount(filename, updated);
+        
+        Path filepath = DIRECTORY_PATH.resolve(filename);
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+
+        Integer key = Integer.valueOf(updated.get(0));
+        if (!recordsMap.containsKey(key)) {
+            throw new NoSuchElementException("Record does not exist: " + key);
+        }
+
+        ArrayList<String> value = new ArrayList<>(updated.subList(1, updated.size()));
+        recordsMap.put(key, value);
+        addUpdatedRecords(filepath, recordsMap);
+    }
+    
+    
+    public static void removeRecord(String filename, int recordID) {
+        deletedSupported(filename);
+        ensureFileExists(filename);
+         
+        Path filepath = DIRECTORY_PATH.resolve(filename);
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+
+        if (!recordsMap.containsKey(recordID)) {
+            throw new NoSuchElementException("Record does not exist: " + recordID);
+        }
+        
+        int index = deletedColIndex(filename);
+        ArrayList<String> value = new ArrayList<>(recordsMap.get(recordID));
+        value.set(index, "1");
+        recordsMap.put(recordID, value);
+        addUpdatedRecords(filepath, recordsMap);
+    }
+    
+    
+    public static void updateConHosFees(ArrayList<Float> fees) {
+        if (fees == null) {
+            throw new NullPointerException("Fees must not be null.");
+        }
+        if (fees.size() != 2 || fees.get(0) == null || fees.get(1) == null) {
+            throw new IllegalArgumentException("Fees must have exactly 2 non-null values.");
+        }
+        
+        ensureFileExists("ConsultationHospitalisationFees.txt");
+        
+        ArrayList<String> formattedFees = new ArrayList<>();
+        formattedFees.add(String.format(Locale.US, "%.2f", fees.get(0)));
+        formattedFees.add(String.format(Locale.US, "%.2f", fees.get(1)));
+        
+        Path filepath = DIRECTORY_PATH.resolve("ConsultationHospitalisationFees.txt");
+        
+        try {
+            Files.write(filepath, formattedFees, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to write: " + "ConsultationHospitalisationFees.txt", e);        
+        }
+    }
+
+    
+    public static ArrayList<Float> readConHosFees() {
+        ensureFileExists("ConsultationHospitalisationFees.txt");
+        Path filepath = DIRECTORY_PATH.resolve("ConsultationHospitalisationFees.txt");
+
+        ArrayList<Float> fees = new ArrayList<>();
+        try {
+            for (String row : Files.readAllLines(filepath)) {
+                if (row.isBlank()) continue;
+                fees.add(Float.parseFloat(row.strip()));
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read: " + "ConsultationHospitalisationFees.txt", e);        
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException("Corrupted file: contains non-numeric value.", e);
+        }
+        
+        if (fees.size() < 2) {
+            fees.clear();
+            fees.add(0.00F);
+            fees.add(0.00F);
+        }
+        return fees;
+    }
+    
+    
+
+    public static List<String> readHeader(String filename) {
+        fileExists(filename);
+        return FILENAME_HEADERS.get(filename);
+    }
+    
+
+    public static TreeMap<Integer, ArrayList<String>> readAllRecords(String filename) {
+        methodSupported(filename);
+        ensureFileExists(filename);
+        Path filepath = DIRECTORY_PATH.resolve(filename);
+        TreeMap<Integer, ArrayList<String>> recordsMap = new TreeMap<>();
+
+        List<String> records;
+        try {
+            records = Files.readAllLines(filepath);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read: " + filename, e);
+        }
+        
+        for (String record : records) {
+            if (record.isBlank()) continue;
+
+            ArrayList<String> parsedRecord = parseRecordString(record);
+            if (parsedRecord.isEmpty()) continue;
+
+            Integer key;
+            try {
+                key = Integer.valueOf(parsedRecord.get(0));
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException("Corrupted file: contains invalid ID.", e);
+            }
+            
+            ArrayList<String> value = new ArrayList<>(parsedRecord.subList(1, parsedRecord.size()));
+            recordsMap.put(key, value);
+        }
+        
+        return recordsMap;
+    }
+
+    public static ArrayList<String> readSpecificRecord(String filename, int recordID) {
+        methodSupported(filename);
+        TreeMap<Integer, ArrayList<String>> recordsMap = readAllRecords(filename);
+        ArrayList<String> specificRecord = recordsMap.get(recordID);
+        
+        if (specificRecord == null) {
+            return null;
+        }
+        
+        specificRecord.add(0, String.valueOf(recordID));
+        return specificRecord;
+    }
+    
+    public static TreeMap<Integer, ArrayList<String>> readActiveRecords(String filename) {
+        deletedSupported(filename);
+        TreeMap<Integer, ArrayList<String>> allRecordsMap = readAllRecords(filename);
+
+        if (allRecordsMap.isEmpty()) {
+            return allRecordsMap;
+        }
+        
+        int index = deletedColIndex(filename);
+        if (index < 0) {
+            return allRecordsMap;
+        }
+
+        TreeMap<Integer, ArrayList<String>> activeRecordsMap = new TreeMap<>();
+        for (Map.Entry<Integer, ArrayList<String>> entry : allRecordsMap.entrySet()) {
+            Integer key = entry.getKey();
+            ArrayList<String> value = entry.getValue();
+            if (value.size() > index && value.get(index).equals("0")) {
+                activeRecordsMap.put(key, value);
+            }
+        }
+        return activeRecordsMap;
     }
 }

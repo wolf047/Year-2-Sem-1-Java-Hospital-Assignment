@@ -16,6 +16,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
      */
     public ManagerDashboard() {
         initComponents();
+        loadDashboardData();
+        
     }
     
     private void loadDashboardData(){
@@ -26,6 +28,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         emailLbl.setText(manager.getEmail());
         phoneLbl.setText(manager.getPhone());
         
+        revenueLbl.setText(String.format("RM %.2f", manager.calculateTotalRevenue()));
     }
 
     /**
@@ -95,6 +98,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
@@ -130,7 +134,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
 
         nameLbl.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         nameLbl.setText("Zainab Abdul Karim");
-        jPanel1.add(nameLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 190, -1));
+        jPanel1.add(nameLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 280, -1));
 
         jLabel9.setText("MEDICAL MANAGER");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
@@ -150,7 +154,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
 
         emailLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         emailLbl.setText("zainab@sejahtera.my");
-        jPanel1.add(emailLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 110, 180, -1));
+        jPanel1.add(emailLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 110, 200, -1));
 
         phoneLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         phoneLbl.setText("012-345 8877");
@@ -169,8 +173,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         usedBedsLbl.setText("18 Beds In Use");
         jPanel3.add(usedBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
-        jLabel28.setText("Currently occupied accross all wards");
-        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+        jLabel28.setText("Occupancy across all wards");
+        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 210, -1));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 200, 210, 90));
 
@@ -186,7 +190,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel4.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
         jLabel25.setText("Total invoiced from closed cases");
-        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 190, -1));
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 210, 90));
 
@@ -201,8 +205,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         departmentsLbl.setText("3 Active");
         jPanel5.add(departmentsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
-        jLabel27.setText("Your managing clinical departments");
-        jPanel5.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+        jLabel27.setText("Departments managed by you");
+        jPanel5.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 200, -1));
 
         getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 210, 90));
 
@@ -246,7 +250,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 50));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

@@ -187,7 +187,7 @@ public class ManagerProfile extends javax.swing.JFrame {
         getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

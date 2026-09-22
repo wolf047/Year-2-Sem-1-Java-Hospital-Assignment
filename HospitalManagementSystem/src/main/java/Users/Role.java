@@ -2,8 +2,8 @@
 package Users;
 
 public enum Role {
-    ADMIN,
-    MEDICALMANAGER,
-    DOCTOR,
-    PATIENT
+    Admin,
+    MedicalManager,
+    Doctor,
+    Patient
 }

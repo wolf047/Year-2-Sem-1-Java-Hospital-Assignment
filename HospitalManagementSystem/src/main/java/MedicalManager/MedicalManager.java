@@ -23,7 +23,6 @@ public class MedicalManager extends User{
         this.gender = "";
     }
     
-    //// MANAGING DEPARTMENTS ////
 
     public List<ArrayList<String>> viewManagingDepartments(){
             List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
@@ -77,8 +76,7 @@ public class MedicalManager extends User{
                 return false; // if false, show unable to update
             }
     }  
-    
-    //// MANAGING SHIFTS ////
+   
     public void createShift(int deptID, String date, String startTime,
            String endTime){
         int newID = FileHandling.getNextID("Shifts.txt");

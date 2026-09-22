@@ -48,7 +48,7 @@ public class Patient extends User implements PatientServices {
     // Builds a patient straight from the files (used after login)
     public Patient(int user_id) {
         this.user_id = user_id;
-        this.role = Role.PATIENT;
+        this.role = Role.Patient;
         reload();
     }
 

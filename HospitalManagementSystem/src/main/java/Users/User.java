@@ -16,7 +16,7 @@ public class User {
     }
     
     public User(int user_id, String first_name, String last_name, String phone,
-            String emial, String password, String gender, LocalDate dob, Role role){
+            String email, String password, String gender, LocalDate dob, Role role){
         this.user_id = user_id;
         this.first_name = first_name;
         this.last_name = last_name;

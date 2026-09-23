@@ -11,11 +11,22 @@ package MedicalManager;
 public class AssignDoctorShift extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AssignDoctorShift.class.getName());
-
+    private int shiftID;
+    private int deptID;
+    private int selectedAssignmentID = -1;
+    
     /**
      * Creates new form ManagerDashboard
      */
-    public AssignDoctorShift() {
+    
+    public AssignDoctorShift(){
+        initComponents();
+    }
+    
+    // overload constructor because void main() requires the default constructor
+    public AssignDoctorShift(int shiftID, String selectedDepartment) {
+        this.shiftID = shiftID;
+        this.deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
         initComponents();
     }
 

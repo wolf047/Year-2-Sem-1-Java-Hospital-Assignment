@@ -129,11 +129,10 @@ public class MedicalManager extends User{
         
     }
     
-    public boolean updateShift(int shiftID, int deptID, String date, String startTime, String endTime){
+    public boolean updateShift(int shiftID, String date, String startTime, String endTime){
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
         if(shifts != null && shifts.containsKey(shiftID)){
             ArrayList<String> details = shifts.get(shiftID);
-            details.set(0,String.valueOf(deptID));
             details.set(1, date);
             details.set(2, startTime);
             details.set(3, endTime);
@@ -170,6 +169,28 @@ public class MedicalManager extends User{
             }
         }
         return results;
+    }
+    
+    public boolean isShiftDuplicate(int deptID, String date, String startTime,
+            String endTime, int excludeShiftID){
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        if (shifts != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : shifts.entrySet()) {
+                int shiftID = entry.getKey();
+                ArrayList<String> details = entry.getValue();
+                if (shiftID != excludeShiftID) {
+                    int existingDeptID = Integer.parseInt(details.get(0));
+                    String existingDate = details.get(1);
+                    String existingStart = details.get(2);
+                    String existingEnd = details.get(3);
+                    if (existingDeptID == deptID && existingDate.equals(date) 
+                            && existingStart.equals(startTime) && existingEnd.equals(endTime)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     public void assignDoctorToShift(int shiftID, int doctorID){

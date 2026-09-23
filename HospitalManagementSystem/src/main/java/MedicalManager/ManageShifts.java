@@ -15,6 +15,7 @@ public class ManageShifts extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageShifts.class.getName());
     MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
+    private int selectedShiftID = -1;
 
     /**
      * Creates new form ManagerDashboard
@@ -87,6 +88,14 @@ public class ManageShifts extends javax.swing.JFrame {
         }
         shiftsTable.setModel(table);
     }
+    
+    private void clearFields(){
+        selectedShiftID = -1;
+        shiftsTable.clearSelection();
+        dateSpinner.setValue(new java.util.Date());
+        startSpinner.setValue(new java.util.Date());
+        endSpinner.setValue(new java.util.Date());
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,7 +114,7 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        saveBtn = new javax.swing.JButton();
+        createBtn = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         updateBtn = new javax.swing.JButton();
@@ -167,10 +176,10 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel6.setText("End Time");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 220, 130, -1));
 
-        saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        saveBtn.setText("Save");
-        saveBtn.addActionListener(this::saveBtnActionPerformed);
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
+        createBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        createBtn.setText("Create");
+        createBtn.addActionListener(this::createBtnActionPerformed);
+        getContentPane().add(createBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Department");
@@ -187,6 +196,7 @@ public class ManageShifts extends javax.swing.JFrame {
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, -1, -1));
 
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -205,6 +215,11 @@ public class ManageShifts extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        shiftsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                shiftsTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(shiftsTable);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 730, 190));
@@ -298,7 +313,14 @@ public class ManageShifts extends javax.swing.JFrame {
 
     private void assignBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignBtnActionPerformed
         // TODO add your handling code here:
-        AssignDoctorShift assign = new AssignDoctorShift();
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        
+        AssignDoctorShift assign = new AssignDoctorShift(selectedShiftID, selectedDepartment);
         assign.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_assignBtnActionPerformed
@@ -320,10 +342,9 @@ public class ManageShifts extends javax.swing.JFrame {
         loadShiftsTable();
     }//GEN-LAST:event_deptCmbActionPerformed
 
-    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        if(deptCmb.getSelectedItem() == null){
-            return;
-        }
+    private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
+        if(deptCmb.getSelectedItem() == null){return;}
+        
         String selectedDepartment = deptCmb.getSelectedItem().toString();
         int deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
         String deptName = selectedDepartment.split(" - ")[1].toLowerCase();
@@ -333,9 +354,15 @@ public class ManageShifts extends javax.swing.JFrame {
         String dateInput = dateFormat.format(dateSpinner.getValue());
         String startTime = timeFormat.format(startSpinner.getValue());
         String endTime = timeFormat.format(endSpinner.getValue());
-        LocalTime startLocal = java.time.LocalTime.parse(startTime);
-        LocalTime endLocal = java.time.LocalTime.parse(endTime);
+        LocalTime startLocal = LocalTime.parse(startTime);
+        LocalTime endLocal = LocalTime.parse(endTime);
         
+        LocalDate currentDate = LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        if(currentDate.isBefore(LocalDate.now())){
+            JOptionPane.showMessageDialog(this, "Cannot create shift in the past.",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if(deptName.contains("emergency")){
             // emergency can be anytime in 24 hours
             if(startLocal.equals(endLocal)){
@@ -354,16 +381,121 @@ public class ManageShifts extends javax.swing.JFrame {
                 return;
             }
         }
-        manager.createShift(deptID, endTime, startTime, endTime);
+        if(manager.isShiftDuplicate(deptID, dateInput, startTime, endTime, -1)){ // -1 for excludeShiftID because creating new
+            JOptionPane.showMessageDialog(this, "A shift with these exact times already exists for this department on this date.",
+                    "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        manager.createShift(deptID, dateInput, startTime, endTime);
         JOptionPane.showMessageDialog(this,
                 "Shift Created Sucesfuly!\nIMPORTANT: Please assign at least 2 doctors to the shift",
                 "Sucess", JOptionPane.INFORMATION_MESSAGE);
         loadShiftsTable();
-    }//GEN-LAST:event_saveBtnActionPerformed
+    }//GEN-LAST:event_createBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        String deptName = selectedDepartment.split(" - ")[1].toLowerCase();
         
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String dateInput = dateFormat.format(dateSpinner.getValue());
+        String startTime = timeFormat.format(startSpinner.getValue());
+        String endTime = timeFormat.format(endSpinner.getValue());
+        LocalTime startLocal = LocalTime.parse(startTime);
+        LocalTime endLocal = LocalTime.parse(endTime);
+        
+        LocalDate currentDate = LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        if(currentDate.isBefore(LocalDate.now())){
+            JOptionPane.showMessageDialog(this, "Cannot create shift in the past.",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(deptName.contains("emergency")){
+            // emergency can be anytime in 24 hours
+            if(startLocal.equals(endLocal)){
+                JOptionPane.showMessageDialog(this, "Start and end times cannot be same",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }else{ // standard shifts between 9am to 6pm
+            LocalTime boundaryStart = LocalTime.of(9, 0);
+            LocalTime boundaryEnd = LocalTime.of(18, 0);
+            if(startLocal.isBefore(boundaryStart) || endLocal.isAfter(boundaryEnd) ||
+                    !startLocal.isBefore(endLocal)){
+                JOptionPane.showMessageDialog(this,
+                        "Standard shifts must fall between 09:00 and 18:00, and end time must be after start time",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        if(manager.isShiftDuplicate(deptID, dateInput, startTime, endTime, selectedShiftID)){
+            JOptionPane.showMessageDialog(this, "A shift with these exact times already exists for this department on this date.",
+                    "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean success = manager.updateShift(selectedShiftID, dateInput, startTime, endTime);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Shift Updated Successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+            loadShiftsTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Unable to update shift.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void shiftsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_shiftsTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = shiftsTable.getSelectedRow();
+        if(selectedRow != -1){
+            String shiftID = shiftsTable.getValueAt(selectedRow, 0).toString();
+            selectedShiftID = Integer.parseInt(shiftID.replace("SHF", ""));
+            try{
+                String shiftDate = shiftsTable.getValueAt(selectedRow, 1).toString();
+                String startTime = shiftsTable.getValueAt(selectedRow, 2).toString();
+                String endTime = shiftsTable.getValueAt(selectedRow, 3).toString();
+                
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                dateSpinner.setValue(dateFormat.parse(shiftDate));
+                startSpinner.setValue(timeFormat.parse(startTime));
+                endSpinner.setValue(timeFormat.parse(endTime));
+            }catch(Exception e){
+                // ignore
+            }
+        }
+    }//GEN-LAST:event_shiftsTableMouseClicked
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this shift?",
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if(confirm == JOptionPane.YES_OPTION){
+            boolean success = manager.deleteShift(selectedShiftID);
+            if(success){
+                JOptionPane.showMessageDialog(this, "Shift Deleted Successfully!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                clearFields();
+                loadShiftsTable();
+            }else{
+                JOptionPane.showMessageDialog(this, "Failed to delete shift.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -392,6 +524,7 @@ public class ManageShifts extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton assignBtn;
+    private javax.swing.JButton createBtn;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JSpinner dateSpinner;
     private javax.swing.JButton deleteBtn;
@@ -414,7 +547,6 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JButton logoutBtn1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
-    private javax.swing.JButton saveBtn;
     private javax.swing.JButton shiftBtn;
     private javax.swing.JTable shiftsTable;
     private javax.swing.JSpinner startSpinner;

@@ -167,7 +167,7 @@ public class UserLogin extends javax.swing.JFrame {
                 }
             }
         }
-        JOptionPane.showMessageDialog(this, "Invalid email of password.");
+        JOptionPane.showMessageDialog(this, "Invalid Email or Password.");
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**

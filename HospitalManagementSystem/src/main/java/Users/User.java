@@ -4,6 +4,7 @@ package Users;
 import java.time.LocalDate;
 import java.util.*;
 import HelperFunction.FileHandling;
+import java.time.format.DateTimeFormatter;
 
 public class User {
     protected String first_name, last_name, phone, email, password, gender;
@@ -114,7 +115,11 @@ public class User {
             ArrayList<String> details = usersMap.get(userID);
             details.set(0, firstName);
             details.set(1, lastName);
-            details.set(2, dob.toString());
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String formattedDob = dob.format(formatter);
+            details.set(2, formattedDob);
+            
             details.set(3, gender);
             details.set(4, phone);
             details.set(5, email);

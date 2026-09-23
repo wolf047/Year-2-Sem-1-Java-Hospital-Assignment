@@ -2,7 +2,7 @@
 2,`Siew Ling`,Cheah,22-09-1994,female,013-3483695,siew.cheah@sriaman-hospital.com.my,Langkawi@5944H,Admin,0
 3,Priyadarshini,`a/p Ramasamy`,10-04-1979,female,017-3854861,priyadarshini.ramasamy@sriaman-hospital.com.my,Nilam@3936Y,Admin,0
 4,`Nur Adriana`,`binti Hassan`,15-03-1975,female,019-5041439,nur.hassan@sriaman-hospital.com.my,Pualam@3484U,MedicalManager,0
-5,`Khairul Anuar`,`bin Yusof`,24-01-1970,male,012-8197084,khairul.yusof@manager.com,Kinabalu@4753B,MedicalManager,0
+5,`Khairul Anuar`,`bin Yusof`,20-10-1970,Male,017-1276218,khairul@manager.com,yusof,MedicalManager,0
 6,Arumugam,`a/l Subramaniam`,28-08-1968,male,011-7403156,arumugam.subramaniam@manger.com,Bunga@3604P,MedicalManager,0
 7,Ravindran,`a/l Subramaniam`,19-05-1979,male,013-8304541,ravindran.subramaniam@manager.com,Rimba@5943A,MedicalManager,0
 8,`Amirul Syafiq`,`bin Ismail`,02-05-1983,male,019-3967749,amirul.ismail@sriaman-hospital.com.my,Harimau@2519N,Doctor,0

@@ -2,11 +2,16 @@
 package MedicalManager;
 
 import HelperFunction.SessionUser;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import javax.swing.JOptionPane;
 
 
 public class ManagerProfile extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagerProfile.class.getName());
+    private MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
 
     /**
      * Creates new form ManagerDashboard
@@ -17,16 +22,22 @@ public class ManagerProfile extends javax.swing.JFrame {
     }
     
     private void loadProfileData() {
-        MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
-        
         userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
         firstNameTf.setText(manager.getFirst());
         lastNameTf.setText(manager.getLast());
         emailTf.setText(manager.getEmail());
-        phoneFtf.setText(manager.getPhone());
+        phoneTf.setText(manager.getPhone());
         passwordField.setText(manager.getPassword());
+        confirmPasswordField.setText(manager.getPassword());
         
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        dobFtf.setText(manager.getDob().format(formatter));
         
+        if("Female".equalsIgnoreCase(manager.getGender())){
+            femaleRadio.setSelected(true);
+        }else {
+            maleRadio.setSelected(true);
+        }
     }
 
     /**
@@ -55,11 +66,10 @@ public class ManagerProfile extends javax.swing.JFrame {
         passwordField = new javax.swing.JPasswordField();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        maleRadio = new javax.swing.JRadioButton();
+        femaleRadio = new javax.swing.JRadioButton();
         emailTf = new javax.swing.JTextField();
         saveBtn = new javax.swing.JButton();
-        phoneFtf = new javax.swing.JFormattedTextField();
         dobFtf = new javax.swing.JFormattedTextField();
         jLabel12 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -69,6 +79,9 @@ public class ManagerProfile extends javax.swing.JFrame {
         reportBtn = new javax.swing.JButton();
         profileBtn = new javax.swing.JButton();
         logoutBtn1 = new javax.swing.JButton();
+        phoneTf = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        confirmPasswordField = new javax.swing.JPasswordField();
 
         jLabel4.setText("jLabel3");
 
@@ -101,71 +114,63 @@ public class ManagerProfile extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("LAST NAME");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 190, 130, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 170, 130, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setText("PASSWORD");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, -1, -1));
+        jLabel5.setText("CONFIRM PASSWORD");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 320, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("EMAIL ADDRESS");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 180, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 180, -1));
 
         lastNameTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(lastNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 220, 300, -1));
+        getContentPane().add(lastNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 200, 290, -1));
 
-        userIDLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        userIDLbl.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         userIDLbl.setText("USER001");
-        getContentPane().add(userIDLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 110, -1));
+        getContentPane().add(userIDLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 110, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel8.setText("DATE OF BIRTH");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 270, 170, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 240, 170, -1));
 
         firstNameTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(firstNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 300, -1));
+        getContentPane().add(firstNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 300, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel9.setText("PHONE NUMBER");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 180, -1));
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 180, -1));
 
         passwordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         passwordField.setText("jPasswordField1");
-        getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, 300, -1));
+        getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 300, -1));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel10.setText("FIRST NAME");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 110, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 110, -1));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel11.setText("GENDER");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 350, 110, -1));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 400, 110, -1));
 
-        genderGrp.add(jRadioButton1);
-        jRadioButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jRadioButton1.setText("Male");
-        getContentPane().add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 380, -1, -1));
+        genderGrp.add(maleRadio);
+        maleRadio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        maleRadio.setText("Male");
+        getContentPane().add(maleRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 430, -1, -1));
 
-        genderGrp.add(jRadioButton2);
-        jRadioButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jRadioButton2.setText("Female");
-        getContentPane().add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 410, -1, 20));
+        genderGrp.add(femaleRadio);
+        femaleRadio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        femaleRadio.setText("Female");
+        getContentPane().add(femaleRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 430, -1, -1));
 
         emailTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(emailTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, 300, -1));
+        getContentPane().add(emailTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 300, -1));
 
         saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveBtn.setText("Save Profile Changes");
+        saveBtn.addActionListener(this::saveBtnActionPerformed);
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 510, -1, -1));
-
-        phoneFtf.setColumns(12);
-        try {
-            phoneFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###-###-####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        phoneFtf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(phoneFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 300, -1));
 
         dobFtf.setColumns(9);
         try {
@@ -174,7 +179,7 @@ public class ManagerProfile extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         dobFtf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 300, 190, -1));
+        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 270, 190, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel12.setText("APU Medical Centre");
@@ -214,7 +219,19 @@ public class ManagerProfile extends javax.swing.JFrame {
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
 
+        phoneTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        getContentPane().add(phoneTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 300, -1));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel7.setText("PASSWORD");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, -1, -1));
+
+        confirmPasswordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        confirmPasswordField.setText("jPasswordField1");
+        getContentPane().add(confirmPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 350, 290, -1));
+
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
@@ -258,6 +275,66 @@ public class ManagerProfile extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_logoutBtn1ActionPerformed
 
+    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+        String first = firstNameTf.getText().trim();
+        String last = lastNameTf.getText().trim();
+        String email = emailTf.getText().trim();
+        String phone = phoneTf.getText();
+        String gender = maleRadio.isSelected() ? "Male" : "Female"; // variable = (condition) ? if_true : if_false
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
+        
+        if (first.isEmpty() || last.isEmpty() || email.isEmpty() || phone.isEmpty() ||
+                password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return; // stop saving process
+        }
+        
+        LocalDate dob = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            dob = LocalDate.parse(dobFtf.getText().trim(), formatter);
+            if(dob.isAfter(LocalDate.now())){
+                JOptionPane.showMessageDialog(this, "Date of Birth cannot be in the future.", 
+                        "Invalid Date", JOptionPane.ERROR_MESSAGE);
+                return; // stop saving process
+            }
+        }catch(DateTimeParseException e){
+            JOptionPane.showMessageDialog(this, "Invalid Date of Birth", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // stop saving process
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "Invalid Date of Birth", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // stop saving process
+        }
+        
+        if(!password.equals(confirmPassword)){
+            JOptionPane.showMessageDialog(this, "Passwords do not match. Please try again.",
+                    "Password Mismatch", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        if(!email.matches(emailRegex)){
+            JOptionPane.showMessageDialog(this,"Please Enter a Valid Email (user@example.com)",
+                    "Invalid Email", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String phoneRegex = "^01[0-9]-[0-9]{7,8}$";
+        if(!phone.matches(phoneRegex)){
+            JOptionPane.showMessageDialog(this, "Please Enter Valid Phone Number (e.g., 012-3456789)",
+                    "Invalid Phone Number", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        boolean updateSuccess = manager.updateProfile(first, last, phone, email, password, gender, dob);
+        if(updateSuccess) {
+            JOptionPane.showMessageDialog(this, "Profile Updated Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "Unable to update profile.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_saveBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -284,10 +361,12 @@ public class ManagerProfile extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPasswordField confirmPasswordField;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
     private javax.swing.JFormattedTextField dobFtf;
     private javax.swing.JTextField emailTf;
+    private javax.swing.JRadioButton femaleRadio;
     private javax.swing.JTextField firstNameTf;
     private javax.swing.ButtonGroup genderGrp;
     private javax.swing.JLabel jLabel1;
@@ -299,17 +378,17 @@ public class ManagerProfile extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField lastNameTf;
     private javax.swing.JButton logoutBtn1;
+    private javax.swing.JRadioButton maleRadio;
     private javax.swing.JPasswordField passwordField;
-    private javax.swing.JFormattedTextField phoneFtf;
+    private javax.swing.JTextField phoneTf;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;

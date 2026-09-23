@@ -1,15 +1,20 @@
 
 package MedicalManager;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 import javax.swing.JSpinner;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.SpinnerDateModel;
 import java.text.SimpleDateFormat;
 import HelperFunction.SessionUser;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.JOptionPane;
 
 public class ManageShifts extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageShifts.class.getName());
+    MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
 
     /**
      * Creates new form ManagerDashboard
@@ -17,6 +22,8 @@ public class ManageShifts extends javax.swing.JFrame {
     public ManageShifts() {
         initComponents();
         setupTimeSpinners();
+        loadDepartmentsCombo();
+        loadShiftsTable();
     }
     
     private void setupTimeSpinners(){
@@ -28,6 +35,57 @@ public class ManageShifts extends javax.swing.JFrame {
         
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy");
         dateSpinner.setEditor(dateEditor);
+    }
+    
+    private void loadDepartmentsCombo(){
+        deptCmb.removeAllItems(); // reset before loading
+        List<ArrayList<String>> departments = manager.viewManagingDepartments();
+        for(ArrayList<String> department : departments){
+            deptCmb.addItem(String.format("DEP%03d", Integer.parseInt(department.get(0))) + " - " + department.get(1));
+        }
+    }
+    
+    private void loadShiftsTable(){
+        if(deptCmb.getSelectedItem() == null){
+            return; // prevent crashing during setup (cmb is cleared upon loading)
+        }
+        
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int selectedDeptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        
+        String[] columns = new String[]{"Shift ID", "Date", "Start Time", "End Time", "Doctors Count"};
+        DefaultTableModel table = new DefaultTableModel(columns, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        
+        // set up date formatting to compare against today (outdated shifts are ignored)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate today = LocalDate.now();
+        
+        List<ArrayList<String>> shifts = manager.viewAllShifts();
+        for(ArrayList<String> shift : shifts){
+            int deptID = Integer.parseInt(shift.get(1));
+            if(deptID == selectedDeptID){
+                LocalDate shiftDate = LocalDate.parse(shift.get(2), formatter);
+                if(shiftDate.isBefore(today)){ // if shift has already passed
+                    continue; // skip this shfit record
+                }
+                
+                int shiftID = Integer.parseInt(shift.get(0));
+                String formattedShiftID = String.format("SHF%03d", shiftID);
+                
+                int numberofDoctors = manager.getAssignedDoctorCount(shiftID);
+                String countDisplay = numberofDoctors < 2 ?
+                        numberofDoctors + " (Needs 2+)" : String.valueOf(numberofDoctors);
+                
+                table.addRow(new Object[]{formattedShiftID, shift.get(2), shift.get(3),
+                    shift.get(4), countDisplay });
+            }
+        }
+        shiftsTable.setModel(table);
     }
 
     /**
@@ -107,10 +165,11 @@ public class ManageShifts extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("End Time");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 220, 130, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 220, 130, -1));
 
         saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveBtn.setText("Save");
+        saveBtn.addActionListener(this::saveBtnActionPerformed);
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -119,10 +178,11 @@ public class ManageShifts extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Start Time");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, 180, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 180, -1));
 
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
+        updateBtn.addActionListener(this::updateBtnActionPerformed);
         getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 290, -1, -1));
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -147,10 +207,11 @@ public class ManageShifts extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(shiftsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 780, 240));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 730, 190));
 
         deptCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deptCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        deptCmb.addActionListener(this::deptCmbActionPerformed);
         getContentPane().add(deptCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 260, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -193,15 +254,15 @@ public class ManageShifts extends javax.swing.JFrame {
 
         startSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MINUTE));
-        getContentPane().add(startSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 240, 180, -1));
+        getContentPane().add(startSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 240, 180, -1));
 
         endSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MINUTE));
-        getContentPane().add(endSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 240, 180, -1));
+        getContentPane().add(endSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 180, -1));
 
         dateSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dateSpinner.setModel(new javax.swing.SpinnerDateModel());
-        getContentPane().add(dateSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
+        getContentPane().add(dateSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 180, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -254,6 +315,55 @@ public class ManageShifts extends javax.swing.JFrame {
             this.dispose();
         }
     }//GEN-LAST:event_logoutBtn1ActionPerformed
+
+    private void deptCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deptCmbActionPerformed
+        loadShiftsTable();
+    }//GEN-LAST:event_deptCmbActionPerformed
+
+    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+        if(deptCmb.getSelectedItem() == null){
+            return;
+        }
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        String deptName = selectedDepartment.split(" - ")[1].toLowerCase();
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String dateInput = dateFormat.format(dateSpinner.getValue());
+        String startTime = timeFormat.format(startSpinner.getValue());
+        String endTime = timeFormat.format(endSpinner.getValue());
+        LocalTime startLocal = java.time.LocalTime.parse(startTime);
+        LocalTime endLocal = java.time.LocalTime.parse(endTime);
+        
+        if(deptName.contains("emergency")){
+            // emergency can be anytime in 24 hours
+            if(startLocal.equals(endLocal)){
+                JOptionPane.showMessageDialog(this, "Start and end times cannot be same",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }else{ // standard shifts between 9am to 6pm
+            LocalTime boundaryStart = LocalTime.of(9, 0);
+            LocalTime boundaryEnd = LocalTime.of(18, 0);
+            if(startLocal.isBefore(boundaryStart) || endLocal.isAfter(boundaryEnd) ||
+                    !startLocal.isBefore(endLocal)){
+                JOptionPane.showMessageDialog(this,
+                        "Standard shifts must fall between 09:00 and 18:00, and end time must be after start time",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        manager.createShift(deptID, endTime, startTime, endTime);
+        JOptionPane.showMessageDialog(this,
+                "Shift Created Sucesfuly!\nIMPORTANT: Please assign at least 2 doctors to the shift",
+                "Sucess", JOptionPane.INFORMATION_MESSAGE);
+        loadShiftsTable();
+    }//GEN-LAST:event_saveBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        
+    }//GEN-LAST:event_updateBtnActionPerformed
 
     /**
      * @param args the command line arguments

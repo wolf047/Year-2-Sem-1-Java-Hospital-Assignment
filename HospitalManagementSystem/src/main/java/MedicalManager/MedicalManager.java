@@ -183,20 +183,17 @@ public class MedicalManager extends User{
         FileHandling.addRecord("ShiftDoctors.txt", record);
     }
     
-    public List<String[]> getDoctorsForShift(int targetShiftID) {
-        List<String[]> assignedDoctors = new ArrayList<>();
-        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readAllRecords("ShiftDoctors.txt");
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        
-        if(assignments != null) {
-            
+    public int getAssignedDoctorCount(int shiftID){
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        int count = 0;
+        if(assignments != null){
+            for(ArrayList<String> assignment : assignments.values()){
+                if(Integer.parseInt(assignment.get(1)) == shiftID){
+                    count++;
+                }
+            }
         }
-        
-        return assignedDoctors;
-    }
-    
-    public void removeDoctorShift(int shiftID){
-        FileHandling.removeRecord("ShiftDoctors", shiftID);
+        return count;
     }
     
     

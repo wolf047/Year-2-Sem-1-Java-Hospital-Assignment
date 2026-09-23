@@ -23,6 +23,19 @@ public class MedicalManager extends User{
         this.gender = "";
     }
     
+    public List<ArrayList<String>> viewAllActiveDepartments(){
+        List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readActiveRecords("Departments.txt");
+        if(departments != null){
+            for(Map.Entry<Integer, ArrayList<String>> department : departments.entrySet()){
+                ArrayList<String> record = new ArrayList<>();
+                record.add(String.valueOf(department.getKey()));
+                record.addAll(department.getValue());
+                result.add(record);
+            }
+        }
+        return result;
+    }
 
     public List<ArrayList<String>> viewManagingDepartments(){
             List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
@@ -75,7 +88,30 @@ public class MedicalManager extends User{
             }else{
                 return false; // if false, show unable to update
             }
-    }  
+    }
+    
+    public boolean isDepartmentAlreadyExist(String deptName, int excludeSelfID){
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readActiveRecords("Departments.txt");
+        if(departments != null){
+            for(Map.Entry<Integer, ArrayList<String>> entry : departments.entrySet()){
+                int deptID = entry.getKey();
+                String existingDeptName = entry.getValue().get(0);
+                if(deptID != excludeSelfID && existingDeptName.equalsIgnoreCase(deptName.trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean deleteDepartment(int deptID){
+        try {
+            FileHandling.removeRecord("Departments.txt", deptID);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
    
     public void createShift(int deptID, String date, String startTime,
            String endTime){

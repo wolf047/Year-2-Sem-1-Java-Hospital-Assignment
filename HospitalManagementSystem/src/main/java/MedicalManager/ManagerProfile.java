@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import java.util.Date;
 
 
 public class ManagerProfile extends javax.swing.JFrame {
@@ -21,6 +23,11 @@ public class ManagerProfile extends javax.swing.JFrame {
         loadProfileData();
     }
     
+    private void setupDobSpinner(){
+        JSpinner.DateEditor dobEditor = new JSpinner.DateEditor(dobSpinner, "dd-MM-yyyy");
+        dobSpinner.setEditor(dobEditor);
+    }
+    
     private void loadProfileData() {
         userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
         firstNameTf.setText(manager.getFirst());
@@ -30,8 +37,8 @@ public class ManagerProfile extends javax.swing.JFrame {
         passwordField.setText(manager.getPassword());
         confirmPasswordField.setText(manager.getPassword());
         
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        dobFtf.setText(manager.getDob().format(formatter));
+        Date dobDate = java.sql.Date.valueOf(manager.getDob());
+        dobSpinner.setValue(dobDate);
         
         if("Female".equalsIgnoreCase(manager.getGender())){
             femaleRadio.setSelected(true);
@@ -70,7 +77,6 @@ public class ManagerProfile extends javax.swing.JFrame {
         femaleRadio = new javax.swing.JRadioButton();
         emailTf = new javax.swing.JTextField();
         saveBtn = new javax.swing.JButton();
-        dobFtf = new javax.swing.JFormattedTextField();
         jLabel12 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         dashboardBtn = new javax.swing.JButton();
@@ -82,6 +88,7 @@ public class ManagerProfile extends javax.swing.JFrame {
         phoneTf = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         confirmPasswordField = new javax.swing.JPasswordField();
+        dobSpinner = new javax.swing.JSpinner();
 
         jLabel4.setText("jLabel3");
 
@@ -172,15 +179,6 @@ public class ManagerProfile extends javax.swing.JFrame {
         saveBtn.addActionListener(this::saveBtnActionPerformed);
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 510, -1, -1));
 
-        dobFtf.setColumns(9);
-        try {
-            dobFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##-##-####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        dobFtf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 270, 190, -1));
-
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel12.setText("APU Medical Centre");
         getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
@@ -229,6 +227,10 @@ public class ManagerProfile extends javax.swing.JFrame {
         confirmPasswordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         confirmPasswordField.setText("jPasswordField1");
         getContentPane().add(confirmPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 350, 290, -1));
+
+        dobSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dobSpinner.setModel(new javax.swing.SpinnerDateModel());
+        getContentPane().add(dobSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 270, 290, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -290,21 +292,12 @@ public class ManagerProfile extends javax.swing.JFrame {
             return; // stop saving process
         }
         
-        LocalDate dob = null;
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            dob = LocalDate.parse(dobFtf.getText().trim(), formatter);
-            if(dob.isAfter(LocalDate.now())){
-                JOptionPane.showMessageDialog(this, "Date of Birth cannot be in the future.", 
-                        "Invalid Date", JOptionPane.ERROR_MESSAGE);
-                return; // stop saving process
-            }
-        }catch(DateTimeParseException e){
-            JOptionPane.showMessageDialog(this, "Invalid Date of Birth", "Error", JOptionPane.ERROR_MESSAGE);
-            return; // stop saving process
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Invalid Date of Birth", "Error", JOptionPane.ERROR_MESSAGE);
-            return; // stop saving process
+        Date selectedDate = (java.util.Date) dobSpinner.getValue();
+        LocalDate dob = selectedDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        if(dob.isAfter(LocalDate.now())){
+            JOptionPane.showMessageDialog(this, "Date of Birth cannot be in the future",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return;
         }
         
         if(!password.equals(confirmPassword)){
@@ -364,7 +357,7 @@ public class ManagerProfile extends javax.swing.JFrame {
     private javax.swing.JPasswordField confirmPasswordField;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
-    private javax.swing.JFormattedTextField dobFtf;
+    private javax.swing.JSpinner dobSpinner;
     private javax.swing.JTextField emailTf;
     private javax.swing.JRadioButton femaleRadio;
     private javax.swing.JTextField firstNameTf;

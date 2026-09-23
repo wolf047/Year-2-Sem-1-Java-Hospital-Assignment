@@ -874,11 +874,11 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         lblLastName.setText("Last Name");
         pnlProfile.add(lblLastName);
-        lblLastName.setBounds(20, 197, 56, 16);
+        lblLastName.setBounds(20, 197, 55, 16);
 
         lblDOB.setText("Date Of Birth");
         pnlProfile.add(lblDOB);
-        lblDOB.setBounds(20, 253, 68, 16);
+        lblDOB.setBounds(20, 253, 69, 16);
 
         lblGender.setText("Gender");
         pnlProfile.add(lblGender);
@@ -888,9 +888,9 @@ public class PatientDashboard extends javax.swing.JFrame {
         pnlProfile.add(lblBloodType);
         lblBloodType.setBounds(20, 365, 60, 16);
 
-        lblAllergies.setText("Allegergies");
+        lblAllergies.setText("Allergies");
         pnlProfile.add(lblAllergies);
-        lblAllergies.setBounds(20, 421, 58, 16);
+        lblAllergies.setBounds(20, 421, 45, 16);
 
         txtPatientID.setEditable(false);
         pnlProfile.add(txtPatientID);

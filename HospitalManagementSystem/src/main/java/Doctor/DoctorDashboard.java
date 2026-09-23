@@ -91,7 +91,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HMS Doctor Portal");
-        setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -121,7 +120,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnLogout.setFocusPainted(false);
         btnLogout.setFocusable(false);
         btnLogout.setRolloverEnabled(false);
-        pnlNav.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 470, 160, 40));
+        pnlNav.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, 160, 40));
 
         btnNavConsultations1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnNavConsultations1.setForeground(new java.awt.Color(38, 117, 154));
@@ -300,20 +299,31 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         tblCases.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Case ID", "Patient", "Doctor-in-Charge", "Category", "Type", "Open Date", "Close Date", "Status"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false, false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCases.setColumnSelectionAllowed(true);
         tblCases.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblCases.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblCases.getTableHeader().setReorderingAllowed(false);
         scrCases.setViewportView(tblCases);
+        tblCases.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 450));
+        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
 
         pnlContent.add(pnlCases, "cases");
 
@@ -340,7 +350,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         tblSchedule.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrSchedule.setViewportView(tblSchedule);
 
-        pnlSchedule.add(scrSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 450));
+        pnlSchedule.add(scrSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
 
         pnlContent.add(pnlSchedule, "schedule");
 
@@ -384,7 +394,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         ));
         scrCalendar.setViewportView(tblCalendar);
 
-        pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 415));
+        pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 435));
 
         pnlContent.add(pnlConsultations, "consultations");
 
@@ -411,7 +421,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrReviews.setViewportView(tblReviews);
 
-        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 450));
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
 
         pnlContent.add(pnlReviews, "reviews");
 

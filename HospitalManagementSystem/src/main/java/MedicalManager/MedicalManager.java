@@ -110,16 +110,12 @@ public class MedicalManager extends User{
     }
     
     public boolean deleteShift(int shiftID) {
-        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
-        if (shifts != null && shifts.containsKey(shiftID)){
-            ArrayList<String> record = shifts.get(shiftID);
-            record.set(4, "1"); // set delete to true (1)
-            
-            record.add(0, String.valueOf(shiftID));
-            FileHandling.editRecord("Shift.txt", record);
+        try {
+            FileHandling.removeRecord("Shifts.txt", shiftID);
             return true;
+        }catch(Exception e) {
+            return false;
         }
-        return false;
     }
     
     public List<ArrayList<String>> viewAllShifts() {
@@ -181,7 +177,7 @@ public class MedicalManager extends User{
         return total;
     }
     
-    public int getUsedBeds() {
+    public int getUsedBedsCount() {
         TreeMap<Integer, ArrayList<String>> beds = FileHandling.readAllRecords("InpatientBeds.txt");
         int totalBeds = 0;
         if (beds != null) {
@@ -192,6 +188,24 @@ public class MedicalManager extends User{
             }
         }
         return totalBeds;
+    }
+    
+    public int[] getNumberCases(){
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        int open = 0, closed = 0, total = 0;
+        for (ArrayList<String> c: cases.values()){
+            if("0".equals(c.get(7))){ // if not deleted
+                total++;
+                String closeDate = c.get(3);
+                if(closeDate == null || closeDate.trim().isEmpty() || closeDate.equalsIgnoreCase("null")) { // check if there is no close date, means still open
+                    open++;
+                } else {
+                    closed++;
+                }
+            }
+            
+        }
+        return new int[]{open, closed, total};
     }
       
     

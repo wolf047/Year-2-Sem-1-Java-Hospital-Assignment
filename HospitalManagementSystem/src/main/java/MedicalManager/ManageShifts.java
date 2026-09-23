@@ -52,6 +52,7 @@ public class ManageShifts extends javax.swing.JFrame {
         endFtf = new javax.swing.JFormattedTextField();
         jLabel9 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        jSpinner1 = new javax.swing.JSpinner();
 
         jLabel4.setText("jLabel3");
 
@@ -189,6 +190,7 @@ public class ManageShifts extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
+        getContentPane().add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 100, 160, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -273,6 +275,7 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jTable1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;

@@ -29,11 +29,152 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblDiagHeader = new javax.swing.JLabel();
+        lblDiagMeta = new javax.swing.JLabel();
+        lblDiagFilterHeader = new javax.swing.JLabel();
+        cmbCategoryFilter = new javax.swing.JComboBox<>();
+        cmbTypeFilter = new javax.swing.JComboBox<>();
+        txtServiceSearch = new javax.swing.JTextField();
+        lblSelectedService = new javax.swing.JLabel();
+        scrServiceResults = new javax.swing.JScrollPane();
+        tblServiceResults = new javax.swing.JTable();
+        lblRemarksHeader = new javax.swing.JLabel();
+        scrRemarks = new javax.swing.JScrollPane();
+        txtRemarks = new javax.swing.JTextArea();
+        btnAddRequest = new javax.swing.JButton();
+        lblRequestsHeader = new javax.swing.JLabel();
+        scrRequestList = new javax.swing.JScrollPane();
+        tblRequestList = new javax.swing.JTable();
+        btnRemoveRequest = new javax.swing.JButton();
+        btnCloseDialog = new javax.swing.JButton();
+        btnSubmitRequests1 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Request Diagnostic Service");
         setModal(true);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblDiagHeader.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        lblDiagHeader.setText("lblDiagHeader");
+        getContentPane().add(lblDiagHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 400, 26));
+
+        lblDiagMeta.setForeground(new java.awt.Color(102, 102, 102));
+        lblDiagMeta.setText("lblDiagMeta");
+        getContentPane().add(lblDiagMeta, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 48, 400, 18));
+
+        lblDiagFilterHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblDiagFilterHeader.setText("Select Service: ");
+        getContentPane().add(lblDiagFilterHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 76, 300, 18));
+
+        cmbCategoryFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(cmbCategoryFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 98, 170, 26));
+
+        cmbTypeFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(cmbTypeFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 98, 200, 26));
+
+        txtServiceSearch.setText("Search service...");
+        getContentPane().add(txtServiceSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 134, 520, 26));
+
+        lblSelectedService.setForeground(new java.awt.Color(102, 102, 102));
+        lblSelectedService.setText("Selected: —");
+        getContentPane().add(lblSelectedService, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 520, 18));
+
+        tblServiceResults.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Service Name", "Category", "Type", "Price"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblServiceResults.setColumnSelectionAllowed(true);
+        tblServiceResults.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblServiceResults.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblServiceResults.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblServiceResults.getTableHeader().setReorderingAllowed(false);
+        scrServiceResults.setViewportView(tblServiceResults);
+        tblServiceResults.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        getContentPane().add(scrServiceResults, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 520, 140));
+
+        lblRemarksHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblRemarksHeader.setText("Request Remarks: ");
+        getContentPane().add(lblRemarksHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 348, 300, 18));
+
+        txtRemarks.setColumns(20);
+        txtRemarks.setLineWrap(true);
+        txtRemarks.setRows(4);
+        txtRemarks.setWrapStyleWord(true);
+        scrRemarks.setViewportView(txtRemarks);
+
+        getContentPane().add(scrRemarks, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 368, 520, 60));
+
+        btnAddRequest.setBackground(new java.awt.Color(38, 117, 154));
+        btnAddRequest.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddRequest.setText("+ Add to Request List");
+        btnAddRequest.setFocusPainted(false);
+        getContentPane().add(btnAddRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 520, 30));
+
+        lblRequestsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblRequestsHeader.setText("Pending Requests: ");
+        getContentPane().add(lblRequestsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 300, 18));
+
+        tblRequestList.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Service", "Category", "Type", "Remarks"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblRequestList.setColumnSelectionAllowed(true);
+        tblRequestList.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblRequestList.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblRequestList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblRequestList.getTableHeader().setReorderingAllowed(false);
+        scrRequestList.setViewportView(tblRequestList);
+        tblRequestList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        getContentPane().add(scrRequestList, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 500, 520, 130));
+
+        btnRemoveRequest.setText("Remove Selected");
+        btnRemoveRequest.setFocusPainted(false);
+        getContentPane().add(btnRemoveRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 644, 250, 32));
+
+        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
+        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
+        btnCloseDialog.setText("Close Page");
+        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
+
+        btnSubmitRequests1.setBackground(new java.awt.Color(38, 117, 154));
+        btnSubmitRequests1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSubmitRequests1.setForeground(new java.awt.Color(255, 255, 255));
+        btnSubmitRequests1.setText("Submit Requests");
+        getContentPane().add(btnSubmitRequests1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 698, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -76,5 +217,24 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddRequest;
+    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnRemoveRequest;
+    private javax.swing.JButton btnSubmitRequests1;
+    private javax.swing.JComboBox<String> cmbCategoryFilter;
+    private javax.swing.JComboBox<String> cmbTypeFilter;
+    private javax.swing.JLabel lblDiagFilterHeader;
+    private javax.swing.JLabel lblDiagHeader;
+    private javax.swing.JLabel lblDiagMeta;
+    private javax.swing.JLabel lblRemarksHeader;
+    private javax.swing.JLabel lblRequestsHeader;
+    private javax.swing.JLabel lblSelectedService;
+    private javax.swing.JScrollPane scrRemarks;
+    private javax.swing.JScrollPane scrRequestList;
+    private javax.swing.JScrollPane scrServiceResults;
+    private javax.swing.JTable tblRequestList;
+    private javax.swing.JTable tblServiceResults;
+    private javax.swing.JTextArea txtRemarks;
+    private javax.swing.JTextField txtServiceSearch;
     // End of variables declaration//GEN-END:variables
 }

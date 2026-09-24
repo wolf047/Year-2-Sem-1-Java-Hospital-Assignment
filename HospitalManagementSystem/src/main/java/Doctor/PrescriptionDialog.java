@@ -31,7 +31,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
 
         lblPrescriptionHeader = new javax.swing.JLabel();
         lblPrescriptionMeta = new javax.swing.JLabel();
-        lblFilterHeader = new javax.swing.JLabel();
+        lblPrescriptionFilterHeader = new javax.swing.JLabel();
         cmbFormFilter = new javax.swing.JComboBox<>();
         txtDrugSearch = new javax.swing.JTextField();
         scrDrugResults = new javax.swing.JScrollPane();
@@ -70,9 +70,9 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         lblPrescriptionMeta.setText("lblPrescriptionMeta");
         getContentPane().add(lblPrescriptionMeta, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 48, 400, 18));
 
-        lblFilterHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lblFilterHeader.setText("Select Drug: ");
-        getContentPane().add(lblFilterHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 76, 300, 18));
+        lblPrescriptionFilterHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblPrescriptionFilterHeader.setText("Select Drug: ");
+        getContentPane().add(lblPrescriptionFilterHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 76, 300, 18));
 
         cmbFormFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(cmbFormFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 98, 170, 26));
@@ -247,10 +247,10 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblDosageHeader;
     private javax.swing.JLabel lblDosageUnit;
     private javax.swing.JLabel lblDuration;
-    private javax.swing.JLabel lblFilterHeader;
     private javax.swing.JLabel lblFrequency;
     private javax.swing.JLabel lblInstructions;
     private javax.swing.JLabel lblItemsHeader;
+    private javax.swing.JLabel lblPrescriptionFilterHeader;
     private javax.swing.JLabel lblPrescriptionHeader;
     private javax.swing.JLabel lblPrescriptionMeta;
     private javax.swing.JLabel lblSelectedDrug;

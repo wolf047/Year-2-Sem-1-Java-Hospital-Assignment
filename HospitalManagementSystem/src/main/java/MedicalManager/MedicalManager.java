@@ -6,6 +6,7 @@ import Users.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import HelperFunction.FileHandling;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MedicalManager extends User{
@@ -204,6 +205,7 @@ public class MedicalManager extends User{
         FileHandling.addRecord("ShiftDoctors.txt", record);
     }
     
+    
     public int getAssignedDoctorCount(int shiftID){
         TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
         int count = 0;
@@ -217,6 +219,62 @@ public class MedicalManager extends User{
         return count;
     }
     
+    public List<String[]> getAssignedDoctors(int shiftID){
+        List<String[]> results = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readActiveRecords("Users.txt");
+        
+        if(assignments != null){
+            for(Map.Entry<Integer, ArrayList<String>> entry : assignments.entrySet()){
+                int assignID = entry.getKey();
+                int assignedShiftID = Integer.parseInt(entry.getValue().get(0));
+                int doctorID = Integer.parseInt(entry.getValue().get(1));
+                
+                if(assignedShiftID == shiftID){
+                    String doctorName = "";
+                    if(users !=null && users.containsKey(doctorID)){
+                        doctorName = users.get(doctorID).get(0) + users.get(doctorID).get(1);
+                    }
+                    results.add(new String[]{
+                        String.valueOf(assignID),
+                        String.valueOf(doctorID),
+                        String.valueOf(doctorName),
+                    });
+                }
+            }
+        }
+        return results;
+    }
+    
+    public boolean hasTimeCollision(int doctorID, String dateStr, String startStr, String endStr){
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        
+        // convert time strings to LocalDate objects
+        LocalDate date = LocalDate.parse(dateStr, dateFormatter);
+        LocalTime startTime = LocalTime.parse(startStr, timeFormatter);
+        LocalTime endTime = LocalTime.parse(endStr, timeFormatter);
+        
+        return false;
+    }
+    
+    public List<String[]> getAvailableDoctors(int shiftID, int deptID){
+        List<String[]> eligible = new ArrayList<>();
+        
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        if(shifts == null || !shifts.containsKey(shiftID)){ return eligible; }
+        String dateStr = shifts.get(shiftID).get(1);
+        LocalDate shiftDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String shiftDay = shiftDate.getDayOfWeek().name(); // get day
+        
+        // get assigned doctors
+        ArrayList<Integer> assignedDoctorIDs = new ArrayList<>();
+        List<String[]> assigned = getAssignedDoctors(shiftID);
+        for(String[] assignment : assigned){
+            assignedDoctorIDs.add(Integer.parseInt(assignment[1]));
+        }
+        return eligible;
+    }
     
     public double calculateTotalRevenue() {
         TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readAllRecords("Invoices.txt");

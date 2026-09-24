@@ -497,13 +497,13 @@ public class DoctorDashboard extends javax.swing.JFrame {
         scrCases.setViewportView(tblCases);
         tblCases.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 440));
+        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 420));
 
         btnViewCaseDetails.setBackground(new java.awt.Color(38, 117, 154));
         btnViewCaseDetails.setForeground(new java.awt.Color(255, 255, 255));
         btnViewCaseDetails.setText("View Case Details");
         btnViewCaseDetails.addActionListener(this::btnViewCaseDetails);
-        pnlCases.add(btnViewCaseDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, 200, 26));
+        pnlCases.add(btnViewCaseDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
 
         pnlContent.add(pnlCases, "cases");
 

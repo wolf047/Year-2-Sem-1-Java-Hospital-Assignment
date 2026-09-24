@@ -72,11 +72,11 @@ public class ManageShifts extends javax.swing.JFrame {
             if(deptID == selectedDeptID){
                 LocalDate shiftDate = LocalDate.parse(shift.get(2), formatter);
                 if(shiftDate.isBefore(today)){ // if shift has already passed
-                    continue; // skip this shfit record
+                    continue; // skip this shift record
                 }
                 
                 int shiftID = Integer.parseInt(shift.get(0));
-                String formattedShiftID = String.format("SHF%03d", shiftID);
+                String formattedShiftID = String.format("SHIFT%03d", shiftID);
                 
                 int numberofDoctors = manager.getAssignedDoctorCount(shiftID);
                 String countDisplay = numberofDoctors < 2 ?
@@ -152,7 +152,6 @@ public class ManageShifts extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -440,7 +439,7 @@ public class ManageShifts extends javax.swing.JFrame {
                     "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        boolean success = manager.updateShift(selectedShiftID, dateInput, startTime, endTime);
+        boolean success = manager.updateShift(selectedShiftID, deptID, dateInput, startTime, endTime);
         if (success) {
             JOptionPane.showMessageDialog(this, "Shift Updated Successfully!",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -457,7 +456,7 @@ public class ManageShifts extends javax.swing.JFrame {
         int selectedRow = shiftsTable.getSelectedRow();
         if(selectedRow != -1){
             String shiftID = shiftsTable.getValueAt(selectedRow, 0).toString();
-            selectedShiftID = Integer.parseInt(shiftID.replace("SHF", ""));
+            selectedShiftID = Integer.parseInt(shiftID.replace("SHIFT", ""));
             try{
                 String shiftDate = shiftsTable.getValueAt(selectedRow, 1).toString();
                 String startTime = shiftsTable.getValueAt(selectedRow, 2).toString();

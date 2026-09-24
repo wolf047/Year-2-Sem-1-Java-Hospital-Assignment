@@ -4,6 +4,11 @@
  */
 package MedicalManager;
 
+import HelperFunction.*;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author lmao
@@ -14,6 +19,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
     private int shiftID;
     private int deptID;
     private int selectedAssignmentID = -1;
+    private MedicalManager manager = (MedicalManager)SessionUser.getCurrentUser();
     
     /**
      * Creates new form ManagerDashboard
@@ -28,6 +34,45 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         this.shiftID = shiftID;
         this.deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
         initComponents();
+        
+        shiftLbl.setText(String.format("Managing Doctors for SHIFT%03d", shiftID));
+        departmentLbl.setText("Department: " + selectedDepartment.split(" - ")[1]);
+        
+        loadAssignedTable();
+        loadDoctorsCombo();
+    }
+    
+    private void loadAssignedTable(){
+        String[] columns = {"Assignment ID", "Doctor ID", "Doctor Name"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        
+        List<String[]> assignedDocs = manager.getAssignedDoctors(shiftID);
+        for (String[] a : assignedDocs) {
+            String assignIDStr = String.format("ASGN%03d", Integer.parseInt(a[0]));
+            String docIDStr = String.format("DOC%03d", Integer.parseInt(a[1]));
+            model.addRow(new Object[]{assignIDStr, docIDStr, "Dr. " + a[2]});
+        }
+        assignedTable.setModel(model);
+        selectedAssignmentID = -1;
+    }
+    
+    private void loadDoctorsCombo(){
+        doctorsCmb.removeAllItems();
+        List<String[]> eligibleDoctors = manager.getEligibleDoctors(shiftID, deptID);
+        
+        if (eligibleDoctors.isEmpty()) {
+            doctorsCmb.addItem("No eligible doctors available");
+            assignBtn.setEnabled(false); // disable button
+        } else {
+            assignBtn.setEnabled(true);
+            for (String[] doc : eligibleDoctors) {
+                String docIDFormat = String.format("DOC%03d", Integer.parseInt(doc[0]));
+                doctorsCmb.addItem(docIDFormat + " - Dr. " + doc[1] + " (Off: " + doc[2] + ")");
+            }
+        }
     }
 
     /**
@@ -43,9 +88,9 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        shiftLbl = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        departmentLbl = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         assignBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -81,17 +126,17 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jLabel1.setText("Assign Doctor");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
-        jLabel2.setText("Managing Doctors for SHIFT001");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
+        shiftLbl.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
+        shiftLbl.setText("Managing Doctors for SHIFT001");
+        getContentPane().add(shiftLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Currently Assigned Doctors");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, -1, -1));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Department: bla bla");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 140, -1));
+        departmentLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentLbl.setText("Department: bla bla");
+        getContentPane().add(departmentLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 310, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Assign New Doctor");
@@ -99,6 +144,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
 
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         assignBtn.setText("Assign");
+        assignBtn.addActionListener(this::assignBtnActionPerformed);
         getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         assignedTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -112,16 +158,22 @@ public class AssignDoctorShift extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        assignedTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                assignedTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(assignedTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 780, 280));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 740, 220));
 
         doctorsCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         doctorsCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(doctorsCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 340, -1));
+        getContentPane().add(doctorsCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 500, -1));
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 230, -1, -1));
 
         backBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -137,6 +189,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
@@ -145,6 +198,55 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         shiftPage.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_backBtnActionPerformed
+
+    private void assignedTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_assignedTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = assignedTable.getSelectedRow();
+        if (selectedRow != -1) {
+            String assignIdStr = assignedTable.getValueAt(selectedRow, 0).toString();
+            selectedAssignmentID = Integer.parseInt(assignIdStr.replace("ASGN", ""));
+        }
+    }//GEN-LAST:event_assignedTableMouseClicked
+
+    private void assignBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignBtnActionPerformed
+        // TODO add your handling code here:
+        if (doctorsCmb.getSelectedItem() == null || !assignBtn.isEnabled()) { return; }
+        String selectedDoctor = doctorsCmb.getSelectedItem().toString();
+        int doctorID = Integer.parseInt(selectedDoctor.split(" - ")[0].replace("DOC", ""));
+        
+        manager.assignDoctorToShift(shiftID, doctorID);
+        JOptionPane.showMessageDialog(this, "Doctor assigned successfully!",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+        
+        loadAssignedTable();
+        loadDoctorsCombo();
+    }//GEN-LAST:event_assignBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if (selectedAssignmentID == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select an assigned doctor from the table to remove.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to remove this doctor from the shift?",
+                "Confirm Removal", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = manager.removeDoctorShift(selectedAssignmentID);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Doctor removed from shift.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                // Reload table and dropdown to put the doctor back in the eligible list!
+                loadAssignedTable();
+                loadDoctorsCombo();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to remove doctor.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -176,17 +278,17 @@ public class AssignDoctorShift extends javax.swing.JFrame {
     private javax.swing.JTable assignedTable;
     private javax.swing.JButton backBtn;
     private javax.swing.JButton deleteBtn;
+    private javax.swing.JLabel departmentLbl;
     private javax.swing.JComboBox<String> doctorsCmb;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel shiftLbl;
     // End of variables declaration//GEN-END:variables
 }

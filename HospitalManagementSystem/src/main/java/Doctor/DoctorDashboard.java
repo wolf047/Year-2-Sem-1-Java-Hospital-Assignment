@@ -432,7 +432,9 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 370));
 
-        btnAddConsultDetails.setText("Add Consultation Details");
+        btnAddConsultDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnAddConsultDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddConsultDetails.setText("+ Add Consultation Details");
         pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
 
         pnlContent.add(pnlConsultations, "consultations");

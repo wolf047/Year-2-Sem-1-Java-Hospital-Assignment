@@ -6,6 +6,7 @@ import Users.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import HelperFunction.FileHandling;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MedicalManager extends User{
@@ -23,6 +24,19 @@ public class MedicalManager extends User{
         this.gender = "";
     }
     
+    public List<ArrayList<String>> viewAllActiveDepartments(){
+        List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readActiveRecords("Departments.txt");
+        if(departments != null){
+            for(Map.Entry<Integer, ArrayList<String>> department : departments.entrySet()){
+                ArrayList<String> record = new ArrayList<>();
+                record.add(String.valueOf(department.getKey()));
+                record.addAll(department.getValue());
+                result.add(record);
+            }
+        }
+        return result;
+    }
 
     public List<ArrayList<String>> viewManagingDepartments(){
             List<ArrayList<String>> result = new ArrayList<>(); // create list to store lists of records
@@ -75,7 +89,30 @@ public class MedicalManager extends User{
             }else{
                 return false; // if false, show unable to update
             }
-    }  
+    }
+    
+    public boolean isDepartmentAlreadyExist(String deptName, int excludeSelfID){
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readActiveRecords("Departments.txt");
+        if(departments != null){
+            for(Map.Entry<Integer, ArrayList<String>> entry : departments.entrySet()){
+                int deptID = entry.getKey();
+                String existingDeptName = entry.getValue().get(0);
+                if(deptID != excludeSelfID && existingDeptName.equalsIgnoreCase(deptName.trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean deleteDepartment(int deptID){
+        try {
+            FileHandling.removeRecord("Departments.txt", deptID);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
    
     public void createShift(int deptID, String date, String startTime,
            String endTime){
@@ -93,11 +130,10 @@ public class MedicalManager extends User{
         
     }
     
-    public boolean updateShift(int shiftID, int deptID, String date, String startTime, String endTime){
+    public boolean updateShift(int shiftID, String date, String startTime, String endTime){
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
         if(shifts != null && shifts.containsKey(shiftID)){
             ArrayList<String> details = shifts.get(shiftID);
-            details.set(0,String.valueOf(deptID));
             details.set(1, date);
             details.set(2, startTime);
             details.set(3, endTime);
@@ -136,6 +172,28 @@ public class MedicalManager extends User{
         return results;
     }
     
+    public boolean isShiftDuplicate(int deptID, String date, String startTime,
+            String endTime, int excludeShiftID){
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        if (shifts != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : shifts.entrySet()) {
+                int shiftID = entry.getKey();
+                ArrayList<String> details = entry.getValue();
+                if (shiftID != excludeShiftID) {
+                    int existingDeptID = Integer.parseInt(details.get(0));
+                    String existingDate = details.get(1);
+                    String existingStart = details.get(2);
+                    String existingEnd = details.get(3);
+                    if (existingDeptID == deptID && existingDate.equals(date) 
+                            && existingStart.equals(startTime) && existingEnd.equals(endTime)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
     public void assignDoctorToShift(int shiftID, int doctorID){
         int newID = FileHandling.getNextID("ShiftDoctors");
         ArrayList<String> record = new ArrayList<>();
@@ -147,22 +205,76 @@ public class MedicalManager extends User{
         FileHandling.addRecord("ShiftDoctors.txt", record);
     }
     
-    public List<String[]> getDoctorsForShift(int targetShiftID) {
-        List<String[]> assignedDoctors = new ArrayList<>();
-        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readAllRecords("ShiftDoctors.txt");
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        
-        if(assignments != null) {
-            
+    
+    public int getAssignedDoctorCount(int shiftID){
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        int count = 0;
+        if(assignments != null){
+            for(ArrayList<String> assignment : assignments.values()){
+                if(Integer.parseInt(assignment.get(1)) == shiftID){
+                    count++;
+                }
+            }
         }
+        return count;
+    }
+    
+    public List<String[]> getAssignedDoctors(int shiftID){
+        List<String[]> results = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readActiveRecords("Users.txt");
         
-        return assignedDoctors;
+        if(assignments != null){
+            for(Map.Entry<Integer, ArrayList<String>> entry : assignments.entrySet()){
+                int assignID = entry.getKey();
+                int assignedShiftID = Integer.parseInt(entry.getValue().get(0));
+                int doctorID = Integer.parseInt(entry.getValue().get(1));
+                
+                if(assignedShiftID == shiftID){
+                    String doctorName = "";
+                    if(users !=null && users.containsKey(doctorID)){
+                        doctorName = users.get(doctorID).get(0) + users.get(doctorID).get(1);
+                    }
+                    results.add(new String[]{
+                        String.valueOf(assignID),
+                        String.valueOf(doctorID),
+                        String.valueOf(doctorName),
+                    });
+                }
+            }
+        }
+        return results;
     }
     
-    public void removeDoctorShift(int shiftID){
-        FileHandling.removeRecord("ShiftDoctors", shiftID);
+    public boolean hasTimeCollision(int doctorID, String dateStr, String startStr, String endStr){
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        
+        // convert time strings to LocalDate objects
+        LocalDate date = LocalDate.parse(dateStr, dateFormatter);
+        LocalTime startTime = LocalTime.parse(startStr, timeFormatter);
+        LocalTime endTime = LocalTime.parse(endStr, timeFormatter);
+        
+        return false;
     }
     
+    public List<String[]> getAvailableDoctors(int shiftID, int deptID){
+        List<String[]> eligible = new ArrayList<>();
+        
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        if(shifts == null || !shifts.containsKey(shiftID)){ return eligible; }
+        String dateStr = shifts.get(shiftID).get(1);
+        LocalDate shiftDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String shiftDay = shiftDate.getDayOfWeek().name(); // get day
+        
+        // get assigned doctors
+        ArrayList<Integer> assignedDoctorIDs = new ArrayList<>();
+        List<String[]> assigned = getAssignedDoctors(shiftID);
+        for(String[] assignment : assigned){
+            assignedDoctorIDs.add(Integer.parseInt(assignment[1]));
+        }
+        return eligible;
+    }
     
     public double calculateTotalRevenue() {
         TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readAllRecords("Invoices.txt");

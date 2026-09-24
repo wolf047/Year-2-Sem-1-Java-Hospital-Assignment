@@ -4,3 +4,4 @@
 4,Orthopedics,`Musculoskeletal trauma, joint and spine surgical care`,5,0
 5,Pediatrics,`Medical care for infants, children and adolescents`,7,0
 6,Radiology,`Diagnostic imaging and image-guided procedures`,4,0
+7,Rehabitilation,`Physical, occupataional and speech therapies`,5,0

@@ -1,19 +1,100 @@
 
 package MedicalManager;
+import java.util.*;
+import javax.swing.JSpinner;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.SpinnerDateModel;
+import java.text.SimpleDateFormat;
+import HelperFunction.SessionUser;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.JOptionPane;
 
-/**
- *
- * @author lmao
- */
 public class ManageShifts extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageShifts.class.getName());
+    MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
+    private int selectedShiftID = -1;
 
     /**
      * Creates new form ManagerDashboard
      */
     public ManageShifts() {
         initComponents();
+        setupTimeSpinners();
+        loadDepartmentsCombo();
+        loadShiftsTable();
+    }
+    
+    private void setupTimeSpinners(){
+        JSpinner.DateEditor startEditor = new JSpinner.DateEditor(startSpinner, "HH:mm");
+        startSpinner.setEditor(startEditor);
+        
+        JSpinner.DateEditor endEditor = new JSpinner.DateEditor(endSpinner, "HH:mm");
+        endSpinner.setEditor(endEditor);
+        
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy");
+        dateSpinner.setEditor(dateEditor);
+    }
+    
+    private void loadDepartmentsCombo(){
+        deptCmb.removeAllItems(); // reset before loading
+        List<ArrayList<String>> departments = manager.viewManagingDepartments();
+        for(ArrayList<String> department : departments){
+            deptCmb.addItem(String.format("DEP%03d", Integer.parseInt(department.get(0))) + " - " + department.get(1));
+        }
+    }
+    
+    private void loadShiftsTable(){
+        if(deptCmb.getSelectedItem() == null){
+            return; // prevent crashing during setup (cmb is cleared upon loading)
+        }
+        
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int selectedDeptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        
+        String[] columns = new String[]{"Shift ID", "Date", "Start Time", "End Time", "Doctors Count"};
+        DefaultTableModel table = new DefaultTableModel(columns, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        
+        // set up date formatting to compare against today (outdated shifts are ignored)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate today = LocalDate.now();
+        
+        List<ArrayList<String>> shifts = manager.viewAllShifts();
+        for(ArrayList<String> shift : shifts){
+            int deptID = Integer.parseInt(shift.get(1));
+            if(deptID == selectedDeptID){
+                LocalDate shiftDate = LocalDate.parse(shift.get(2), formatter);
+                if(shiftDate.isBefore(today)){ // if shift has already passed
+                    continue; // skip this shfit record
+                }
+                
+                int shiftID = Integer.parseInt(shift.get(0));
+                String formattedShiftID = String.format("SHF%03d", shiftID);
+                
+                int numberofDoctors = manager.getAssignedDoctorCount(shiftID);
+                String countDisplay = numberofDoctors < 2 ?
+                        numberofDoctors + " (Needs 2+)" : String.valueOf(numberofDoctors);
+                
+                table.addRow(new Object[]{formattedShiftID, shift.get(2), shift.get(3),
+                    shift.get(4), countDisplay });
+            }
+        }
+        shiftsTable.setModel(table);
+    }
+    
+    private void clearFields(){
+        selectedShiftID = -1;
+        shiftsTable.clearSelection();
+        dateSpinner.setValue(new java.util.Date());
+        startSpinner.setValue(new java.util.Date());
+        endSpinner.setValue(new java.util.Date());
     }
 
     /**
@@ -28,17 +109,12 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        shiftBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
-        profileBtn = new javax.swing.JButton();
-        dashboardBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        saveBtn = new javax.swing.JButton();
+        createBtn = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         updateBtn = new javax.swing.JButton();
@@ -47,12 +123,17 @@ public class ManageShifts extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         shiftsTable = new javax.swing.JTable();
         deptCmb = new javax.swing.JComboBox<>();
-        dobFtf = new javax.swing.JFormattedTextField();
-        startFtf = new javax.swing.JFormattedTextField();
-        endFtf = new javax.swing.JFormattedTextField();
         jLabel9 = new javax.swing.JLabel();
+        logoutBtn1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jSpinner1 = new javax.swing.JSpinner();
+        dashboardBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        shiftBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
+        startSpinner = new javax.swing.JSpinner();
+        endSpinner = new javax.swing.JSpinner();
+        dateSpinner = new javax.swing.JSpinner();
 
         jLabel4.setText("jLabel3");
 
@@ -75,30 +156,6 @@ public class ManageShifts extends javax.swing.JFrame {
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        shiftBtn.setText("Shift Rosters");
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
-
-        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        departmentBtn.setText("Departments");
-        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
-
-        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        reportBtn.setText("Reports");
-        reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
-
-        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        profileBtn.setText("Profile");
-        profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-
-        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        dashboardBtn.setText("Dashboard");
-        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Operational Shift Rosters");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
@@ -108,35 +165,38 @@ public class ManageShifts extends javax.swing.JFrame {
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Date (dd-mm-yyyy)");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 150, -1, -1));
+        jLabel3.setText("Date");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Scheduled Shifts");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("End Time (hh:mm)");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 220, 130, -1));
+        jLabel6.setText("End Time");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 220, 130, -1));
 
-        saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        saveBtn.setText("Save");
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
+        createBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        createBtn.setText("Create");
+        createBtn.addActionListener(this::createBtnActionPerformed);
+        getContentPane().add(createBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Department");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 110, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel8.setText("Start Time (hh:mm)");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 180, -1));
+        jLabel8.setText("Start Time");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 180, -1));
 
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
+        updateBtn.addActionListener(this::updateBtnActionPerformed);
         getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 290, -1, -1));
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, -1, -1));
 
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -155,44 +215,72 @@ public class ManageShifts extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        shiftsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                shiftsTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(shiftsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 780, 240));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 730, 190));
 
+        deptCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deptCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(deptCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 290, -1));
-
-        dobFtf.setColumns(9);
-        try {
-            dobFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##-##-####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        getContentPane().add(dobFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 170, 260, -1));
-
-        try {
-            startFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        getContentPane().add(startFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 290, -1));
-
-        try {
-            endFtf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        getContentPane().add(endFtf, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 240, 260, -1));
+        deptCmb.addActionListener(this::deptCmbActionPerformed);
+        getContentPane().add(deptCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 260, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel9.setText("APU Medical Centre");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
+        logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setText("Logout");
+        logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
+        getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
+
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
+        jPanel2.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, -1, -1));
+
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentBtn.setText("Departments");
+        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
+        jPanel2.add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, -1, -1));
+
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        shiftBtn.setText("Shift Rosters");
+        jPanel2.add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, -1, -1));
+
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        reportBtn.setText("Reports");
+        reportBtn.addActionListener(this::reportBtnActionPerformed);
+        jPanel2.add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
+
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
-        getContentPane().add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 100, 160, -1));
+
+        startSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MINUTE));
+        getContentPane().add(startSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 240, 180, -1));
+
+        endSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MINUTE));
+        getContentPane().add(endSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 180, -1));
+
+        dateSpinner.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dateSpinner.setModel(new javax.swing.SpinnerDateModel());
+        getContentPane().add(dateSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 180, -1));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
@@ -225,10 +313,189 @@ public class ManageShifts extends javax.swing.JFrame {
 
     private void assignBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignBtnActionPerformed
         // TODO add your handling code here:
-        AssignDoctorShift assign = new AssignDoctorShift();
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        
+        AssignDoctorShift assign = new AssignDoctorShift(selectedShiftID, selectedDepartment);
         assign.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_assignBtnActionPerformed
+
+    private void logoutBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtn1ActionPerformed
+        // TODO add your handling code here:
+        int confirmLogout = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            javax.swing.JOptionPane.YES_NO_OPTION);
+        if(confirmLogout == javax.swing.JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new Users.UserLogin().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_logoutBtn1ActionPerformed
+
+    private void deptCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deptCmbActionPerformed
+        loadShiftsTable();
+    }//GEN-LAST:event_deptCmbActionPerformed
+
+    private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
+        if(deptCmb.getSelectedItem() == null){return;}
+        
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        String deptName = selectedDepartment.split(" - ")[1].toLowerCase();
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String dateInput = dateFormat.format(dateSpinner.getValue());
+        String startTime = timeFormat.format(startSpinner.getValue());
+        String endTime = timeFormat.format(endSpinner.getValue());
+        LocalTime startLocal = LocalTime.parse(startTime);
+        LocalTime endLocal = LocalTime.parse(endTime);
+        
+        LocalDate currentDate = LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        if(currentDate.isBefore(LocalDate.now())){
+            JOptionPane.showMessageDialog(this, "Cannot create shift in the past.",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(deptName.contains("emergency")){
+            // emergency can be anytime in 24 hours
+            if(startLocal.equals(endLocal)){
+                JOptionPane.showMessageDialog(this, "Start and end times cannot be same",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }else{ // standard shifts between 9am to 6pm
+            LocalTime boundaryStart = LocalTime.of(9, 0);
+            LocalTime boundaryEnd = LocalTime.of(18, 0);
+            if(startLocal.isBefore(boundaryStart) || endLocal.isAfter(boundaryEnd) ||
+                    !startLocal.isBefore(endLocal)){
+                JOptionPane.showMessageDialog(this,
+                        "Standard shifts must fall between 09:00 and 18:00, and end time must be after start time",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        if(manager.isShiftDuplicate(deptID, dateInput, startTime, endTime, -1)){ // -1 for excludeShiftID because creating new
+            JOptionPane.showMessageDialog(this, "A shift with these exact times already exists for this department on this date.",
+                    "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        manager.createShift(deptID, dateInput, startTime, endTime);
+        JOptionPane.showMessageDialog(this,
+                "Shift Created Sucesfuly!\nIMPORTANT: Please assign at least 2 doctors to the shift",
+                "Sucess", JOptionPane.INFORMATION_MESSAGE);
+        loadShiftsTable();
+    }//GEN-LAST:event_createBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String selectedDepartment = deptCmb.getSelectedItem().toString();
+        int deptID = Integer.parseInt(selectedDepartment.split(" - ")[0].replace("DEP", ""));
+        String deptName = selectedDepartment.split(" - ")[1].toLowerCase();
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String dateInput = dateFormat.format(dateSpinner.getValue());
+        String startTime = timeFormat.format(startSpinner.getValue());
+        String endTime = timeFormat.format(endSpinner.getValue());
+        LocalTime startLocal = LocalTime.parse(startTime);
+        LocalTime endLocal = LocalTime.parse(endTime);
+        
+        LocalDate currentDate = LocalDate.parse(dateInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        if(currentDate.isBefore(LocalDate.now())){
+            JOptionPane.showMessageDialog(this, "Cannot create shift in the past.",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(deptName.contains("emergency")){
+            // emergency can be anytime in 24 hours
+            if(startLocal.equals(endLocal)){
+                JOptionPane.showMessageDialog(this, "Start and end times cannot be same",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }else{ // standard shifts between 9am to 6pm
+            LocalTime boundaryStart = LocalTime.of(9, 0);
+            LocalTime boundaryEnd = LocalTime.of(18, 0);
+            if(startLocal.isBefore(boundaryStart) || endLocal.isAfter(boundaryEnd) ||
+                    !startLocal.isBefore(endLocal)){
+                JOptionPane.showMessageDialog(this,
+                        "Standard shifts must fall between 09:00 and 18:00, and end time must be after start time",
+                        "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        if(manager.isShiftDuplicate(deptID, dateInput, startTime, endTime, selectedShiftID)){
+            JOptionPane.showMessageDialog(this, "A shift with these exact times already exists for this department on this date.",
+                    "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean success = manager.updateShift(selectedShiftID, dateInput, startTime, endTime);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Shift Updated Successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+            loadShiftsTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Unable to update shift.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void shiftsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_shiftsTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = shiftsTable.getSelectedRow();
+        if(selectedRow != -1){
+            String shiftID = shiftsTable.getValueAt(selectedRow, 0).toString();
+            selectedShiftID = Integer.parseInt(shiftID.replace("SHF", ""));
+            try{
+                String shiftDate = shiftsTable.getValueAt(selectedRow, 1).toString();
+                String startTime = shiftsTable.getValueAt(selectedRow, 2).toString();
+                String endTime = shiftsTable.getValueAt(selectedRow, 3).toString();
+                
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                dateSpinner.setValue(dateFormat.parse(shiftDate));
+                startSpinner.setValue(timeFormat.parse(startTime));
+                endSpinner.setValue(timeFormat.parse(endTime));
+            }catch(Exception e){
+                // ignore
+            }
+        }
+    }//GEN-LAST:event_shiftsTableMouseClicked
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if(selectedShiftID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a shift.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this shift?",
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if(confirm == JOptionPane.YES_OPTION){
+            boolean success = manager.deleteShift(selectedShiftID);
+            if(success){
+                JOptionPane.showMessageDialog(this, "Shift Deleted Successfully!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                clearFields();
+                loadShiftsTable();
+            }else{
+                JOptionPane.showMessageDialog(this, "Failed to delete shift.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,12 +524,13 @@ public class ManageShifts extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton assignBtn;
+    private javax.swing.JButton createBtn;
     private javax.swing.JButton dashboardBtn;
+    private javax.swing.JSpinner dateSpinner;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
     private javax.swing.JComboBox<String> deptCmb;
-    private javax.swing.JFormattedTextField dobFtf;
-    private javax.swing.JFormattedTextField endFtf;
+    private javax.swing.JSpinner endSpinner;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -275,14 +543,13 @@ public class ManageShifts extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton logoutBtn1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
-    private javax.swing.JButton saveBtn;
     private javax.swing.JButton shiftBtn;
     private javax.swing.JTable shiftsTable;
-    private javax.swing.JFormattedTextField startFtf;
+    private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

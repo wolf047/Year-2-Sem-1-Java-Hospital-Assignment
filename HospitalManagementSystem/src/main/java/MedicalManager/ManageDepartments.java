@@ -1,6 +1,11 @@
 
 package MedicalManager;
 
+import HelperFunction.SessionUser;
+import java.util.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author lmao
@@ -8,12 +13,43 @@ package MedicalManager;
 public class ManageDepartments extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageDepartments.class.getName());
+    private int selectedDeptID = -1;
+    private MedicalManager manager = (MedicalManager) SessionUser.getCurrentUser();
 
     /**
      * Creates new form ManagerDashboard
      */
     public ManageDepartments() {
         initComponents();
+        loadDepartmentsTable();
+    }
+    
+    private void loadDepartmentsTable(){
+        List<ArrayList<String>> departments = manager.viewManagingDepartments();
+        
+        String[] columns = new String[]{"Dept ID", "Department Name", "Description"};
+        DefaultTableModel table = new DefaultTableModel(columns, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        
+        for(ArrayList<String> department : departments){
+            String deptID = String.format("DEP%03d", Integer.parseInt(department.get(0)));
+            table.addRow(new Object[]{deptID, department.get(1), department.get(2)});
+        }
+        departmentsTable.setModel(table);
+        departmentsTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+        departmentsTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        departmentsTable.getColumnModel().getColumn(2).setPreferredWidth(420);
+    }
+    
+    private void clearFields(){
+        deptNameTf.setText("");
+        descTf.setText("");
+        selectedDeptID = -1;
+        departmentsTable.clearSelection();
     }
 
     /**
@@ -26,11 +62,6 @@ public class ManageDepartments extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel4 = new javax.swing.JLabel();
-        shiftBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
-        profileBtn = new javax.swing.JButton();
-        dashboardBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -44,7 +75,14 @@ public class ManageDepartments extends javax.swing.JFrame {
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
+        logoutBtn1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        dashboardBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        shiftBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
+        clearBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
@@ -53,30 +91,6 @@ public class ManageDepartments extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        shiftBtn.setText("Shift Rosters");
-        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
-
-        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        departmentBtn.setText("Departments");
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
-
-        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        reportBtn.setText("Reports");
-        reportBtn.addActionListener(this::reportBtnActionPerformed);
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
-
-        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        profileBtn.setText("Profile");
-        profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-
-        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        dashboardBtn.setText("Dashboard");
-        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Manage Clinical Departments");
@@ -98,7 +112,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         getContentPane().add(deptNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 250, -1));
 
         descTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        getContentPane().add(descTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 390, -1));
+        getContentPane().add(descTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 450, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("DEPARTMENT NAME");
@@ -106,6 +120,7 @@ public class ManageDepartments extends javax.swing.JFrame {
 
         saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveBtn.setText("Save");
+        saveBtn.addActionListener(this::saveBtnActionPerformed);
         getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
         departmentsTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -119,26 +134,70 @@ public class ManageDepartments extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        departmentsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                departmentsTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(departmentsTable);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 780, 270));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 760, 210));
 
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
-        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, -1, -1));
+        updateBtn.addActionListener(this::updateBtnActionPerformed);
+        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, 80, -1));
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 240, -1, -1));
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 240, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel7.setText("APU Medical Centre");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
+        logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setText("Logout");
+        logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
+        getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
+
         jPanel2.setBackground(new java.awt.Color(38, 117, 154));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
+        jPanel2.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, -1, -1));
+
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentBtn.setText("Departments");
+        jPanel2.add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, -1, -1));
+
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
+        jPanel2.add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, -1, -1));
+
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        reportBtn.setText("Reports");
+        reportBtn.addActionListener(this::reportBtnActionPerformed);
+        jPanel2.add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
+
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
 
+        clearBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        clearBtn.setText("Clear");
+        clearBtn.addActionListener(this::clearBtnActionPerformed);
+        getContentPane().add(clearBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 240, -1, -1));
+
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
@@ -169,6 +228,118 @@ public class ManageDepartments extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_profileBtnActionPerformed
 
+    private void logoutBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtn1ActionPerformed
+        // TODO add your handling code here:
+        int confirmLogout = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            javax.swing.JOptionPane.YES_NO_OPTION);
+        if(confirmLogout == javax.swing.JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new Users.UserLogin().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_logoutBtn1ActionPerformed
+
+    private void departmentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_departmentsTableMouseClicked
+        int selectedRow = departmentsTable.getSelectedRow();
+        if(selectedRow != -1){
+            String idStr = departmentsTable.getValueAt(selectedRow, 0).toString();
+            selectedDeptID = Integer.parseInt(idStr.replace("DEP", "")); // remove DEP and get raw integer id
+            
+            deptNameTf.setText(departmentsTable.getValueAt(selectedRow, 1).toString());
+            descTf.setText(departmentsTable.getValueAt(selectedRow, 2).toString());
+        }
+    }//GEN-LAST:event_departmentsTableMouseClicked
+
+    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+        // TODO add your handling code here:
+        String name = deptNameTf.getText().trim();
+        String desc = descTf.getText().trim();
+        
+        if(name.isEmpty() || desc.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.",
+                    "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if(manager.isDepartmentAlreadyExist(name, -1)){ // index -1 because its new department, no ID
+            JOptionPane.showMessageDialog(this, "Department name already exists.",
+                    "Duplicate Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        manager.createDepartment(name, desc);
+        JOptionPane.showMessageDialog(this, "Department Created Successfully!",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+        clearFields();
+        loadDepartmentsTable(); // reload table
+    }//GEN-LAST:event_saveBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        // TODO add your handling code here:
+        if(selectedDeptID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a department to update.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        String name = deptNameTf.getText().trim();
+        String desc = descTf.getText().trim();
+        if(name.isEmpty() || desc.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Please fill i all fields.",
+                    "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if(manager.isDepartmentAlreadyExist(name, selectedDeptID)){
+            JOptionPane.showMessageDialog(this, "Department name already exists.",
+                    "Duplicate Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        boolean success = manager.updateDepartment(selectedDeptID, name, desc);
+        if(success){
+            JOptionPane.showMessageDialog(this, "Department Updated Successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+            loadDepartmentsTable();
+        }else{
+            JOptionPane.showMessageDialog(this, "Failed to update department",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if(selectedDeptID == -1){
+            JOptionPane.showMessageDialog(this, "Please select a department to delete.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete this department?",
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if(confirm == JOptionPane.YES_OPTION){
+            boolean success = manager.deleteDepartment(selectedDeptID);
+            if(success){
+                JOptionPane.showMessageDialog(this, "Department Deleted Succesfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                clearFields();
+                loadDepartmentsTable();
+            }else{
+                JOptionPane.showMessageDialog(this, "Failed to delete department",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        }
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
+        // TODO add your handling code here:
+        clearFields();
+    }//GEN-LAST:event_clearBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -195,6 +366,7 @@ public class ManageDepartments extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton clearBtn;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
@@ -210,6 +382,7 @@ public class ManageDepartments extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton logoutBtn1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JButton saveBtn;

@@ -37,23 +37,36 @@ public class ManagerDashboard extends javax.swing.JFrame {
         
         usedBedsLbl.setText(manager.getUsedBedsCount() + " Beds In Use");
         
-        List<ArrayList<String>> departments = manager.viewManagingDepartments();
-        departmentsLbl.setText(departments.size() + " Active");
+        List<ArrayList<String>> myDepartments = manager.viewManagingDepartments();
+        departmentsLbl.setText(myDepartments.size() + " Active");
         
-        String[] columnNames = {"Dept ID", "Department Name", "Description"};
-        DefaultTableModel table = new DefaultTableModel(columnNames, 0);
+        List<ArrayList<String>> allDepartments = manager.viewAllActiveDepartments();
+        String[] columnNames = {"Dept ID", "Department Name", "Description", "Managed By"};
+        DefaultTableModel table = new DefaultTableModel(columnNames, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
         
-        // departments -> list of lists of department
-        for(ArrayList<String> department : departments) {
-            String deptID = String.format("DEP%02d", Integer.parseInt(department.get(0)));
+        for(ArrayList<String> department : allDepartments) {
+            String deptID = String.format("DEP%03d", Integer.parseInt(department.get(0)));
             String deptName = department.get(1);
             String desc = department.get(2);
-            table.addRow(new Object[]{deptID, deptName, desc});
+            String managerID = String.format("USER%03d", Integer.parseInt(department.get(3)));
+            
+            if(Integer.parseInt(department.get(3)) == manager.getUserID()){
+                managerID += " (You)";
+            }
+            
+            table.addRow(new Object[]{deptID, deptName, desc, managerID});
         }
+        
         departmentsTable.setModel(table);
-        departmentsTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-        departmentsTable.getColumnModel().getColumn(1).setPreferredWidth(150); 
-        departmentsTable.getColumnModel().getColumn(2).setPreferredWidth(400); 
+        departmentsTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+        departmentsTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+        departmentsTable.getColumnModel().getColumn(2).setPreferredWidth(380);
+        departmentsTable.getColumnModel().getColumn(3).setPreferredWidth(100);
     }
 
     /**
@@ -241,11 +254,11 @@ public class ManagerDashboard extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(departmentsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 760, 230));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 760, 230));
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel19.setText("Your Managed Departments Overview");
-        getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 280, -1));
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel19.setText("All Hospital Departments Overview");
+        getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 280, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setText("APU Medical Centre");

@@ -6,6 +6,7 @@ import Users.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import HelperFunction.FileHandling;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -130,10 +131,11 @@ public class MedicalManager extends User{
         
     }
     
-    public boolean updateShift(int shiftID, String date, String startTime, String endTime){
+    public boolean updateShift(int shiftID, int deptID, String date, String startTime, String endTime){
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readAllRecords("Shifts.txt");
         if(shifts != null && shifts.containsKey(shiftID)){
             ArrayList<String> details = shifts.get(shiftID);
+            details.set(0, String.valueOf(deptID));
             details.set(1, date);
             details.set(2, startTime);
             details.set(3, endTime);
@@ -205,6 +207,15 @@ public class MedicalManager extends User{
         FileHandling.addRecord("ShiftDoctors.txt", record);
     }
     
+    public boolean removeDoctorShift(int assignmentID){
+        try {
+            FileHandling.removeRecord("ShiftDoctors.txt", assignmentID);
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
+    
     
     public int getAssignedDoctorCount(int shiftID){
         TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
@@ -249,41 +260,93 @@ public class MedicalManager extends User{
     public boolean hasTimeCollision(int doctorID, String dateStr, String startStr, String endStr){
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        
         // convert time strings to LocalDate objects
         LocalDate date = LocalDate.parse(dateStr, dateFormatter);
         LocalTime startTime = LocalTime.parse(startStr, timeFormatter);
         LocalTime endTime = LocalTime.parse(endStr, timeFormatter);
-        
-        java.time.LocalDateTime targetStart = date.atTime(startTime);
-        java.time.LocalDateTime targetEnd = date.atTime(endTime);
+        // use LocalDateTime to glue time to date, to compare overnight shifts
+        LocalDateTime selectedStart = date.atTime(startTime);
+        LocalDateTime selectedEnd = date.atTime(endTime);
         // handle overnight shifts
-        if (targetEnd.isBefore(targetStart)) {
-            targetEnd = targetEnd.plusDays(1);
+        if (endTime.isBefore(startTime)) { // compare time (without date)
+            selectedEnd = selectedEnd.plusDays(1); // add one day to end so end > start (time + date)
         }
         TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
-        
-        
-        
+        if(assignments != null && shifts != null){
+            for(ArrayList<String> assignment : assignments.values()){
+                int assignedDoctorID = Integer.parseInt(assignment.get(1));
+                if(assignedDoctorID == doctorID){ // check shifts for selected doctor
+                    int assignedShiftID = Integer.parseInt(assignment.get(0));
+                    ArrayList<String> shiftDetails = shifts.get(assignedShiftID); // get shift details
+                    if(shiftDetails != null){
+                        // get the shift's date and time to be compared on selected shift
+                        // if overlap with current shift, return true (has collision)
+                        String assignedDateStr = shiftDetails.get(1);
+                        String assignedStartStr = shiftDetails.get(2);
+                        String assignedEndStr = shiftDetails.get(3);
+                        
+                        LocalDate assignedDate = LocalDate.parse(assignedDateStr, dateFormatter);
+                        LocalTime assignedStartTime = LocalTime.parse(assignedStartStr, timeFormatter);
+                        LocalTime assignedEndTime = LocalTime.parse(assignedEndStr, timeFormatter);
+                        LocalDateTime assignedStart = assignedDate.atTime(assignedStartTime);
+                        LocalDateTime assignedEnd = assignedDate.atTime(assignedEndTime);
+                        if(assignedEndTime.isBefore(assignedStartTime)){ // compare start and end time (without date)
+                            assignedEnd = assignedEnd.plusDays(1);
+                        }
+                        // check if doctor already have shift at selected shift time
+                        // check for shiftStart < dsEnd AND shiftEnd > dsStart
+                        if(selectedStart.isBefore(assignedEnd) && selectedEnd.isAfter(assignedStart)){
+                            return true; // collision found
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
     
-    public List<String[]> getAvailableDoctors(int shiftID, int deptID){
+    public List<String[]> getEligibleDoctors(int shiftID, int deptID){
         List<String[]> eligible = new ArrayList<>();
         
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
         if(shifts == null || !shifts.containsKey(shiftID)){ return eligible; }
-        String dateStr = shifts.get(shiftID).get(1);
-        LocalDate shiftDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        String shiftDay = shiftDate.getDayOfWeek().name(); // get day
+        String date = shifts.get(shiftID).get(1);
+        String startTime = shifts.get(shiftID).get(2);
+        String endTime = shifts.get(shiftID).get(3);
+        
+        LocalDate shiftDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String shiftDay = shiftDate.getDayOfWeek().name();
         
         // get assigned doctors
-        ArrayList<Integer> assignedDoctorIDs = new ArrayList<>();
+        ArrayList<Integer> assignedDoctorIDs = new ArrayList<>(); // IDs of all doctors assigned to this shift
         List<String[]> assigned = getAssignedDoctors(shiftID);
         for(String[] assignment : assigned){
             assignedDoctorIDs.add(Integer.parseInt(assignment[1]));
         }
+        TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readActiveRecords("Doctors.txt");
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readActiveRecords("Users.txt");
+        if(doctors != null){
+            for(Map.Entry<Integer, ArrayList<String>> entry : doctors.entrySet()){
+                int doctorID = entry.getKey();
+                int doctorDeptID = Integer.parseInt(entry.getValue().get(0));
+                String offDay = entry.getValue().get(3);
+                // if doctor belongs in the department, not off day and not in that same shift
+                if(doctorDeptID == deptID && !shiftDay.equalsIgnoreCase(offDay) &&
+                        !assignedDoctorIDs.contains(doctorID)){
+                    // check time collisions with other shifts
+                    if(!hasTimeCollision(doctorID, date, startTime, endTime)){
+                        String doctorName = "";
+                        if(users != null && users.containsKey(doctorID)){
+                            doctorName = users.get(doctorID).get(0) + " " + users.get(doctorID).get(1);
+                        }
+                        eligible.add(new String[]{String.valueOf(doctorID), doctorName, offDay});
+                    }
+                
+                }
+            }
+        }
+        
         return eligible;
     }
     

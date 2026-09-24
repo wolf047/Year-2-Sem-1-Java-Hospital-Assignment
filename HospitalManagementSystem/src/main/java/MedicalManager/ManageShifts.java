@@ -440,7 +440,7 @@ public class ManageShifts extends javax.swing.JFrame {
                     "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        boolean success = manager.updateShift(selectedShiftID, dateInput, startTime, endTime);
+        boolean success = manager.updateShift(selectedShiftID, deptID, dateInput, startTime, endTime);
         if (success) {
             JOptionPane.showMessageDialog(this, "Shift Updated Successfully!",
                     "Success", JOptionPane.INFORMATION_MESSAGE);

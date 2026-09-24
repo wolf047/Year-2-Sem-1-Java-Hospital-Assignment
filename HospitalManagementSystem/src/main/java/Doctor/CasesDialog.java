@@ -214,25 +214,7 @@ public class CasesDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCloseDialog
 
-    private void btnSaveSummary(java.awt.event.ActionEvent evt) {
-    // TODO add your handling code here:
-    }
 
-    private void btnViewConsultation(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void btnViewDiagnosticResult(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void btnCloseCase(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-}
     /**
      * @param args the command line arguments
      */

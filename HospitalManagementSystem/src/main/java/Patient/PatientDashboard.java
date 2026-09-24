@@ -10,6 +10,8 @@ import java.util.TreeMap;
 import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import HelperFunction.SessionUser;
+import Users.UserLogin;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -28,8 +30,7 @@ public class PatientDashboard extends javax.swing.JFrame {
      */
     // =====================================================================
     // 1. FIELDS
-    // =====================================================================
-    private int patientId;                                // logged-in patient (from PatientLogin)
+    // =====================================================================                                // logged-in patient (from PatientLogin)
     private PatientServices patient;                      // the patient object, seen through the interface
     private final Color NAV_BG = new Color(30, 95, 125);  // menu background
     private final Color BLUE = new Color(38, 117, 154);   // theme blue
@@ -43,7 +44,7 @@ public class PatientDashboard extends javax.swing.JFrame {
     // =====================================================================
     // 2. CONSTRUCTOR
     // =====================================================================
-    public PatientDashboard(int patientId) {
+    public PatientDashboard() {
         initComponents();
 
         // make every table read-only and consistent
@@ -57,8 +58,7 @@ public class PatientDashboard extends javax.swing.JFrame {
             t.setSelectionForeground(Color.WHITE);
         }
 
-        this.patientId = patientId;
-        this.patient = new Patient(patientId);
+        this.patient = (Patient) SessionUser.getCurrentUser();
 
         setLocationRelativeTo(null);
         loadWelcomeName();
@@ -1010,7 +1010,8 @@ public class PatientDashboard extends javax.swing.JFrame {
 
         int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            new PatientLogin().setVisible(true);
+            SessionUser.logout();
+            new UserLogin().setVisible(true);
             dispose();
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
@@ -1232,8 +1233,8 @@ public class PatientDashboard extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        // Test run: open the dashboard for patient 40
-        java.awt.EventQueue.invokeLater(() -> new PatientDashboard(40).setVisible(true));
+        // Test run: open the dashboard for patient 40java.awt.Event
+        java.awt.EventQueue.invokeLater(() -> new Users.UserLogin().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

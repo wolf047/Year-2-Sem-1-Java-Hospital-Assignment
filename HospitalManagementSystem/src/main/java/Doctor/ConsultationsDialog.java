@@ -57,7 +57,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         boolean canEdit = doctor.canEditConsultation();
         txtVitalSigns.setEditable(canEdit);
         txtNotes.setEditable(canEdit);
-        btnSaveConsultation.setEnabled(canEdit);
+        btnCompleteConsultation.setEnabled(canEdit);
         btnWritePrescription.setEnabled(canEdit);
         btnRequestDiagnostic.setEnabled(canEdit);
 
@@ -88,10 +88,10 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         lblConsultHeader = new javax.swing.JLabel();
-        lblConsultMeta = new javax.swing.JLabel();
         lblConsultStatusBadge = new javax.swing.JLabel();
-        btnViewCase = new javax.swing.JButton();
+        lblConsultMeta = new javax.swing.JLabel();
         lblConsultRoleNote = new javax.swing.JLabel();
+        btnViewCase = new javax.swing.JButton();
         lblComplaintHeader = new javax.swing.JLabel();
         scrComplaint = new javax.swing.JScrollPane();
         txtComplaint = new javax.swing.JTextArea();
@@ -101,8 +101,6 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblNotesHeader = new javax.swing.JLabel();
         scrNotes = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
-        btnSaveConsultation = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
         lblPrescriptionHeader = new javax.swing.JLabel();
         btnWritePrescription = new javax.swing.JButton();
         scrPrescriptionItemsView = new javax.swing.JScrollPane();
@@ -112,12 +110,15 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnDeleteDiagnosticRequest = new javax.swing.JButton();
         scrDiagnosticRequestsView = new javax.swing.JScrollPane();
         tblDiagnosticRequestsView = new javax.swing.JTable();
+        btnCompleteConsultation = new javax.swing.JButton();
+        btnCloseDialog = new javax.swing.JButton();
+        btnSaveDetails = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Consultation Notes");
         setModal(true);
         setName("consultations"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 800));
+        setPreferredSize(new java.awt.Dimension(560, 910));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -136,18 +137,19 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblConsultRoleNote.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         lblConsultRoleNote.setForeground(new java.awt.Color(102, 102, 102));
         lblConsultRoleNote.setText("lblConsultRoleNote");
-        getContentPane().add(lblConsultRoleNote, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 68, 520, 40));
+        lblConsultRoleNote.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        getContentPane().add(lblConsultRoleNote, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 68, 350, 40));
 
         btnViewCase.setBackground(new java.awt.Color(38, 117, 154));
         btnViewCase.setForeground(new java.awt.Color(255, 255, 255));
         btnViewCase.setText("View Case");
         btnViewCase.setFocusPainted(false);
         btnViewCase.addActionListener(this::btnViewCase);
-        getContentPane().add(btnViewCase, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 112, 130, 26));
+        getContentPane().add(btnViewCase, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 68, 130, 26));
 
         lblComplaintHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblComplaintHeader.setText("Complaint:");
-        getContentPane().add(lblComplaintHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 144, 300, 18));
+        getContentPane().add(lblComplaintHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 114, 300, 18));
 
         txtComplaint.setColumns(20);
         txtComplaint.setLineWrap(true);
@@ -155,11 +157,11 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         txtComplaint.setWrapStyleWord(true);
         scrComplaint.setViewportView(txtComplaint);
 
-        getContentPane().add(scrComplaint, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 164, 520, 50));
+        getContentPane().add(scrComplaint, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 134, 520, 50));
 
         lblVitalsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblVitalsHeader.setText("Vital Signs: ");
-        getContentPane().add(lblVitalsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 224, 300, 18));
+        getContentPane().add(lblVitalsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 194, 300, 18));
 
         txtVitalSigns.setColumns(20);
         txtVitalSigns.setLineWrap(true);
@@ -167,11 +169,11 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         txtVitalSigns.setWrapStyleWord(true);
         scrVitalSigns.setViewportView(txtVitalSigns);
 
-        getContentPane().add(scrVitalSigns, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 244, 520, 50));
+        getContentPane().add(scrVitalSigns, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 214, 520, 50));
 
         lblNotesHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblNotesHeader.setText("Notes: ");
-        getContentPane().add(lblNotesHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 304, 300, 18));
+        getContentPane().add(lblNotesHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 274, 300, 18));
 
         txtNotes.setColumns(20);
         txtNotes.setLineWrap(true);
@@ -179,18 +181,18 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         txtNotes.setWrapStyleWord(true);
         scrNotes.setViewportView(txtNotes);
 
-        getContentPane().add(scrNotes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 324, 520, 110));
+        getContentPane().add(scrNotes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 294, 520, 110));
 
         lblPrescriptionHeader.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         lblPrescriptionHeader.setText("Prescription:");
-        getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 446, 140, 22));
+        getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 466, 140, 22));
 
         btnWritePrescription.setBackground(new java.awt.Color(38, 117, 154));
         btnWritePrescription.setForeground(new java.awt.Color(255, 255, 255));
         btnWritePrescription.setText("Write Prescription");
         btnWritePrescription.setFocusPainted(false);
         btnWritePrescription.addActionListener(this::btnWritePrescription);
-        getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 442, 230, 28));
+        getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 590, 200, 26));
 
         tblPrescriptionItemsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -211,23 +213,23 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         tblPrescriptionItemsView.getTableHeader().setReorderingAllowed(false);
         scrPrescriptionItemsView.setViewportView(tblPrescriptionItemsView);
 
-        getContentPane().add(scrPrescriptionItemsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 474, 520, 86));
+        getContentPane().add(scrPrescriptionItemsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 494, 520, 86));
 
         lblDiagnosticHeader.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         lblDiagnosticHeader.setText("Diagnostic Requests:");
-        getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 576, 170, 22));
+        getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 626, 170, 22));
 
         btnRequestDiagnostic.setBackground(new java.awt.Color(38, 117, 154));
         btnRequestDiagnostic.setForeground(new java.awt.Color(255, 255, 255));
         btnRequestDiagnostic.setText("Add Request");
         btnRequestDiagnostic.setFocusPainted(false);
         btnRequestDiagnostic.addActionListener(this::btnRequestDiagnostic);
-        getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 572, 150, 28));
+        getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 778, 200, 26));
 
         btnDeleteDiagnosticRequest.setText("Delete Selected");
         btnDeleteDiagnosticRequest.setFocusPainted(false);
         btnDeleteDiagnosticRequest.addActionListener(this::btnDeleteDiagnosticRequest);
-        getContentPane().add(btnDeleteDiagnosticRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 572, 190, 28));
+        getContentPane().add(btnDeleteDiagnosticRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 778, 200, 26));
 
         tblDiagnosticRequestsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -253,26 +255,32 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         });
         scrDiagnosticRequestsView.setViewportView(tblDiagnosticRequestsView);
 
-        getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 608, 520, 110));
+        getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 658, 520, 110));
 
-        btnSaveConsultation.setBackground(new java.awt.Color(38, 117, 154));
-        btnSaveConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnSaveConsultation.setForeground(new java.awt.Color(255, 255, 255));
-        btnSaveConsultation.setText("Save Changes");
-        btnSaveConsultation.addActionListener(this::btnSaveConsultation);
-        getContentPane().add(btnSaveConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 738, 250, 34));
+        btnCompleteConsultation.setBackground(new java.awt.Color(38, 117, 154));
+        btnCompleteConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCompleteConsultation.setForeground(new java.awt.Color(255, 255, 255));
+        btnCompleteConsultation.setText("Complete Consultation");
+        btnCompleteConsultation.addActionListener(this::btnCompleteConsultation);
+        getContentPane().add(btnCompleteConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 250, 36));
 
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseDialog.setText("Cancel");
         btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 738, 250, 34));
+        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 830, 250, 36));
+
+        btnSaveDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnSaveDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnSaveDetails.setText("Save Details");
+        btnSaveDetails.addActionListener(this::btnSaveDetails);
+        getContentPane().add(btnSaveDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 414, 140, 26));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSaveConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveConsultation
+    private void btnCompleteConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation
         String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText());
         if (result != null) {
             JOptionPane.showMessageDialog(this, result);
@@ -281,7 +289,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         JOptionPane.showMessageDialog(this, "Consultation updated.");
         doctor.loadConsultation(consultId);
         refresh();
-    }//GEN-LAST:event_btnSaveConsultation
+    }//GEN-LAST:event_btnCompleteConsultation
 
     private void btnWritePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWritePrescription
         if (!doctor.canEditConsultation()) {
@@ -350,6 +358,17 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnCloseDialog
 
+    private void btnSaveDetails(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveDetails
+        String result = doctor.saveCaseSummary(txtCaseSummary.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Case summary saved.");
+        doctor.loadCase(caseId);
+        refresh();
+    }//GEN-LAST:event_btnSaveDetails
+
 
     /**
      * @param args the command line arguments
@@ -390,9 +409,10 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnCompleteConsultation;
     private javax.swing.JButton btnDeleteDiagnosticRequest;
     private javax.swing.JButton btnRequestDiagnostic;
-    private javax.swing.JButton btnSaveConsultation;
+    private javax.swing.JButton btnSaveDetails;
     private javax.swing.JButton btnViewCase;
     private javax.swing.JButton btnWritePrescription;
     private javax.swing.JLabel lblComplaintHeader;

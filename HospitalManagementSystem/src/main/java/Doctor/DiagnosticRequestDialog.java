@@ -133,6 +133,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Request Diagnostic Service");
         setModal(true);
+        setPreferredSize(new java.awt.Dimension(560, 785));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

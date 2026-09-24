@@ -4,13 +4,25 @@
  */
 package Doctor;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Sascha
  */
 public class PrescriptionDialog extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PrescriptionDialog.class.getName());
+
+    private DoctorServices doctor;
+    private int consultId = -1;
+    // items already added to the prescription being built: {drugId, drugName, dosage, frequency, duration, instructions}
+    private ArrayList<String[]> pendingItems = new ArrayList<>();
+    private int selectedDrugId = -1;
+    private String selectedDrugName = "";
+    private String selectedForm = "";
 
     /**
      * Creates new form PrescriptionDialog
@@ -18,6 +30,73 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     public PrescriptionDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    // Used by the Consultation dialog to write a prescription for one consultation
+    public PrescriptionDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int consultId) {
+        super(parent, modal);
+        initComponents();
+        this.doctor = doctor;
+        this.consultId = consultId;
+
+        lblPrescriptionHeader.setText("Write Prescription");
+        lblPrescriptionMeta.setText("Consultation #" + consultId);
+        txtDrugSearch.setText("");
+        txtDosage.setText("");
+        txtFrequency.setText("");
+        txtInstructions.setText("");
+
+        ArrayList<String> forms = doctor.getDrugForms();
+        cmbFormFilter.setModel(new javax.swing.DefaultComboBoxModel<>(forms.toArray(new String[0])));
+
+        ArrayList<String[]> existing = doctor.getPrescriptionItems(consultId);
+        if (!existing.isEmpty()) {
+            lblSelectedDrug.setText("A prescription has already been issued for this consultation.");
+            DefaultTableModel model = (DefaultTableModel) tblPrescriptionItems.getModel();
+            model.setRowCount(0);
+            for (String[] item : existing) {
+                model.addRow(item);
+            }
+            setInputsEnabled(false);
+        } else if (!doctor.canEditConsultation()) {
+            lblSelectedDrug.setText("You cannot write a prescription for this consultation.");
+            setInputsEnabled(false);
+        } else {
+            searchDrugs();
+        }
+    }
+
+    private void setInputsEnabled(boolean enabled) {
+        cmbFormFilter.setEnabled(enabled);
+        txtDrugSearch.setEnabled(enabled);
+        tblDrugResults.setEnabled(enabled);
+        txtDosage.setEnabled(enabled);
+        txtFrequency.setEnabled(enabled);
+        spnDuration.setEnabled(enabled);
+        txtInstructions.setEnabled(enabled);
+        btnAddItem.setEnabled(enabled);
+        btnRemoveItem.setEnabled(enabled);
+        btnSavePrescription.setEnabled(enabled);
+    }
+
+    private void searchDrugs() {
+        String form = "All";
+        if (cmbFormFilter.getSelectedItem() != null) {
+            form = cmbFormFilter.getSelectedItem().toString();
+        }
+        DefaultTableModel model = (DefaultTableModel) tblDrugResults.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.searchDrugs(form, txtDrugSearch.getText())) {
+            model.addRow(row);
+        }
+    }
+
+    private void refreshItemsTable() {
+        DefaultTableModel model = (DefaultTableModel) tblPrescriptionItems.getModel();
+        model.setRowCount(0);
+        for (String[] item : pendingItems) {
+            model.addRow(new Object[]{item[1], item[2], item[3], item[4]});
+        }
     }
 
     /**
@@ -217,31 +296,74 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbFormFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFormFilter
-        // TODO add your handling code here:
+        searchDrugs();
     }//GEN-LAST:event_cmbFormFilter
 
     private void btnAddItem(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItem
-        // TODO add your handling code here:
+        if (selectedDrugId < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a drug from the results above.");
+            return;
+        }
+        String dosage = txtDosage.getText();
+        String frequency = txtFrequency.getText();
+        String instructions = txtInstructions.getText();
+        String unit = doctor.getDosageUnit(selectedForm);
+
+        String error = doctor.checkPrescriptionItem(unit, dosage, frequency, instructions);
+        if (error != null) {
+            JOptionPane.showMessageDialog(this, error);
+            return;
+        }
+
+        String duration = String.valueOf(spnDuration.getValue());
+        pendingItems.add(new String[]{String.valueOf(selectedDrugId), selectedDrugName,
+            dosage.trim(), frequency.trim(), duration, instructions.trim()});
+        refreshItemsTable();
+
+        txtDosage.setText("");
+        txtFrequency.setText("");
+        txtInstructions.setText("");
+        spnDuration.setValue(1);
     }//GEN-LAST:event_btnAddItem
 
     private void btnRemoveItem(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItem
-        // TODO add your handling code here:
+        int row = tblPrescriptionItems.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select an item to remove.");
+            return;
+        }
+        pendingItems.remove(row);
+        refreshItemsTable();
     }//GEN-LAST:event_btnRemoveItem
 
     private void btnSavePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePrescription
-        // TODO add your handling code here:
+        String result = doctor.savePrescription(consultId, pendingItems);
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Prescription saved.");
+        dispose();
     }//GEN-LAST:event_btnSavePrescription
 
     private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btnCloseDialog
 
     private void tblDrugResults(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDrugResults
-        // TODO add your handling code here:
+        int row = tblDrugResults.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+        selectedDrugId = doctor.getDrugResultId(row);
+        selectedDrugName = tblDrugResults.getValueAt(row, 0).toString();
+        selectedForm = tblDrugResults.getValueAt(row, 1).toString();
+        lblSelectedDrug.setText("Selected: " + selectedDrugName);
+        lblDosageUnit.setText(doctor.getDosageUnit(selectedForm));
     }//GEN-LAST:event_tblDrugResults
 
     private void txtDrugSearch(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDrugSearch
-        // TODO add your handling code here:
+        searchDrugs();
     }//GEN-LAST:event_txtDrugSearch
 
 

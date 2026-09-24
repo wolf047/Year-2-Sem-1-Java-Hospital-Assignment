@@ -4,13 +4,19 @@
  */
 package Doctor;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Sascha
  */
 public class ConsultationsDialog extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ConsultationsDialog.class.getName());
+
+    private DoctorServices doctor;
+    private int consultId = -1;
+    private static final String[] STATUS_OPTIONS = {"booked", "completed", "cancelled"};
 
     /**
      * Creates new form ConsultationDialog
@@ -18,6 +24,52 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     public ConsultationsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    // Used by the doctor dashboard to open one specific consultation
+    public ConsultationsDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int consultId) {
+        super(parent, modal);
+        initComponents();
+        this.doctor = doctor;
+        this.consultId = consultId;
+
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Booked", "Completed", "Cancelled"}));
+
+        if (!doctor.loadConsultation(consultId)) {
+            JOptionPane.showMessageDialog(this, "This consultation could not be found.");
+            dispose();
+            return;
+        }
+        refresh();
+    }
+
+    // Redraws every field from the doctor object's current data
+    private void refresh() {
+        lblConsultHeader.setText(doctor.getConsultTitle());
+        lblConsultMeta.setText(doctor.getConsultMeta());
+        lblConsultStatusBadge.setText(doctor.getConsultStatus());
+        lblConsultRoleNote.setText(doctor.getConsultRoleNote());
+        lblPrescriptionStatus.setText(doctor.getPrescriptionStatus(consultId));
+        lblDiagnosticStatus.setText(doctor.getDiagnosticStatus(consultId));
+
+        txtComplaint.setText(doctor.getComplaint());
+        txtComplaint.setEditable(false);
+        txtVitalSigns.setText(doctor.getVitalSigns());
+        txtNotes.setText(doctor.getNotes());
+
+        for (int i = 0; i < STATUS_OPTIONS.length; i++) {
+            if (STATUS_OPTIONS[i].equals(doctor.getConsultStatus().toLowerCase())) {
+                cmbStatus.setSelectedIndex(i);
+            }
+        }
+
+        boolean canEdit = doctor.canEditConsultation();
+        txtVitalSigns.setEditable(canEdit);
+        txtNotes.setEditable(canEdit);
+        cmbStatus.setEnabled(canEdit);
+        btnSaveConsultation.setEnabled(canEdit);
+        btnWritePrescription.setEnabled(canEdit);
+        btnRequestDiagnostic.setEnabled(canEdit);
     }
 
     /**
@@ -161,19 +213,43 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveConsultation
-        // TODO add your handling code here:
+        int statusIndex = cmbStatus.getSelectedIndex();
+        String status = STATUS_OPTIONS[statusIndex < 0 ? 0 : statusIndex];
+
+        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText(), status);
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Consultation updated.");
+        doctor.loadConsultation(consultId);
+        refresh();
     }//GEN-LAST:event_btnSaveConsultation
 
     private void btnWritePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWritePrescription
-        // TODO add your handling code here:
+        if (!doctor.canEditConsultation()) {
+            JOptionPane.showMessageDialog(this, "You cannot write a prescription for this consultation.");
+            return;
+        }
+        PrescriptionDialog dialog = new PrescriptionDialog((java.awt.Frame) getOwner(), true, doctor, consultId);
+        dialog.setVisible(true);
+        doctor.loadConsultation(consultId);
+        refresh();
     }//GEN-LAST:event_btnWritePrescription
 
     private void btnRequestDiagnostic(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRequestDiagnostic
-        // TODO add your handling code here:
+        if (!doctor.canEditConsultation()) {
+            JOptionPane.showMessageDialog(this, "You cannot request diagnostic services for this consultation.");
+            return;
+        }
+        DiagnosticRequestDialog dialog = new DiagnosticRequestDialog((java.awt.Frame) getOwner(), true, doctor, consultId);
+        dialog.setVisible(true);
+        doctor.loadConsultation(consultId);
+        refresh();
     }//GEN-LAST:event_btnRequestDiagnostic
 
     private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btnCloseDialog
 
     

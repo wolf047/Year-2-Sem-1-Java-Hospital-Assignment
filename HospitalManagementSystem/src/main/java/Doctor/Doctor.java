@@ -4,6 +4,7 @@ import HelperFunction.FileHandling;
 import Users.Role;
 import Users.User;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,6 +49,10 @@ public class Doctor extends User implements DoctorServices {
     // Search results (Prescription and Diagnostic Request dialogs)
     private ArrayList<Integer> drugResultIds = new ArrayList<>();
     private ArrayList<Integer> serviceResultIds = new ArrayList<>();
+
+    // Diagnostic requests of the currently loaded consultation (Consultation dialog)
+    private ArrayList<Object[]> diagRequestRows = new ArrayList<>();
+    private ArrayList<Integer> diagRequestIds = new ArrayList<>();
 
     // =====================================================================
     // CONSTRUCTORS
@@ -244,6 +249,47 @@ public class Doctor extends User implements DoctorServices {
         return users.get(id).get(0) + " " + users.get(id).get(1);
     }
 
+    // true if the case has already been closed (has a close date)
+    private boolean isCaseClosed(String caseId) {
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        if (cases == null) {
+            return false;
+        }
+        ArrayList<String> k = cases.get(Integer.parseInt(caseId)); // 3 close_date
+        if (k == null) {
+            return false;
+        }
+        return !k.get(3).isEmpty();
+    }
+
+    // A consultation stays "booked" until the day it happened is over. Once that day has
+    // passed, this turns it into "completed" (details were added) or "cancelled" (they were
+    // not), and saves that change. c is the consultation's field list (without its id).
+    private void autoFinalizeConsultation(int consultId, ArrayList<String> c) {
+        if (!c.get(5).equals("booked")) {
+            return;
+        }
+        LocalDate consultDate;
+        try {
+            consultDate = LocalDate.parse(c.get(7), DATE);
+        } catch (Exception e) {
+            return;
+        }
+        if (!LocalDate.now().isAfter(consultDate)) {
+            return;
+        }
+        String newStatus = "cancelled";
+        if (!c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty()) {
+            newStatus = "completed";
+        }
+        c.set(5, newStatus);
+
+        ArrayList<String> record = new ArrayList<>();
+        record.add(String.valueOf(consultId));
+        record.addAll(c);
+        FileHandling.editRecord("Consultations.txt", record);
+    }
+
     // =====================================================================
     // SCHEDULE (doctor's own shift assignments)
     // =====================================================================
@@ -306,6 +352,7 @@ public class Doctor extends User implements DoctorServices {
             if (consultDate.isBefore(this.weekStart) || consultDate.isAfter(weekEnd)) {
                 continue;
             }
+            autoFinalizeConsultation(consultId, c);
             weekRows.add(new Object[]{c.get(7), c.get(0), c.get(8) + " - " + c.get(9), c.get(2), c.get(6), capitalize(c.get(5))});
             weekConsultIds.add(consultId);
         }
@@ -417,6 +464,7 @@ public class Doctor extends User implements DoctorServices {
                 if (!c.get(0).equals(String.valueOf(caseId))) {
                     continue;
                 }
+                autoFinalizeConsultation(consultId, c);
                 caseConsultRows.add(new Object[]{c.get(7), getDoctorName(c.get(1)), c.get(2), capitalize(c.get(5))});
                 caseConsultIds.add(consultId);
 
@@ -458,6 +506,9 @@ public class Doctor extends User implements DoctorServices {
     }
 
     public String getCaseRoleNote() {
+        if (!isCaseOpen()) {
+            return "This case is closed and can no longer be edited.";
+        }
         if (isCaseInCharge()) {
             return "You are the doctor in charge of this case.";
         }
@@ -534,6 +585,9 @@ public class Doctor extends User implements DoctorServices {
         if (!isCaseInCharge()) {
             return "Only the doctor in charge can edit the case summary.";
         }
+        if (!isCaseOpen()) {
+            return "This case is closed and can no longer be edited.";
+        }
         if (summary.contains("`")) {
             return "Summary cannot contain a backtick (`) character.";
         }
@@ -598,6 +652,7 @@ public class Doctor extends User implements DoctorServices {
         if (c.get(10).equals("1")) {
             return false;
         }
+        autoFinalizeConsultation(consultId, c);
         this.currentConsultId = consultId;
         this.consultCaseId = c.get(0);
         this.consultDoctorId = c.get(1);
@@ -610,6 +665,13 @@ public class Doctor extends User implements DoctorServices {
         this.consultStart = c.get(8);
         this.consultEnd = c.get(9);
         return true;
+    }
+
+    public int getConsultCaseId() {
+        if (this.consultCaseId == null) {
+            return -1;
+        }
+        return Integer.parseInt(this.consultCaseId);
     }
 
     public String getConsultTitle() {
@@ -630,14 +692,36 @@ public class Doctor extends User implements DoctorServices {
     }
 
     public String getConsultRoleNote() {
-        if (canEditConsultation()) {
-            return "";
-        }
         if (!this.consultDoctorId.equals(String.valueOf(this.user_id))) {
             return "This consultation was conducted by " + getDoctorName(this.consultDoctorId)
                     + ". You may view it but cannot make changes.";
         }
-        return "This consultation is cancelled and cannot be edited.";
+        if (!this.consultStatus.equals("booked")) {
+            return "This consultation is " + this.consultStatus + " and can no longer be edited.";
+        }
+        if (isCaseClosed(this.consultCaseId)) {
+            return "This case is closed. Consultation details can no longer be edited.";
+        }
+        LocalDate consultDateParsed;
+        try {
+            consultDateParsed = LocalDate.parse(this.consultDate, DATE);
+        } catch (Exception e) {
+            return "";
+        }
+        LocalDate today = LocalDate.now();
+        if (consultDateParsed.isAfter(today)) {
+            return "This consultation has not taken place yet. Details can be added once it starts, on the day of the consultation.";
+        }
+        if (consultDateParsed.equals(today)) {
+            try {
+                if (LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
+                    return "This consultation has not started yet. Details can be added once it starts.";
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        return "";
     }
 
     public String getComplaint() {
@@ -652,69 +736,43 @@ public class Doctor extends User implements DoctorServices {
         return this.consultNotes;
     }
 
+    // Own, still-booked, same-day, case-not-closed consultation whose start time has passed
     public boolean canEditConsultation() {
         if (this.currentConsultId == -1) {
             return false;
         }
-        return this.consultDoctorId.equals(String.valueOf(this.user_id)) && !this.consultStatus.equals("cancelled");
+        if (!this.consultDoctorId.equals(String.valueOf(this.user_id))) {
+            return false;
+        }
+        if (!this.consultStatus.equals("booked")) {
+            return false;
+        }
+        if (isCaseClosed(this.consultCaseId)) {
+            return false;
+        }
+        LocalDate consultDateParsed;
+        try {
+            consultDateParsed = LocalDate.parse(this.consultDate, DATE);
+        } catch (Exception e) {
+            return false;
+        }
+        if (!consultDateParsed.equals(LocalDate.now())) {
+            return false;
+        }
+        try {
+            return !LocalTime.now().isBefore(LocalTime.parse(this.consultStart));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public String getPrescriptionStatus(int consultId) {
-        TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readActiveRecords("Prescriptions.txt");
-        TreeMap<Integer, ArrayList<String>> items = FileHandling.readActiveRecords("PrescriptionItems.txt");
-        if (prescriptions == null) {
-            return "No prescription issued.";
-        }
-        for (Integer prescriptionId : prescriptions.keySet()) {
-            ArrayList<String> p = prescriptions.get(prescriptionId); // 0 consultation_id
-            if (!p.get(0).equals(String.valueOf(consultId))) {
-                continue;
-            }
-            int count = 0;
-            if (items != null) {
-                for (ArrayList<String> it : items.values()) { // 0 prescription_id
-                    if (it.get(0).equals(String.valueOf(prescriptionId))) {
-                        count++;
-                    }
-                }
-            }
-            return "Prescription on file (" + count + " item" + (count == 1 ? "" : "s") + ").";
-        }
-        return "No prescription issued.";
-    }
-
-    public String getDiagnosticStatus(int consultId) {
-        TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
-        if (requests == null) {
-            return "No diagnostic requests.";
-        }
-        int total = 0;
-        int pending = 0;
-        for (ArrayList<String> r : requests.values()) { // 0 consultation_id, 4 result_date
-            if (!r.get(0).equals(String.valueOf(consultId))) {
-                continue;
-            }
-            total++;
-            if (r.get(4).isEmpty()) {
-                pending++;
-            }
-        }
-        if (total == 0) {
-            return "No diagnostic requests.";
-        }
-        return total + " request" + (total == 1 ? "" : "s") + ", " + pending + " pending.";
-    }
-
-    // Saves the consultation. Returns null if saved, or the error message.
-    public String saveConsultation(String vitals, String notes, String status) {
+    // Saves the consultation's vitals and notes. Returns null if saved, or the error message.
+    public String saveConsultation(String vitals, String notes) {
         if (this.currentConsultId == -1) {
             return "No consultation loaded.";
         }
         if (!canEditConsultation()) {
             return "You cannot edit this consultation.";
-        }
-        if (!status.equals("booked") && !status.equals("completed") && !status.equals("cancelled")) {
-            return "Please choose a valid status.";
         }
         if (vitals.contains("`") || notes.contains("`")) {
             return "Vital signs and notes cannot contain a backtick (`) character.";
@@ -727,7 +785,7 @@ public class Doctor extends User implements DoctorServices {
         record.add(this.consultComplaint);
         record.add(vitals.trim());
         record.add(notes.trim());
-        record.add(status);
+        record.add(this.consultStatus);
         record.add(this.consultRoom);
         record.add(this.consultDate);
         record.add(this.consultStart);
@@ -737,7 +795,6 @@ public class Doctor extends User implements DoctorServices {
 
         this.consultVitals = vitals.trim();
         this.consultNotes = notes.trim();
-        this.consultStatus = status;
         return null;
     }
 
@@ -819,7 +876,7 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-    // Existing items of a consultation's prescription, if any: {drugName, dosage, frequency, duration}
+    // Existing items of a consultation's prescription, if any: {drugId, drugName, dosage, frequency, duration, instructions}
     public ArrayList<String[]> getPrescriptionItems(int consultId) {
         ArrayList<String[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readActiveRecords("Prescriptions.txt");
@@ -834,7 +891,7 @@ public class Doctor extends User implements DoctorServices {
                 continue;
             }
             for (ArrayList<String> it : items.values()) {
-                // it: 0 prescription_id, 1 drug_id, 2 dosage, 3 frequency, 4 duration
+                // it: 0 prescription_id, 1 drug_id, 2 dosage, 3 frequency, 4 duration, 5 instructions
                 if (!it.get(0).equals(String.valueOf(prescriptionId))) {
                     continue;
                 }
@@ -845,7 +902,7 @@ public class Doctor extends User implements DoctorServices {
                         drugName = d.get(0);
                     }
                 }
-                rows.add(new String[]{drugName, it.get(2), it.get(3), it.get(4)});
+                rows.add(new String[]{it.get(1), drugName, it.get(2), it.get(3), it.get(4), it.get(5)});
             }
         }
         return rows;
@@ -871,6 +928,7 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
+    // Creates the prescription if none exists yet, or replaces its items if one already does.
     // items: {drugId, drugName, dosage, frequency, duration, instructions}
     public String savePrescription(int consultId, ArrayList<String[]> items) {
         if (!loadConsultation(consultId) || !canEditConsultation()) {
@@ -880,21 +938,36 @@ public class Doctor extends User implements DoctorServices {
             return "Please add at least one drug to the prescription.";
         }
 
+        Integer prescriptionId = null;
         TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readActiveRecords("Prescriptions.txt");
         if (prescriptions != null) {
-            for (ArrayList<String> p : prescriptions.values()) { // 0 consultation_id
+            for (Integer id : prescriptions.keySet()) {
+                ArrayList<String> p = prescriptions.get(id); // 0 consultation_id
                 if (p.get(0).equals(String.valueOf(consultId))) {
-                    return "A prescription has already been issued for this consultation.";
+                    prescriptionId = id;
+                    break;
                 }
             }
         }
 
-        int prescriptionId = FileHandling.getNextID("Prescriptions.txt");
-        ArrayList<String> prescriptionRecord = new ArrayList<>();
-        prescriptionRecord.add(String.valueOf(prescriptionId));
-        prescriptionRecord.add(String.valueOf(consultId));
-        prescriptionRecord.add("0");
-        FileHandling.addRecord("Prescriptions.txt", prescriptionRecord);
+        if (prescriptionId == null) {
+            prescriptionId = FileHandling.getNextID("Prescriptions.txt");
+            ArrayList<String> prescriptionRecord = new ArrayList<>();
+            prescriptionRecord.add(String.valueOf(prescriptionId));
+            prescriptionRecord.add(String.valueOf(consultId));
+            prescriptionRecord.add("0");
+            FileHandling.addRecord("Prescriptions.txt", prescriptionRecord);
+        } else {
+            TreeMap<Integer, ArrayList<String>> existingItems = FileHandling.readActiveRecords("PrescriptionItems.txt");
+            if (existingItems != null) {
+                for (Integer itemId : existingItems.keySet()) {
+                    ArrayList<String> it = existingItems.get(itemId); // 0 prescription_id
+                    if (it.get(0).equals(String.valueOf(prescriptionId))) {
+                        FileHandling.removeRecord("PrescriptionItems.txt", itemId);
+                    }
+                }
+            }
+        }
 
         for (String[] item : items) {
             ArrayList<String> itemRecord = new ArrayList<>();
@@ -1016,6 +1089,84 @@ public class Doctor extends User implements DoctorServices {
             record.add("0");
             FileHandling.addRecord("DiagnosticServiceRequests.txt", record);
         }
+        return null;
+    }
+
+    // The diagnostic requests of one consultation, for display on the Consultation dialog
+    public ArrayList<Object[]> getDiagnosticRequests(int consultId) {
+        diagRequestRows.clear();
+        diagRequestIds.clear();
+
+        TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
+        TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
+        if (requests == null) {
+            return diagRequestRows;
+        }
+        for (Integer requestId : requests.keySet()) {
+            // r: 0 consultation_id, 1 service_id, 2 request_date, 3 remarks, 4 result_date, 5 results
+            ArrayList<String> r = requests.get(requestId);
+            if (!r.get(0).equals(String.valueOf(consultId))) {
+                continue;
+            }
+            String serviceName = "Unknown";
+            if (services != null) {
+                ArrayList<String> s = services.get(Integer.parseInt(r.get(1)));
+                if (s != null) {
+                    serviceName = s.get(0);
+                }
+            }
+            String status = "Pending";
+            if (!r.get(4).isEmpty()) {
+                status = "Ready";
+            }
+            diagRequestRows.add(new Object[]{serviceName, r.get(2), status, r.get(4)});
+            diagRequestIds.add(requestId);
+        }
+        return diagRequestRows;
+    }
+
+    public int getDiagnosticRequestId(int row) {
+        if (row < 0 || row >= diagRequestIds.size()) {
+            return -1;
+        }
+        return diagRequestIds.get(row);
+    }
+
+    public String getDiagnosticRequestDetail(int row) {
+        if (row < 0 || row >= diagRequestIds.size()) {
+            return "";
+        }
+        ArrayList<String> r = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", diagRequestIds.get(row));
+        if (r == null) {
+            return "";
+        }
+        // r (with id): 0 id, 1 consultation_id, 2 service_id, 3 request_date, 4 remarks, 5 result_date, 6 results
+        TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
+        String serviceName = "Unknown";
+        if (services != null) {
+            ArrayList<String> s = services.get(Integer.parseInt(r.get(2)));
+            if (s != null) {
+                serviceName = s.get(0);
+            }
+        }
+        String results = "Not available yet";
+        if (!r.get(5).isEmpty()) {
+            results = r.get(6);
+        }
+        return serviceName + "\n\nRequest remarks: " + r.get(4) + "\n\nResults: " + results;
+    }
+
+    // Deletes one diagnostic request. Returns null if deleted, or the error message.
+    public String deleteDiagnosticRequest(int requestId) {
+        ArrayList<String> record = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", requestId);
+        if (record == null) {
+            return "This diagnostic request could not be found.";
+        }
+        int consultId = Integer.parseInt(record.get(1)); // 1 consultation_id
+        if (!loadConsultation(consultId) || !canEditConsultation()) {
+            return "You cannot delete diagnostic requests for this consultation.";
+        }
+        FileHandling.removeRecord("DiagnosticServiceRequests.txt", requestId);
         return null;
     }
 

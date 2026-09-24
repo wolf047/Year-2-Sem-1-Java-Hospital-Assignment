@@ -50,16 +50,12 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         cmbFormFilter.setModel(new javax.swing.DefaultComboBoxModel<>(forms.toArray(new String[0])));
 
         ArrayList<String[]> existing = doctor.getPrescriptionItems(consultId);
-        if (!existing.isEmpty()) {
-            lblSelectedDrug.setText("A prescription has already been issued for this consultation.");
-            DefaultTableModel model = (DefaultTableModel) tblPrescriptionItems.getModel();
-            model.setRowCount(0);
-            for (String[] item : existing) {
-                model.addRow(item);
-            }
-            setInputsEnabled(false);
-        } else if (!doctor.canEditConsultation()) {
-            lblSelectedDrug.setText("You cannot write a prescription for this consultation.");
+        pendingItems = new ArrayList<>(existing);
+        refreshItemsTable();
+        lblPrescriptionHeader.setText(existing.isEmpty() ? "Write Prescription" : "Edit Prescription");
+
+        if (!doctor.canEditConsultation()) {
+            lblSelectedDrug.setText("This consultation can no longer be edited.");
             setInputsEnabled(false);
         } else {
             searchDrugs();
@@ -281,7 +277,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
+        btnCloseDialog.setText("Cancel");
         btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 700, 250, 36));
 

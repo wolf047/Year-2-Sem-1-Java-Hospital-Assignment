@@ -4,7 +4,9 @@
  */
 package Doctor;
 
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -16,7 +18,6 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
     private DoctorServices doctor;
     private int consultId = -1;
-    private static final String[] STATUS_OPTIONS = {"booked", "completed", "cancelled"};
 
     /**
      * Creates new form ConsultationDialog
@@ -33,8 +34,6 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         this.doctor = doctor;
         this.consultId = consultId;
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Booked", "Completed", "Cancelled"}));
-
         if (!doctor.loadConsultation(consultId)) {
             JOptionPane.showMessageDialog(this, "This consultation could not be found.");
             dispose();
@@ -49,27 +48,34 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblConsultMeta.setText(doctor.getConsultMeta());
         lblConsultStatusBadge.setText(doctor.getConsultStatus());
         lblConsultRoleNote.setText(doctor.getConsultRoleNote());
-        lblPrescriptionStatus.setText(doctor.getPrescriptionStatus(consultId));
-        lblDiagnosticStatus.setText(doctor.getDiagnosticStatus(consultId));
 
         txtComplaint.setText(doctor.getComplaint());
         txtComplaint.setEditable(false);
         txtVitalSigns.setText(doctor.getVitalSigns());
         txtNotes.setText(doctor.getNotes());
 
-        for (int i = 0; i < STATUS_OPTIONS.length; i++) {
-            if (STATUS_OPTIONS[i].equals(doctor.getConsultStatus().toLowerCase())) {
-                cmbStatus.setSelectedIndex(i);
-            }
-        }
-
         boolean canEdit = doctor.canEditConsultation();
         txtVitalSigns.setEditable(canEdit);
         txtNotes.setEditable(canEdit);
-        cmbStatus.setEnabled(canEdit);
         btnSaveConsultation.setEnabled(canEdit);
         btnWritePrescription.setEnabled(canEdit);
         btnRequestDiagnostic.setEnabled(canEdit);
+
+        ArrayList<String[]> items = doctor.getPrescriptionItems(consultId);
+        DefaultTableModel prescriptionModel = (DefaultTableModel) tblPrescriptionItemsView.getModel();
+        prescriptionModel.setRowCount(0);
+        for (String[] item : items) {
+            prescriptionModel.addRow(new Object[]{item[1], item[2], item[3], item[4]});
+        }
+        btnWritePrescription.setText(items.isEmpty() ? "Write Prescription" : "Edit Prescription");
+
+        ArrayList<Object[]> requests = doctor.getDiagnosticRequests(consultId);
+        DefaultTableModel diagnosticModel = (DefaultTableModel) tblDiagnosticRequestsView.getModel();
+        diagnosticModel.setRowCount(0);
+        for (Object[] row : requests) {
+            diagnosticModel.addRow(row);
+        }
+        btnDeleteDiagnosticRequest.setEnabled(canEdit && !requests.isEmpty());
     }
 
     /**
@@ -84,6 +90,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblConsultHeader = new javax.swing.JLabel();
         lblConsultMeta = new javax.swing.JLabel();
         lblConsultStatusBadge = new javax.swing.JLabel();
+        btnViewCase = new javax.swing.JButton();
         lblConsultRoleNote = new javax.swing.JLabel();
         lblComplaintHeader = new javax.swing.JLabel();
         scrComplaint = new javax.swing.JScrollPane();
@@ -94,26 +101,29 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblNotesHeader = new javax.swing.JLabel();
         scrNotes = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
-        lblStatusHeader = new javax.swing.JLabel();
-        cmbStatus = new javax.swing.JComboBox<>();
-        btnWritePrescription = new javax.swing.JButton();
-        btnRequestDiagnostic = new javax.swing.JButton();
-        lblPrescriptionStatus = new javax.swing.JLabel();
-        lblDiagnosticStatus = new javax.swing.JLabel();
         btnSaveConsultation = new javax.swing.JButton();
         btnCloseDialog = new javax.swing.JButton();
+        lblPrescriptionHeader = new javax.swing.JLabel();
+        btnWritePrescription = new javax.swing.JButton();
+        scrPrescriptionItemsView = new javax.swing.JScrollPane();
+        tblPrescriptionItemsView = new javax.swing.JTable();
+        lblDiagnosticHeader = new javax.swing.JLabel();
+        btnRequestDiagnostic = new javax.swing.JButton();
+        btnDeleteDiagnosticRequest = new javax.swing.JButton();
+        scrDiagnosticRequestsView = new javax.swing.JScrollPane();
+        tblDiagnosticRequestsView = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Consultation Notes");
         setModal(true);
         setName("consultations"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 600));
+        setPreferredSize(new java.awt.Dimension(560, 710));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblConsultHeader.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         lblConsultHeader.setText("lblConsultHeader");
-        getContentPane().add(lblConsultHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 400, 26));
+        getContentPane().add(lblConsultHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 290, 26));
 
         lblConsultMeta.setForeground(new java.awt.Color(102, 102, 102));
         lblConsultMeta.setText("lblConsultMeta");
@@ -121,7 +131,14 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
         lblConsultStatusBadge.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblConsultStatusBadge.setText("lblConsultStatusBadge");
-        getContentPane().add(lblConsultStatusBadge, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 20, 100, 18));
+        getContentPane().add(lblConsultStatusBadge, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 26, 90, 18));
+
+        btnViewCase.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewCase.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewCase.setText("View Case");
+        btnViewCase.setFocusPainted(false);
+        btnViewCase.addActionListener(this::btnViewCase);
+        getContentPane().add(btnViewCase, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 18, 120, 28));
 
         lblConsultRoleNote.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         lblConsultRoleNote.setForeground(new java.awt.Color(102, 102, 102));
@@ -164,59 +181,99 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
         getContentPane().add(scrNotes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 276, 520, 110));
 
-        lblStatusHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lblStatusHeader.setText("Status: ");
-        getContentPane().add(lblStatusHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 396, 180, 18));
+        btnSaveConsultation.setBackground(new java.awt.Color(38, 117, 154));
+        btnSaveConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSaveConsultation.setForeground(new java.awt.Color(255, 255, 255));
+        btnSaveConsultation.setText("Save Changes");
+        btnSaveConsultation.addActionListener(this::btnSaveConsultation);
+        getContentPane().add(btnSaveConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 396, 250, 32));
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(cmbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 416, 180, 28));
+        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
+        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
+        btnCloseDialog.setText("Cancel");
+        btnCloseDialog.addActionListener(this::btnCloseDialog);
+        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 396, 250, 32));
+
+        lblPrescriptionHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblPrescriptionHeader.setText("Prescription:");
+        getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 300, 18));
 
         btnWritePrescription.setBackground(new java.awt.Color(38, 117, 154));
         btnWritePrescription.setForeground(new java.awt.Color(255, 255, 255));
         btnWritePrescription.setText("Write Prescription");
         btnWritePrescription.setFocusPainted(false);
         btnWritePrescription.addActionListener(this::btnWritePrescription);
-        getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 416, 160, 28));
+        getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 434, 190, 26));
+
+        tblPrescriptionItemsView.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Drug", "Dosage", "Frequency", "Days"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblPrescriptionItemsView.getTableHeader().setReorderingAllowed(false);
+        scrPrescriptionItemsView.setViewportView(tblPrescriptionItemsView);
+
+        getContentPane().add(scrPrescriptionItemsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, 520, 80));
+
+        lblDiagnosticHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblDiagnosticHeader.setText("Diagnostic Requests:");
+        getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 548, 300, 18));
 
         btnRequestDiagnostic.setBackground(new java.awt.Color(38, 117, 154));
         btnRequestDiagnostic.setForeground(new java.awt.Color(255, 255, 255));
-        btnRequestDiagnostic.setText("Request Diagnostic Test");
+        btnRequestDiagnostic.setText("Add Request");
         btnRequestDiagnostic.setFocusPainted(false);
         btnRequestDiagnostic.addActionListener(this::btnRequestDiagnostic);
-        getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 416, 160, 28));
+        getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 542, 120, 26));
 
-        lblPrescriptionStatus.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        lblPrescriptionStatus.setForeground(new java.awt.Color(102, 102, 102));
-        lblPrescriptionStatus.setText("lblPrescriptionStatus");
-        getContentPane().add(lblPrescriptionStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 452, 520, 18));
+        btnDeleteDiagnosticRequest.setText("Delete Selected");
+        btnDeleteDiagnosticRequest.setFocusPainted(false);
+        btnDeleteDiagnosticRequest.addActionListener(this::btnDeleteDiagnosticRequest);
+        getContentPane().add(btnDeleteDiagnosticRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 542, 100, 26));
 
-        lblDiagnosticStatus.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        lblDiagnosticStatus.setForeground(new java.awt.Color(102, 102, 102));
-        lblDiagnosticStatus.setText("lblDiagnosticStatus");
-        getContentPane().add(lblDiagnosticStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 472, 520, 18));
+        tblDiagnosticRequestsView.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        btnSaveConsultation.setBackground(new java.awt.Color(38, 117, 154));
-        btnSaveConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnSaveConsultation.setForeground(new java.awt.Color(255, 255, 255));
-        btnSaveConsultation.setText("Save Changes");
-        btnSaveConsultation.addActionListener(this::btnSaveConsultation);
-        getContentPane().add(btnSaveConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 250, 36));
+            },
+            new String [] {
+                "Service", "Requested Date", "Status", "Result Date"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 520, 250, 36));
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblDiagnosticRequestsView.getTableHeader().setReorderingAllowed(false);
+        tblDiagnosticRequestsView.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDiagnosticRequestsView(evt);
+            }
+        });
+        scrDiagnosticRequestsView.setViewportView(tblDiagnosticRequestsView);
+
+        getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 568, 520, 110));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveConsultation
-        int statusIndex = cmbStatus.getSelectedIndex();
-        String status = STATUS_OPTIONS[statusIndex < 0 ? 0 : statusIndex];
-
-        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText(), status);
+        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText());
         if (result != null) {
             JOptionPane.showMessageDialog(this, result);
             return;
@@ -248,11 +305,52 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         refresh();
     }//GEN-LAST:event_btnRequestDiagnostic
 
+    private void btnDeleteDiagnosticRequest(java.awt.event.ActionEvent evt) {
+        int row = tblDiagnosticRequestsView.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a diagnostic request to delete.");
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete this diagnostic request?",
+                "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        String result = doctor.deleteDiagnosticRequest(doctor.getDiagnosticRequestId(row));
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        refresh();
+    }
+
+    private void tblDiagnosticRequestsView(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() != 2) {
+            return;
+        }
+        int row = tblDiagnosticRequestsView.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+        JOptionPane.showMessageDialog(this, doctor.getDiagnosticRequestDetail(row), "Diagnostic Result", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void btnViewCase(java.awt.event.ActionEvent evt) {
+        int caseId = doctor.getConsultCaseId();
+        if (caseId < 0) {
+            return;
+        }
+        CasesDialog dialog = new CasesDialog((java.awt.Frame) getOwner(), true, doctor, caseId);
+        dialog.setVisible(true);
+        doctor.loadConsultation(consultId);
+        refresh();
+    }
+
     private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
         dispose();
     }//GEN-LAST:event_btnCloseDialog
 
-    
+
     /**
      * @param args the command line arguments
      */
@@ -260,7 +358,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -292,23 +390,27 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnDeleteDiagnosticRequest;
     private javax.swing.JButton btnRequestDiagnostic;
     private javax.swing.JButton btnSaveConsultation;
+    private javax.swing.JButton btnViewCase;
     private javax.swing.JButton btnWritePrescription;
-    private javax.swing.JComboBox<String> cmbStatus;
     private javax.swing.JLabel lblComplaintHeader;
     private javax.swing.JLabel lblConsultHeader;
     private javax.swing.JLabel lblConsultMeta;
     private javax.swing.JLabel lblConsultRoleNote;
     private javax.swing.JLabel lblConsultStatusBadge;
-    private javax.swing.JLabel lblDiagnosticStatus;
+    private javax.swing.JLabel lblDiagnosticHeader;
     private javax.swing.JLabel lblNotesHeader;
-    private javax.swing.JLabel lblPrescriptionStatus;
-    private javax.swing.JLabel lblStatusHeader;
+    private javax.swing.JLabel lblPrescriptionHeader;
     private javax.swing.JLabel lblVitalsHeader;
     private javax.swing.JScrollPane scrComplaint;
+    private javax.swing.JScrollPane scrDiagnosticRequestsView;
     private javax.swing.JScrollPane scrNotes;
+    private javax.swing.JScrollPane scrPrescriptionItemsView;
     private javax.swing.JScrollPane scrVitalSigns;
+    private javax.swing.JTable tblDiagnosticRequestsView;
+    private javax.swing.JTable tblPrescriptionItemsView;
     private javax.swing.JTextArea txtComplaint;
     private javax.swing.JTextArea txtNotes;
     private javax.swing.JTextArea txtVitalSigns;

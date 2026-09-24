@@ -158,6 +158,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private void openSelectedCase() {
         int row = tblCases.getSelectedRow();
         if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a case from the list.");
             return;
         }
         int caseId = doctor.getCaseId(row);
@@ -235,6 +236,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblCasesTitle = new javax.swing.JLabel();
         scrCases = new javax.swing.JScrollPane();
         tblCases = new javax.swing.JTable();
+        btnViewCaseDetails = new javax.swing.JButton();
         pnlSchedule = new javax.swing.JPanel();
         lblScheduleTitle = new javax.swing.JLabel();
         scrSchedule = new javax.swing.JScrollPane();
@@ -495,7 +497,13 @@ public class DoctorDashboard extends javax.swing.JFrame {
         scrCases.setViewportView(tblCases);
         tblCases.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
+        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 440));
+
+        btnViewCaseDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewCaseDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewCaseDetails.setText("View Case Details");
+        btnViewCaseDetails.addActionListener(this::btnViewCaseDetails);
+        pnlCases.add(btnViewCaseDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, 200, 26));
 
         pnlContent.add(pnlCases, "cases");
 
@@ -725,6 +733,10 @@ public class DoctorDashboard extends javax.swing.JFrame {
         openSelectedConsultation();
     }
 
+    private void btnViewCaseDetails(java.awt.event.ActionEvent evt) {
+        openSelectedCase();
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -762,6 +774,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnPrevWeek;
     private javax.swing.JButton btnResetProfile;
     private javax.swing.JButton btnSaveProfile;
+    private javax.swing.JButton btnViewCaseDetails;
     private javax.swing.JLabel lblCasesTitle;
     private javax.swing.JLabel lblConfirmPwd;
     private javax.swing.JLabel lblConsultationsTitle;

@@ -262,7 +262,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
+        btnCloseDialog.setText("Cancel");
         btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
 

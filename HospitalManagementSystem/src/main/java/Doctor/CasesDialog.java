@@ -57,8 +57,8 @@ public class CasesDialog extends javax.swing.JDialog {
         txtCaseSummary.setText(doctor.getCaseSummary());
         boolean inCharge = doctor.isCaseInCharge();
         boolean open = doctor.isCaseOpen();
-        txtCaseSummary.setEditable(inCharge);
-        btnSaveSummary.setEnabled(inCharge);
+        txtCaseSummary.setEditable(inCharge && open);
+        btnSaveSummary.setEnabled(inCharge && open);
         btnCloseCase.setEnabled(inCharge && open);
 
         DefaultTableModel consultModel = (DefaultTableModel) tblCaseConsultations.getModel();
@@ -241,7 +241,7 @@ public class CasesDialog extends javax.swing.JDialog {
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
+        btnCloseDialog.setText("Cancel");
         btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
 

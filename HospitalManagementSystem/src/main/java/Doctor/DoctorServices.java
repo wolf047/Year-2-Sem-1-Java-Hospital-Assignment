@@ -51,6 +51,7 @@ public interface DoctorServices {
     String closeCase();
 
     boolean loadConsultation(int consultId);
+    int getConsultCaseId();
     String getConsultTitle();
     String getConsultMeta();
     String getConsultStatus();
@@ -59,9 +60,7 @@ public interface DoctorServices {
     String getVitalSigns();
     String getNotes();
     boolean canEditConsultation();
-    String getPrescriptionStatus(int consultId);
-    String getDiagnosticStatus(int consultId);
-    String saveConsultation(String vitals, String notes, String status);
+    String saveConsultation(String vitals, String notes);
 
     ArrayList<String> getDrugForms();
     ArrayList<Object[]> searchDrugs(String form, String text);
@@ -77,6 +76,10 @@ public interface DoctorServices {
     int getServiceResultId(int row);
     String checkText(String text);
     String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests);
+    ArrayList<Object[]> getDiagnosticRequests(int consultId);
+    int getDiagnosticRequestId(int row);
+    String getDiagnosticRequestDetail(int row);
+    String deleteDiagnosticRequest(int requestId);
 
     ArrayList<Object[]> getReviews();
     String getRatingSummary();

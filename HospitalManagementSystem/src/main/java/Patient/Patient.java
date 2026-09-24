@@ -51,6 +51,14 @@ public class Patient extends User implements PatientServices {
         this.role = Role.Patient;
         reload();
     }
+    // Used by UserLogin: the user details come from Users.txt,
+    // blood type and allergies are read from Patients.txt
+
+    public Patient(int user_id, String first_name, String last_name, String phone, String email,
+            String password, String gender, LocalDate dob, Role role) {
+        super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
+        reload();
+    }
 
     // =====================================================================
     // GETTERS AND SETTERS

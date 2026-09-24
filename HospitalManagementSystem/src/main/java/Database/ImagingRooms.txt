@@ -3,6 +3,6 @@
 3,x-ray,maintenance,0
 4,ultrasound,ok,0
 5,ultrasound,ok,0
-6,"CT scan",ok,0
-7,"CT scan",maintenance,0
+6,`CT scan`,ok,0
+7,`CT scan`,maintenance,0
 8,ultrasound,ok,0

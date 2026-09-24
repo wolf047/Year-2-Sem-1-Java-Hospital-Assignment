@@ -4,10 +4,12 @@ import Users.Role;
 import HelperFunction.SessionUser;
 import HelperFunction.FileHandling;
 import MedicalManager.*;
+import Doctor.DoctorDashboard;
 import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
+import Patient.*;
 
 public class UserLogin extends javax.swing.JFrame {
 
@@ -114,15 +116,15 @@ public class UserLogin extends javax.swing.JFrame {
         }
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         if (users != null) {
-            for (Integer id : users.keySet()){
+            for (Integer id : users.keySet()) {
                 ArrayList<String> u = users.get(id);
-                
+
                 boolean emailMatch = u.get(5).equalsIgnoreCase(inputEmail);
                 boolean passMatch = u.get(6).equals(password);
                 boolean isActive = u.get(8).equals("0");
-                
+
                 if (emailMatch && passMatch && isActive) {
-                    
+
                     // Extract user details
                     String first = u.get(0);
                     String last = u.get(1);
@@ -132,37 +134,32 @@ public class UserLogin extends javax.swing.JFrame {
                     String phone = u.get(4);
                     String email = u.get(5);
                     Role role = Role.valueOf(u.get(7));
-                    
+
                     switch (role) {
                         case MedicalManager:
                             MedicalManager manager = new MedicalManager(
-                                    id, first, last, phone, email,password, gender, dob, role);
+                                    id, first, last, phone, email, password, gender, dob, role);
                             SessionUser.login(manager);
-                            
+
                             new ManagerDashboard().setVisible(true);
                             this.dispose();
                             return;
-                            
+
                         case Patient:
-                            // Patient patient = new Patient(id, first, last, phone, email, inputPass, gender, dob, role);
-                            // SessionUser.login(patient);
-                            // new PatientDashboard().setVisible(true);
-                            // this.dispose();
+                            Patient patient = new Patient(id, first, last, phone, email, password, gender, dob, role);
+                            SessionUser.login(patient);
+                            new PatientDashboard().setVisible(true);
+                            this.dispose();
                             return;
-                            
+
                         case Admin:
                             // Admin admin = new Admin(...);
                             // SessionUser.login(admin);
                             // new AdminDashboard().setVisible(true);
                             // this.dispose();
                             return;
-                            
-                        case Doctor:
-                            // Doctor doctor = new Doctor(...);
-                            // SessionUser.login(doctor);
-                            // new DoctorDashboard().setVisible(true);
-                            // this.dispose();
-                            return;
+
+                        
                     }
                 }
             }

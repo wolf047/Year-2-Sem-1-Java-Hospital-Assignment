@@ -1,15 +1,40 @@
 
 package MedicalManager;
 
+import HelperFunction.*;
+
 public class ViewReports extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ViewReports.class.getName());
+    MedicalManager manager = (MedicalManager)SessionUser.getCurrentUser();
 
     /**
      * Creates new form ManagerDashboard
      */
     public ViewReports() {
         initComponents();
+        loadSummaryMetrics();
+    }
+    
+    private void loadSummaryMetrics(){
+        double[] rev = manager.getRevenueMetrics();
+        revenueLbl.setText(String.format("RM %,.2f", rev[0]));  // Total Invoiced
+        revenueLbl1.setText(String.format("RM %,.2f", rev[1])); // Total Collected
+        revenueLbl2.setText(String.format("RM %,.2f", rev[2])); // Outstanding
+        
+        int[] cases = manager.getNumberCases(); // [total, open, closed]
+        totalCasesLbl.setText("Total Cases: " + cases[2]);
+        openCasesLbl.setText("Active/Open: " + cases[0]);
+        closedCasesLbl.setText("Resolved/Closed: " + cases[1]);
+        
+        int[] beds = manager.getOccupancyMetrics(); // [total, occupied, available]
+        totalBedsLbl.setText("Total Capacity: " + beds[0] + " Beds");
+        occupiedBedsLbl.setText("Currently Occupied: " + beds[1]);
+        availableBedsLbl.setText("Available: " + beds[2]);
+        
+        double[] reviews = manager.getReviewMetrics(); // Returns [averageRating, totalCount]
+        averageRatingLbl.setText(String.format("Average Rating: %.1f / 5.0", reviews[0]));
+        totalReviewsLbl.setText("Total Feedback Received: " + (int)reviews[1]);
     }
 
     /**
@@ -22,11 +47,6 @@ public class ViewReports extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel4 = new javax.swing.JLabel();
-        shiftBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
-        profileBtn = new javax.swing.JButton();
-        dashboardBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -52,17 +72,30 @@ public class ViewReports extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         casesTable = new javax.swing.JTable();
+        closedCasesLbl = new javax.swing.JLabel();
+        totalCasesLbl = new javax.swing.JLabel();
+        openCasesLbl = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         wardBedsTable = new javax.swing.JTable();
+        availableBedsLbl = new javax.swing.JLabel();
+        totalBedsLbl = new javax.swing.JLabel();
+        occupiedBedsLbl = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         averageRatingLbl = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         reviewsTable = new javax.swing.JTable();
+        totalReviewsLbl = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        logoutBtn1 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
+        dashboardBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        shiftBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
@@ -71,30 +104,6 @@ public class ViewReports extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        shiftBtn.setText("Shift Rosters");
-        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
-
-        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        departmentBtn.setText("Departments");
-        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
-
-        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        reportBtn.setText("Reports");
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
-
-        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        profileBtn.setText("Profile");
-        profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-
-        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        dashboardBtn.setText("Dashboard");
-        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Hospital Reports & Analytics");
@@ -121,7 +130,7 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 750, 270));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 750, 230));
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -213,13 +222,25 @@ public class ViewReports extends javax.swing.JFrame {
 
         jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 660, 190));
 
+        closedCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        closedCasesLbl.setText("closed cases");
+        jPanel2.add(closedCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, -1, -1));
+
+        totalCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        totalCasesLbl.setText("total cases");
+        jPanel2.add(totalCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
+
+        openCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        openCasesLbl.setText("open cases");
+        jPanel2.add(openCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, -1, -1));
+
         jTabbedPane1.addTab("Consultation Volume", jPanel2);
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Ward & Bed Allocation Utilisation");
-        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
 
         wardBedsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -234,7 +255,19 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane4.setViewportView(wardBedsTable);
 
-        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 750, 330));
+        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 700, 250));
+
+        availableBedsLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        availableBedsLbl.setText("available beds");
+        jPanel3.add(availableBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 160, -1));
+
+        totalBedsLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        totalBedsLbl.setText("total beds");
+        jPanel3.add(totalBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 140, -1));
+
+        occupiedBedsLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        occupiedBedsLbl.setText("occupied beds");
+        jPanel3.add(occupiedBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 60, 160, -1));
 
         jTabbedPane1.addTab("Ward Occupancy", jPanel3);
 
@@ -242,7 +275,7 @@ public class ViewReports extends javax.swing.JFrame {
 
         averageRatingLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         averageRatingLbl.setText("Average Rating: ??");
-        jPanel4.add(averageRatingLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+        jPanel4.add(averageRatingLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 40, 230, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Recent Patient Feedback");
@@ -261,7 +294,11 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane5.setViewportView(reviewsTable);
 
-        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 760, 330));
+        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 740, 260));
+
+        totalReviewsLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        totalReviewsLbl.setText("Total Reviews");
+        jPanel4.add(totalReviewsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 180, -1));
 
         jTabbedPane1.addTab("Patient Reviews", jPanel4);
 
@@ -271,10 +308,42 @@ public class ViewReports extends javax.swing.JFrame {
         jLabel9.setText("APU Medical Centre");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
+        logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setText("Logout");
+        logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
+        getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
+
         jPanel5.setBackground(new java.awt.Color(38, 117, 154));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
+        jPanel5.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, -1, -1));
+
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentBtn.setText("Departments");
+        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
+        jPanel5.add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, -1, -1));
+
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
+        jPanel5.add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, -1, -1));
+
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        reportBtn.setText("Reports");
+        jPanel5.add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
+        jPanel5.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
+
         getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 50));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
@@ -305,6 +374,19 @@ public class ViewReports extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_profileBtnActionPerformed
 
+    private void logoutBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtn1ActionPerformed
+        // TODO add your handling code here:
+        int confirmLogout = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            javax.swing.JOptionPane.YES_NO_OPTION);
+        if(confirmLogout == javax.swing.JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new Users.UserLogin().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_logoutBtn1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -331,8 +413,10 @@ public class ViewReports extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel availableBedsLbl;
     private javax.swing.JLabel averageRatingLbl;
     private javax.swing.JTable casesTable;
+    private javax.swing.JLabel closedCasesLbl;
     private javax.swing.JTable consultationsTable;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
@@ -365,6 +449,9 @@ public class ViewReports extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton logoutBtn1;
+    private javax.swing.JLabel occupiedBedsLbl;
+    private javax.swing.JLabel openCasesLbl;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JLabel revenueLbl;
@@ -372,6 +459,9 @@ public class ViewReports extends javax.swing.JFrame {
     private javax.swing.JLabel revenueLbl2;
     private javax.swing.JTable reviewsTable;
     private javax.swing.JButton shiftBtn;
+    private javax.swing.JLabel totalBedsLbl;
+    private javax.swing.JLabel totalCasesLbl;
+    private javax.swing.JLabel totalReviewsLbl;
     private javax.swing.JTable wardBedsTable;
     // End of variables declaration//GEN-END:variables
 }

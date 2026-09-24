@@ -29,13 +29,13 @@ public class ManagerDashboard extends javax.swing.JFrame {
         userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
         emailLbl.setText(manager.getEmail());
         phoneLbl.setText(manager.getPhone());
-        revenueLbl.setText(String.format("RM %.2f", manager.calculateTotalRevenue()));
+        revenueLbl.setText(String.format("RM %,.2f", manager.getRevenueMetrics()[0]));
         
         int[] cases = manager.getNumberCases();
         casesLbl.setText(String.valueOf(cases[2]));
         casesDesc.setText(String.valueOf(cases[0]) + " Open / " + String.valueOf(cases[1]) + " Closed");
         
-        usedBedsLbl.setText(manager.getUsedBedsCount() + " Beds In Use");
+        usedBedsLbl.setText(manager.getOccupancyMetrics()[1] + " Beds In Use");
         
         List<ArrayList<String>> myDepartments = manager.viewManagingDepartments();
         departmentsLbl.setText(myDepartments.size() + " Active");
@@ -204,8 +204,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         revenueLbl.setText("RM 48,250.00");
         jPanel4.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
-        jLabel25.setText("Total invoiced from closed cases");
-        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 190, -1));
+        jLabel25.setText("Total invoiced");
+        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 160, -1));
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 210, 90));
 
@@ -254,7 +254,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(departmentsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 760, 230));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 760, 200));
 
         jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel19.setText("All Hospital Departments Overview");

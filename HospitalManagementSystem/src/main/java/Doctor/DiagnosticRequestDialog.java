@@ -25,6 +25,11 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     private String selectedCategory = "";
     private String selectedType = "";
 
+    // Nothing is written to file from this dialog. The caller (ConsultationsDialog) only
+    // submits these requests when its own "Save Details" is clicked.
+    private boolean saved = false;
+    private ArrayList<String[]> resultRequests = new ArrayList<>();
+
     /**
      * Creates new form DiagnosticRequestDialog
      */
@@ -55,6 +60,20 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         } else {
             searchServices();
         }
+    }
+
+    // true once the doctor clicked "Submit Requests" in this dialog
+    public boolean isSaved() {
+        return saved;
+    }
+
+    // the drafted requests as {serviceId, serviceName, remarks}, only meaningful when isSaved() is true
+    public ArrayList<String[]> getResultRequests() {
+        ArrayList<String[]> result = new ArrayList<>();
+        for (String[] r : resultRequests) {
+            result.add(new String[]{r[0], r[1], r[4]});
+        }
+        return result;
     }
 
     private void setInputsEnabled(boolean enabled) {
@@ -127,7 +146,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         scrRequestList = new javax.swing.JScrollPane();
         tblRequestList = new javax.swing.JTable();
         btnRemoveRequest = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         btnSubmitRequests = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -260,12 +279,12 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         btnRemoveRequest.addActionListener(this::btnRemoveRequest);
         getContentPane().add(btnRemoveRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 644, 250, 32));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Cancel");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
 
         btnSubmitRequests.setBackground(new java.awt.Color(38, 117, 154));
         btnSubmitRequests.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -314,18 +333,18 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnRemoveRequest
 
     private void btnSubmitRequests(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitRequests
-        String result = doctor.submitDiagnosticRequests(consultId, pendingRequests);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
+        if (pendingRequests.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please add at least one service to the request list.");
             return;
         }
-        JOptionPane.showMessageDialog(this, "Diagnostic request(s) submitted.");
+        resultRequests = pendingRequests;
+        saved = true;
         dispose();
     }//GEN-LAST:event_btnSubmitRequests
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
         dispose();
-    }//GEN-LAST:event_btnCloseDialog
+    }//GEN-LAST:event_btnCancel
 
     private void txtServiceSearch(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtServiceSearch
         searchServices();
@@ -384,7 +403,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddRequest;
-    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnRemoveRequest;
     private javax.swing.JButton btnSubmitRequests;
     private javax.swing.JComboBox<String> cmbCategoryFilter;

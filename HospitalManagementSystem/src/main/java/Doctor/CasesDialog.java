@@ -105,7 +105,7 @@ public class CasesDialog extends javax.swing.JDialog {
         lblPatientBloodType = new javax.swing.JLabel();
         lblPatientAllergies = new javax.swing.JLabel();
         btnViewDiagnosticResult = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cases Details");
@@ -238,12 +238,12 @@ public class CasesDialog extends javax.swing.JDialog {
         btnViewDiagnosticResult.addActionListener(this::btnViewDiagnosticResult);
         getContentPane().add(btnViewDiagnosticResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 622, 160, 30));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Cancel");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -300,9 +300,9 @@ public class CasesDialog extends javax.swing.JDialog {
         refresh();
     }//GEN-LAST:event_btnCloseCase
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
         dispose();
-    }//GEN-LAST:event_btnCloseDialog
+    }//GEN-LAST:event_btnCancel
 
 
     /**
@@ -344,7 +344,7 @@ public class CasesDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCloseCase;
-    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnSaveSummary;
     private javax.swing.JButton btnViewConsultation;
     private javax.swing.JButton btnViewDiagnosticResult;

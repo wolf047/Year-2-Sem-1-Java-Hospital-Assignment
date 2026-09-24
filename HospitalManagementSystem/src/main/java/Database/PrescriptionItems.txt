@@ -53,6 +53,3 @@
 53,32,14,`1 cap`,`three times daily`,7,`Apply to the affected area only and wash hands after use`,0
 54,32,3,`1 tab`,`three times daily`,7,`Apply to the affected area only and wash hands after use`,0
 55,33,31,`5 mL`,`single dose`,1,`Administer under supervision and observe for adverse reaction`,0
-56,34,35,2,`Every 2 hours`,2,,0
-57,35,2,1,2,1,,0
-58,36,3,1,1,11,,0

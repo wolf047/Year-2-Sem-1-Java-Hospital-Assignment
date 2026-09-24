@@ -19,6 +19,31 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private DoctorServices doctor;
     private int consultId = -1;
 
+    // A diagnostic request drafted (or already on file) for this consultation, pending the
+    // doctor's "Save Details"/"Complete Consultation" click. requestId is -1 for a brand new
+    // draft that has not been submitted yet.
+    private static class PendingDiagRequest {
+        int requestId;
+        String serviceId;
+        String serviceName;
+        String requestDate;
+        String remarks;
+
+        PendingDiagRequest(int requestId, String serviceId, String serviceName, String requestDate, String remarks) {
+            this.requestId = requestId;
+            this.serviceId = serviceId;
+            this.serviceName = serviceName;
+            this.requestDate = requestDate;
+            this.remarks = remarks;
+        }
+    }
+
+    // Nothing from the Prescription/Diagnostic Request dialogs is written to file until the
+    // doctor clicks "Save Details" or "Complete Consultation" here. Cancel discards all of it.
+    private ArrayList<String[]> pendingPrescriptionItems = new ArrayList<>();
+    private ArrayList<PendingDiagRequest> pendingDiagRequests = new ArrayList<>();
+    private ArrayList<Integer> originalDiagRequestIds = new ArrayList<>();
+
     /**
      * Creates new form ConsultationDialog
      */
@@ -39,43 +64,108 @@ public class ConsultationsDialog extends javax.swing.JDialog {
             dispose();
             return;
         }
+        txtComplaint.setText(doctor.getComplaint());
+        txtComplaint.setEditable(false);
+        txtVitalSigns.setText(doctor.getVitalSigns());
+        txtNotes.setText(doctor.getNotes());
+        loadPendingState();
         refresh();
     }
 
-    // Redraws every field from the doctor object's current data
+    // Seeds the pending prescription/diagnostic-request drafts from what is currently on file
+    private void loadPendingState() {
+        pendingPrescriptionItems = doctor.getPrescriptionItems(consultId);
+
+        pendingDiagRequests = new ArrayList<>();
+        originalDiagRequestIds = new ArrayList<>();
+        for (Object[] row : doctor.getDiagnosticRequestItems(consultId)) {
+            int requestId = (Integer) row[0];
+            pendingDiagRequests.add(new PendingDiagRequest(requestId, (String) row[1], (String) row[2], (String) row[3], (String) row[4]));
+            originalDiagRequestIds.add(requestId);
+        }
+    }
+
+    // Redraws every field from the doctor object's and the pending drafts' current data.
+    // Deliberately never touches txtVitalSigns/txtNotes so in-progress typing survives a
+    // round trip through the Prescription/Diagnostic Request dialogs.
     private void refresh() {
         lblConsultHeader.setText(doctor.getConsultTitle());
         lblConsultMeta.setText(doctor.getConsultMeta());
         lblConsultStatusBadge.setText(doctor.getConsultStatus());
         lblConsultRoleNote.setText("<html>" + doctor.getConsultRoleNote() + "</html>");
 
-        txtComplaint.setText(doctor.getComplaint());
-        txtComplaint.setEditable(false);
-        txtVitalSigns.setText(doctor.getVitalSigns());
-        txtNotes.setText(doctor.getNotes());
-
         boolean canEdit = doctor.canEditConsultation();
         txtVitalSigns.setEditable(canEdit);
         txtNotes.setEditable(canEdit);
         btnCompleteConsultation.setEnabled(canEdit);
-        btnWritePrescription.setEnabled(canEdit);
-        btnRequestDiagnostic.setEnabled(canEdit);
+        btnSaveDetails.setEnabled(canEdit);
+        btnAddPrescription.setEnabled(canEdit);
+        btnAddDiagRequest.setEnabled(canEdit);
 
-        ArrayList<String[]> items = doctor.getPrescriptionItems(consultId);
         DefaultTableModel prescriptionModel = (DefaultTableModel) tblPrescriptionItemsView.getModel();
         prescriptionModel.setRowCount(0);
-        for (String[] item : items) {
+        for (String[] item : pendingPrescriptionItems) {
             prescriptionModel.addRow(new Object[]{item[1], item[2], item[3], item[4]});
         }
-        btnWritePrescription.setText(items.isEmpty() ? "Write Prescription" : "Edit Prescription");
+        btnAddPrescription.setText(pendingPrescriptionItems.isEmpty() ? "Add Prescription" : "Edit Prescription");
 
-        ArrayList<Object[]> requests = doctor.getDiagnosticRequests(consultId);
         DefaultTableModel diagnosticModel = (DefaultTableModel) tblDiagnosticRequestsView.getModel();
         diagnosticModel.setRowCount(0);
-        for (Object[] row : requests) {
-            diagnosticModel.addRow(row);
+        for (PendingDiagRequest req : pendingDiagRequests) {
+            diagnosticModel.addRow(new Object[]{req.serviceName, req.requestDate, req.remarks});
         }
-        btnDeleteDiagnosticRequest.setEnabled(canEdit && !requests.isEmpty());
+        btnDeleteDiagRequest.setEnabled(canEdit && !pendingDiagRequests.isEmpty());
+    }
+
+    // Saves vitals/notes, the drafted prescription, and the drafted diagnostic requests
+    // (new ones added, existing ones removed) all together. Returns false and shows the
+    // error if any step fails, leaving the dialog open with the drafts untouched.
+    private boolean saveEverything() {
+        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return false;
+        }
+
+        if (!pendingPrescriptionItems.isEmpty()) {
+            result = doctor.savePrescription(consultId, pendingPrescriptionItems);
+            if (result != null) {
+                JOptionPane.showMessageDialog(this, result);
+                return false;
+            }
+        }
+
+        for (Integer originalId : originalDiagRequestIds) {
+            boolean stillPending = false;
+            for (PendingDiagRequest req : pendingDiagRequests) {
+                if (req.requestId == originalId) {
+                    stillPending = true;
+                    break;
+                }
+            }
+            if (!stillPending) {
+                doctor.deleteDiagnosticRequest(originalId);
+            }
+        }
+
+        ArrayList<String[]> newRequests = new ArrayList<>();
+        for (PendingDiagRequest req : pendingDiagRequests) {
+            if (req.requestId == -1) {
+                newRequests.add(new String[]{req.serviceId, req.remarks});
+            }
+        }
+        if (!newRequests.isEmpty()) {
+            result = doctor.submitDiagnosticRequests(consultId, newRequests);
+            if (result != null) {
+                JOptionPane.showMessageDialog(this, result);
+                return false;
+            }
+        }
+
+        doctor.loadConsultation(consultId);
+        loadPendingState();
+        refresh();
+        return true;
     }
 
     /**
@@ -102,16 +192,16 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         scrNotes = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
         lblPrescriptionHeader = new javax.swing.JLabel();
-        btnWritePrescription = new javax.swing.JButton();
+        btnAddPrescription = new javax.swing.JButton();
         scrPrescriptionItemsView = new javax.swing.JScrollPane();
         tblPrescriptionItemsView = new javax.swing.JTable();
         lblDiagnosticHeader = new javax.swing.JLabel();
-        btnRequestDiagnostic = new javax.swing.JButton();
-        btnDeleteDiagnosticRequest = new javax.swing.JButton();
+        btnAddDiagRequest = new javax.swing.JButton();
+        btnDeleteDiagRequest = new javax.swing.JButton();
         scrDiagnosticRequestsView = new javax.swing.JScrollPane();
         tblDiagnosticRequestsView = new javax.swing.JTable();
         btnCompleteConsultation = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         btnSaveDetails = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -187,12 +277,12 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblPrescriptionHeader.setText("Prescription:");
         getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 466, 140, 22));
 
-        btnWritePrescription.setBackground(new java.awt.Color(38, 117, 154));
-        btnWritePrescription.setForeground(new java.awt.Color(255, 255, 255));
-        btnWritePrescription.setText("Write Prescription");
-        btnWritePrescription.setFocusPainted(false);
-        btnWritePrescription.addActionListener(this::btnWritePrescription);
-        getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 590, 200, 26));
+        btnAddPrescription.setBackground(new java.awt.Color(38, 117, 154));
+        btnAddPrescription.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddPrescription.setText("Add Prescription");
+        btnAddPrescription.setFocusPainted(false);
+        btnAddPrescription.addActionListener(this::btnAddPrescription);
+        getContentPane().add(btnAddPrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 590, 200, 26));
 
         tblPrescriptionItemsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -219,28 +309,28 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         lblDiagnosticHeader.setText("Diagnostic Requests:");
         getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 626, 170, 22));
 
-        btnRequestDiagnostic.setBackground(new java.awt.Color(38, 117, 154));
-        btnRequestDiagnostic.setForeground(new java.awt.Color(255, 255, 255));
-        btnRequestDiagnostic.setText("Add Request");
-        btnRequestDiagnostic.setFocusPainted(false);
-        btnRequestDiagnostic.addActionListener(this::btnRequestDiagnostic);
-        getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 778, 200, 26));
+        btnAddDiagRequest.setBackground(new java.awt.Color(38, 117, 154));
+        btnAddDiagRequest.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddDiagRequest.setText("Add Request");
+        btnAddDiagRequest.setFocusPainted(false);
+        btnAddDiagRequest.addActionListener(this::btnAddDiagRequest);
+        getContentPane().add(btnAddDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 778, 200, 26));
 
-        btnDeleteDiagnosticRequest.setText("Delete Selected");
-        btnDeleteDiagnosticRequest.setFocusPainted(false);
-        btnDeleteDiagnosticRequest.addActionListener(this::btnDeleteDiagnosticRequest);
-        getContentPane().add(btnDeleteDiagnosticRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 778, 200, 26));
+        btnDeleteDiagRequest.setText("Delete Selected");
+        btnDeleteDiagRequest.setFocusPainted(false);
+        btnDeleteDiagRequest.addActionListener(this::btnDeleteDiagRequest);
+        getContentPane().add(btnDeleteDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 778, 200, 26));
 
         tblDiagnosticRequestsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Service", "Requested Date", "Status", "Result Date"
+                "Service", "Requested Date", "Remarks"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -248,11 +338,6 @@ public class ConsultationsDialog extends javax.swing.JDialog {
             }
         });
         tblDiagnosticRequestsView.getTableHeader().setReorderingAllowed(false);
-        tblDiagnosticRequestsView.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblDiagnosticRequestsView(evt);
-            }
-        });
         scrDiagnosticRequestsView.setViewportView(tblDiagnosticRequestsView);
 
         getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 658, 520, 110));
@@ -264,12 +349,12 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnCompleteConsultation.addActionListener(this::btnCompleteConsultation);
         getContentPane().add(btnCompleteConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 250, 36));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Cancel");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 830, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 830, 250, 36));
 
         btnSaveDetails.setBackground(new java.awt.Color(38, 117, 154));
         btnSaveDetails.setForeground(new java.awt.Color(255, 255, 255));
@@ -281,67 +366,63 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCompleteConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation
-        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
+        if (!saveEverything()) {
             return;
         }
         JOptionPane.showMessageDialog(this, "Consultation updated.");
-        doctor.loadConsultation(consultId);
-        refresh();
+        dispose();
     }//GEN-LAST:event_btnCompleteConsultation
 
-    private void btnWritePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWritePrescription
+    private void btnSaveDetails(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveDetails
+        if (!saveEverything()) {
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Details saved.");
+    }//GEN-LAST:event_btnSaveDetails
+
+    private void btnAddPrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPrescription
         if (!doctor.canEditConsultation()) {
             JOptionPane.showMessageDialog(this, "You cannot write a prescription for this consultation.");
             return;
         }
-        PrescriptionDialog dialog = new PrescriptionDialog((java.awt.Frame) getOwner(), true, doctor, consultId);
+        PrescriptionDialog dialog = new PrescriptionDialog((java.awt.Frame) getOwner(), true, doctor, consultId,
+                new ArrayList<>(pendingPrescriptionItems));
         dialog.setVisible(true);
-        doctor.loadConsultation(consultId);
+        if (dialog.isSaved()) {
+            pendingPrescriptionItems = dialog.getResultItems();
+        }
         refresh();
-    }//GEN-LAST:event_btnWritePrescription
+    }//GEN-LAST:event_btnAddPrescription
 
-    private void btnRequestDiagnostic(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRequestDiagnostic
+    private void btnAddDiagRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDiagRequest
         if (!doctor.canEditConsultation()) {
             JOptionPane.showMessageDialog(this, "You cannot request diagnostic services for this consultation.");
             return;
         }
         DiagnosticRequestDialog dialog = new DiagnosticRequestDialog((java.awt.Frame) getOwner(), true, doctor, consultId);
         dialog.setVisible(true);
-        doctor.loadConsultation(consultId);
+        if (dialog.isSaved()) {
+            for (String[] request : dialog.getResultRequests()) {
+                pendingDiagRequests.add(new PendingDiagRequest(-1, request[0], request[1], doctor.today(), request[2]));
+            }
+        }
         refresh();
-    }//GEN-LAST:event_btnRequestDiagnostic
+    }//GEN-LAST:event_btnAddDiagRequest
 
-    private void btnDeleteDiagnosticRequest(java.awt.event.ActionEvent evt) {
+    private void btnDeleteDiagRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteDiagRequest
         int row = tblDiagnosticRequestsView.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a diagnostic request to delete.");
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Delete this diagnostic request?",
+        int confirm = JOptionPane.showConfirmDialog(this, "Remove this diagnostic request?",
                 "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
-        String result = doctor.deleteDiagnosticRequest(doctor.getDiagnosticRequestId(row));
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
+        pendingDiagRequests.remove(row);
         refresh();
-    }
-
-    private void tblDiagnosticRequestsView(java.awt.event.MouseEvent evt) {
-        if (evt.getClickCount() != 2) {
-            return;
-        }
-        int row = tblDiagnosticRequestsView.getSelectedRow();
-        if (row < 0) {
-            return;
-        }
-        JOptionPane.showMessageDialog(this, doctor.getDiagnosticRequestDetail(row), "Diagnostic Result", JOptionPane.INFORMATION_MESSAGE);
-    }
+    }//GEN-LAST:event_btnDeleteDiagRequest
 
     private void btnViewCase(java.awt.event.ActionEvent evt) {
         int caseId = doctor.getConsultCaseId();
@@ -354,20 +435,9 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         refresh();
     }
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
         dispose();
-    }//GEN-LAST:event_btnCloseDialog
-
-    private void btnSaveDetails(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveDetails
-        String result = doctor.saveCaseSummary(txtCaseSummary.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
-        JOptionPane.showMessageDialog(this, "Case summary saved.");
-        doctor.loadCase(caseId);
-        refresh();
-    }//GEN-LAST:event_btnSaveDetails
+    }//GEN-LAST:event_btnCancel
 
 
     /**
@@ -408,13 +478,13 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnAddDiagRequest;
+    private javax.swing.JButton btnAddPrescription;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCompleteConsultation;
-    private javax.swing.JButton btnDeleteDiagnosticRequest;
-    private javax.swing.JButton btnRequestDiagnostic;
+    private javax.swing.JButton btnDeleteDiagRequest;
     private javax.swing.JButton btnSaveDetails;
     private javax.swing.JButton btnViewCase;
-    private javax.swing.JButton btnWritePrescription;
     private javax.swing.JLabel lblComplaintHeader;
     private javax.swing.JLabel lblConsultHeader;
     private javax.swing.JLabel lblConsultMeta;

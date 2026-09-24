@@ -68,8 +68,3 @@
 68,63,1,16-08-2026,`Baseline assessment prior to commencing therapy`,17-08-2026,`Haemoglobin 10.5 g per dL, white cell count 15.7 x10^9 per L, platelet 249 x10^9 per L`,0
 69,63,14,16-08-2026,`Requested to support the working diagnosis`,18-08-2026,`Streptococcus pneumoniae isolated and sensitive to amoxicillin`,0
 70,63,18,16-08-2026,`Repeat investigation to monitor treatment response`,16-08-2026,`Patchy consolidation in the right lower zone with clear costophrenic angles elsewhere`,0
-71,67,2,24-09-2026,,,,0
-72,67,6,24-09-2026,,,,0
-73,67,25,24-09-2026,,,,0
-74,67,25,24-09-2026,,,,0
-75,67,24,24-09-2026,,,,0

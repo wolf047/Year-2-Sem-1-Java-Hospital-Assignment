@@ -24,6 +24,11 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     private String selectedDrugName = "";
     private String selectedForm = "";
 
+    // Nothing is written to file from this dialog. The caller (ConsultationsDialog) only
+    // applies these items when its own "Save Details" is clicked.
+    private boolean saved = false;
+    private ArrayList<String[]> resultItems = new ArrayList<>();
+
     /**
      * Creates new form PrescriptionDialog
      */
@@ -32,14 +37,15 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         initComponents();
     }
 
-    // Used by the Consultation dialog to write a prescription for one consultation
-    public PrescriptionDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int consultId) {
+    // Used by the Consultation dialog to draft a prescription for one consultation.
+    // initialItems is the current draft (already-saved items, plus anything added earlier
+    // this session) so re-opening this dialog continues from where the doctor left off.
+    public PrescriptionDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int consultId, ArrayList<String[]> initialItems) {
         super(parent, modal);
         initComponents();
         this.doctor = doctor;
         this.consultId = consultId;
 
-        lblPrescriptionHeader.setText("Write Prescription");
         lblPrescriptionMeta.setText("Consultation #" + consultId);
         txtDrugSearch.setText("");
         txtDosage.setText("");
@@ -49,10 +55,9 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         ArrayList<String> forms = doctor.getDrugForms();
         cmbFormFilter.setModel(new javax.swing.DefaultComboBoxModel<>(forms.toArray(new String[0])));
 
-        ArrayList<String[]> existing = doctor.getPrescriptionItems(consultId);
-        pendingItems = new ArrayList<>(existing);
+        pendingItems = new ArrayList<>(initialItems);
         refreshItemsTable();
-        lblPrescriptionHeader.setText(existing.isEmpty() ? "Write Prescription" : "Edit Prescription");
+        lblPrescriptionHeader.setText(pendingItems.isEmpty() ? "Write Prescription" : "Edit Prescription");
 
         if (!doctor.canEditConsultation()) {
             lblSelectedDrug.setText("This consultation can no longer be edited.");
@@ -60,6 +65,16 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         } else {
             searchDrugs();
         }
+    }
+
+    // true once the doctor clicked "Save Prescription" in this dialog
+    public boolean isSaved() {
+        return saved;
+    }
+
+    // the drafted items, only meaningful when isSaved() is true
+    public ArrayList<String[]> getResultItems() {
+        return resultItems;
     }
 
     private void setInputsEnabled(boolean enabled) {
@@ -126,7 +141,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         scrPrescriptionItems = new javax.swing.JScrollPane();
         tblPrescriptionItems = new javax.swing.JTable();
         btnRemoveItem = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         btnSavePrescription = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -274,12 +289,12 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         btnRemoveItem.addActionListener(this::btnRemoveItem);
         getContentPane().add(btnRemoveItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 646, 250, 32));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Cancel");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 700, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 700, 250, 36));
 
         btnSavePrescription.setBackground(new java.awt.Color(38, 117, 154));
         btnSavePrescription.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -333,18 +348,18 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnRemoveItem
 
     private void btnSavePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePrescription
-        String result = doctor.savePrescription(consultId, pendingItems);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
+        if (pendingItems.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please add at least one drug to the prescription.");
             return;
         }
-        JOptionPane.showMessageDialog(this, "Prescription saved.");
+        resultItems = pendingItems;
+        saved = true;
         dispose();
     }//GEN-LAST:event_btnSavePrescription
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
         dispose();
-    }//GEN-LAST:event_btnCloseDialog
+    }//GEN-LAST:event_btnCancel
 
     private void tblDrugResults(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDrugResults
         int row = tblDrugResults.getSelectedRow();
@@ -402,7 +417,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddItem;
-    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnRemoveItem;
     private javax.swing.JButton btnSavePrescription;
     private javax.swing.JComboBox<String> cmbFormFilter;

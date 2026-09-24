@@ -75,11 +75,12 @@ public interface DoctorServices {
     ArrayList<Object[]> searchServices(String category, String type, String text);
     int getServiceResultId(int row);
     String checkText(String text);
+    // requests: {serviceId, remarks}
     String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests);
-    ArrayList<Object[]> getDiagnosticRequests(int consultId);
-    int getDiagnosticRequestId(int row);
-    String getDiagnosticRequestDetail(int row);
+    // rows: {requestId, serviceId, serviceName, requestDate, remarks}
+    ArrayList<Object[]> getDiagnosticRequestItems(int consultId);
     String deleteDiagnosticRequest(int requestId);
+    String today();
 
     ArrayList<Object[]> getReviews();
     String getRatingSummary();

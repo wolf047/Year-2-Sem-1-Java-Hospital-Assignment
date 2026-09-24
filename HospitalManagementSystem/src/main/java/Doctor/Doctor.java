@@ -50,10 +50,6 @@ public class Doctor extends User implements DoctorServices {
     private ArrayList<Integer> drugResultIds = new ArrayList<>();
     private ArrayList<Integer> serviceResultIds = new ArrayList<>();
 
-    // Diagnostic requests of the currently loaded consultation (Consultation dialog)
-    private ArrayList<Object[]> diagRequestRows = new ArrayList<>();
-    private ArrayList<Integer> diagRequestIds = new ArrayList<>();
-
     // =====================================================================
     // CONSTRUCTORS
     // =====================================================================
@@ -225,7 +221,7 @@ public class Doctor extends User implements DoctorServices {
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
-    private String today() {
+    public String today() {
         return LocalDate.now().format(DATE);
     }
 
@@ -1068,7 +1064,7 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // requests: {serviceId, serviceName, category, type, remarks}
+    // requests: {serviceId, remarks}
     public String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests) {
         if (!loadConsultation(consultId) || !canEditConsultation()) {
             return "You cannot request diagnostic services for this consultation.";
@@ -1083,7 +1079,7 @@ public class Doctor extends User implements DoctorServices {
             record.add(String.valueOf(consultId));
             record.add(request[0]);
             record.add(today());
-            record.add(request[4]);
+            record.add(request[1]);
             record.add("");
             record.add("");
             record.add("0");
@@ -1092,15 +1088,14 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // The diagnostic requests of one consultation, for display on the Consultation dialog
-    public ArrayList<Object[]> getDiagnosticRequests(int consultId) {
-        diagRequestRows.clear();
-        diagRequestIds.clear();
-
+    // The diagnostic requests already on file for one consultation, for editing on the Consultation dialog:
+    // {requestId, serviceId, serviceName, requestDate, remarks}
+    public ArrayList<Object[]> getDiagnosticRequestItems(int consultId) {
+        ArrayList<Object[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (requests == null) {
-            return diagRequestRows;
+            return rows;
         }
         for (Integer requestId : requests.keySet()) {
             // r: 0 consultation_id, 1 service_id, 2 request_date, 3 remarks, 4 result_date, 5 results
@@ -1115,45 +1110,9 @@ public class Doctor extends User implements DoctorServices {
                     serviceName = s.get(0);
                 }
             }
-            String status = "Pending";
-            if (!r.get(4).isEmpty()) {
-                status = "Ready";
-            }
-            diagRequestRows.add(new Object[]{serviceName, r.get(2), status, r.get(4)});
-            diagRequestIds.add(requestId);
+            rows.add(new Object[]{requestId, r.get(1), serviceName, r.get(2), r.get(3)});
         }
-        return diagRequestRows;
-    }
-
-    public int getDiagnosticRequestId(int row) {
-        if (row < 0 || row >= diagRequestIds.size()) {
-            return -1;
-        }
-        return diagRequestIds.get(row);
-    }
-
-    public String getDiagnosticRequestDetail(int row) {
-        if (row < 0 || row >= diagRequestIds.size()) {
-            return "";
-        }
-        ArrayList<String> r = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", diagRequestIds.get(row));
-        if (r == null) {
-            return "";
-        }
-        // r (with id): 0 id, 1 consultation_id, 2 service_id, 3 request_date, 4 remarks, 5 result_date, 6 results
-        TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
-        String serviceName = "Unknown";
-        if (services != null) {
-            ArrayList<String> s = services.get(Integer.parseInt(r.get(2)));
-            if (s != null) {
-                serviceName = s.get(0);
-            }
-        }
-        String results = "Not available yet";
-        if (!r.get(5).isEmpty()) {
-            results = r.get(6);
-        }
-        return serviceName + "\n\nRequest remarks: " + r.get(4) + "\n\nResults: " + results;
+        return rows;
     }
 
     // Deletes one diagnostic request. Returns null if deleted, or the error message.

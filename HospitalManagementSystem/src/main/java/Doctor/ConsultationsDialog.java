@@ -123,12 +123,14 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnWritePrescription.setForeground(new java.awt.Color(255, 255, 255));
         btnWritePrescription.setText("Write Prescription");
         btnWritePrescription.setFocusPainted(false);
+        btnWritePrescription.addActionListener(this::btnWritePrescription);
         getContentPane().add(btnWritePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 416, 160, 28));
 
         btnRequestDiagnostic.setBackground(new java.awt.Color(38, 117, 154));
         btnRequestDiagnostic.setForeground(new java.awt.Color(255, 255, 255));
         btnRequestDiagnostic.setText("Request Diagnostic Test");
         btnRequestDiagnostic.setFocusPainted(false);
+        btnRequestDiagnostic.addActionListener(this::btnRequestDiagnostic);
         getContentPane().add(btnRequestDiagnostic, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 416, 160, 28));
 
         lblPrescriptionStatus.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
@@ -145,17 +147,36 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnSaveConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnSaveConsultation.setForeground(new java.awt.Color(255, 255, 255));
         btnSaveConsultation.setText("Save Changes");
+        btnSaveConsultation.addActionListener(this::btnSaveConsultation);
         getContentPane().add(btnSaveConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 250, 36));
 
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseDialog.setText("Close Page");
+        btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 520, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSaveConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveConsultation
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveConsultation
+
+    private void btnWritePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWritePrescription
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnWritePrescription
+
+    private void btnRequestDiagnostic(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRequestDiagnostic
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRequestDiagnostic
+
+    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseDialog
+
+    
     /**
      * @param args the command line arguments
      */

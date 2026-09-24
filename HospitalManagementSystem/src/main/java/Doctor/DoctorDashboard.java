@@ -33,11 +33,11 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblPortalTitle = new javax.swing.JLabel();
         pnlNav = new javax.swing.JPanel();
         btnLogout = new javax.swing.JButton();
-        btnNavConsultations1 = new javax.swing.JButton();
-        btnNavSchedule1 = new javax.swing.JButton();
-        btnNavCases1 = new javax.swing.JButton();
-        btnNavReviews1 = new javax.swing.JButton();
-        btnNavProfile1 = new javax.swing.JButton();
+        btnNavConsultations = new javax.swing.JButton();
+        btnNavSchedule = new javax.swing.JButton();
+        btnNavCases = new javax.swing.JButton();
+        btnNavReviews = new javax.swing.JButton();
+        btnNavProfile = new javax.swing.JButton();
         pnlContent = new javax.swing.JPanel();
         pnlProfile = new javax.swing.JPanel();
         lblProfileTitle = new javax.swing.JLabel();
@@ -84,6 +84,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblWeekRange = new javax.swing.JLabel();
         scrCalendar = new javax.swing.JScrollPane();
         tblCalendar = new javax.swing.JTable();
+        btnAddConsultDetails = new javax.swing.JButton();
         pnlReviews = new javax.swing.JPanel();
         lblReviewsTitle = new javax.swing.JLabel();
         scrReviews = new javax.swing.JScrollPane();
@@ -120,56 +121,62 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnLogout.setFocusPainted(false);
         btnLogout.setFocusable(false);
         btnLogout.setRolloverEnabled(false);
+        btnLogout.addActionListener(this::btnLogout);
         pnlNav.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, 160, 40));
 
-        btnNavConsultations1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnNavConsultations1.setForeground(new java.awt.Color(38, 117, 154));
-        btnNavConsultations1.setText("Consultations");
-        btnNavConsultations1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 15, 1, 1));
-        btnNavConsultations1.setFocusPainted(false);
-        btnNavConsultations1.setFocusable(false);
-        btnNavConsultations1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pnlNav.add(btnNavConsultations1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 160, 40));
+        btnNavConsultations.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavConsultations.setForeground(new java.awt.Color(38, 117, 154));
+        btnNavConsultations.setText("Consultations");
+        btnNavConsultations.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 15, 1, 1));
+        btnNavConsultations.setFocusPainted(false);
+        btnNavConsultations.setFocusable(false);
+        btnNavConsultations.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavConsultations.addActionListener(this::btnNavConsultations);
+        pnlNav.add(btnNavConsultations, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 160, 40));
 
-        btnNavSchedule1.setBackground(new java.awt.Color(30, 95, 125));
-        btnNavSchedule1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnNavSchedule1.setForeground(new java.awt.Color(255, 255, 255));
-        btnNavSchedule1.setText("Schedule");
-        btnNavSchedule1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        btnNavSchedule1.setFocusPainted(false);
-        btnNavSchedule1.setFocusable(false);
-        btnNavSchedule1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pnlNav.add(btnNavSchedule1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 160, 40));
+        btnNavSchedule.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavSchedule.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavSchedule.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavSchedule.setText("Schedule");
+        btnNavSchedule.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavSchedule.setFocusPainted(false);
+        btnNavSchedule.setFocusable(false);
+        btnNavSchedule.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavSchedule.addActionListener(this::btnNavSchedule);
+        pnlNav.add(btnNavSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 160, 40));
 
-        btnNavCases1.setBackground(new java.awt.Color(30, 95, 125));
-        btnNavCases1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnNavCases1.setForeground(new java.awt.Color(255, 255, 255));
-        btnNavCases1.setText("Cases");
-        btnNavCases1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        btnNavCases1.setFocusPainted(false);
-        btnNavCases1.setFocusable(false);
-        btnNavCases1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pnlNav.add(btnNavCases1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 160, 40));
+        btnNavCases.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavCases.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavCases.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavCases.setText("Cases");
+        btnNavCases.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavCases.setFocusPainted(false);
+        btnNavCases.setFocusable(false);
+        btnNavCases.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavCases.addActionListener(this::btnNavCases);
+        pnlNav.add(btnNavCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 160, 40));
 
-        btnNavReviews1.setBackground(new java.awt.Color(30, 95, 125));
-        btnNavReviews1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnNavReviews1.setForeground(new java.awt.Color(255, 255, 255));
-        btnNavReviews1.setText("Reviews");
-        btnNavReviews1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        btnNavReviews1.setFocusPainted(false);
-        btnNavReviews1.setFocusable(false);
-        btnNavReviews1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pnlNav.add(btnNavReviews1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 160, 40));
+        btnNavReviews.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavReviews.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavReviews.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavReviews.setText("Reviews");
+        btnNavReviews.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavReviews.setFocusPainted(false);
+        btnNavReviews.setFocusable(false);
+        btnNavReviews.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavReviews.addActionListener(this::btnNavReviews);
+        pnlNav.add(btnNavReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 160, 40));
 
-        btnNavProfile1.setBackground(new java.awt.Color(30, 95, 125));
-        btnNavProfile1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnNavProfile1.setForeground(new java.awt.Color(255, 255, 255));
-        btnNavProfile1.setText("Profile");
-        btnNavProfile1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        btnNavProfile1.setFocusPainted(false);
-        btnNavProfile1.setFocusable(false);
-        btnNavProfile1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pnlNav.add(btnNavProfile1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 160, 40));
+        btnNavProfile.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavProfile.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavProfile.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavProfile.setText("Profile");
+        btnNavProfile.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavProfile.setFocusPainted(false);
+        btnNavProfile.setFocusable(false);
+        btnNavProfile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavProfile.addActionListener(this::btnNavProfile);
+        pnlNav.add(btnNavProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 160, 40));
 
         getContentPane().add(pnlNav, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 180, 550));
 
@@ -253,19 +260,19 @@ public class DoctorDashboard extends javax.swing.JFrame {
         txtEmail.setText("txtEmail");
         pnlProfile.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 161, 275, 28));
 
-        lblCurrentPwd.setText("lblCurrentPwd");
+        lblCurrentPwd.setText("Current Password: ");
         pnlProfile.add(lblCurrentPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 253, 275, 18));
 
         pwdCurrent.setText("pwdCurrent");
         pnlProfile.add(pwdCurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 273, 275, 28));
 
-        lblNewPwd.setText("lblNewPwd");
+        lblNewPwd.setText("New Password: ");
         pnlProfile.add(lblNewPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 309, 275, 18));
 
         pwdNew.setText("pwdNew");
         pnlProfile.add(pwdNew, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 329, 275, 28));
 
-        lblConfirmPwd.setText("lblConfirmPwd");
+        lblConfirmPwd.setText("Confirm New Password: ");
         pnlProfile.add(lblConfirmPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 365, 275, 18));
 
         pwdConfirm.setText("pwdConfirm");
@@ -278,6 +285,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnSaveProfile.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnSaveProfile.setForeground(new java.awt.Color(255, 255, 255));
         btnSaveProfile.setText("Save");
+        btnSaveProfile.addActionListener(this::btnSaveProfile);
         pnlProfile.add(btnSaveProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 451, 132, 36));
 
         btnResetProfile.setBackground(new java.awt.Color(38, 117, 154));
@@ -285,6 +293,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnResetProfile.setForeground(new java.awt.Color(255, 255, 255));
         btnResetProfile.setText("Reset");
         btnResetProfile.setFocusPainted(false);
+        btnResetProfile.addActionListener(this::btnResetProfile);
         pnlProfile.add(btnResetProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(454, 451, 132, 36));
 
         pnlContent.add(pnlProfile, "profile");
@@ -337,17 +346,26 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         tblSchedule.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Date", "Start Time", "End Time"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblSchedule.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblSchedule.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblSchedule.getTableHeader().setReorderingAllowed(false);
         scrSchedule.setViewportView(tblSchedule);
 
         pnlSchedule.add(scrSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
@@ -367,6 +385,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnPrevWeek.setText("← Prev Week");
         btnPrevWeek.setFocusPainted(false);
         btnPrevWeek.setRolloverEnabled(false);
+        btnPrevWeek.addActionListener(this::btnPrevWeek);
         pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 110, 28));
 
         btnNextWeek.setBackground(new java.awt.Color(38, 117, 154));
@@ -374,27 +393,47 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnNextWeek.setText("Next Week →");
         btnNextWeek.setFocusPainted(false);
         btnNextWeek.setRolloverEnabled(false);
+        btnNextWeek.addActionListener(this::btnNextWeek);
         pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 55, 110, 28));
 
         lblWeekRange.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         lblWeekRange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWeekRange.setText("Week of —");
-        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 55, 110, 28));
+        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 55, 300, 28));
 
         tblCalendar.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Date", "Case ID", "Time Slot", "Complaint", "Room ID", "Status"
             }
-        ));
-        scrCalendar.setViewportView(tblCalendar);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
 
-        pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 435));
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCalendar.setColumnSelectionAllowed(true);
+        tblCalendar.getTableHeader().setReorderingAllowed(false);
+        tblCalendar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCalendar(evt);
+            }
+        });
+        scrCalendar.setViewportView(tblCalendar);
+        tblCalendar.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 370));
+
+        btnAddConsultDetails.setText("Add Consultation Details");
+        pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
 
         pnlContent.add(pnlConsultations, "consultations");
 
@@ -408,17 +447,26 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         tblReviews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Consultation ID", "Rating", "Comments"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblReviews.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblReviews.getTableHeader().setReorderingAllowed(false);
         scrReviews.setViewportView(tblReviews);
 
         pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
@@ -429,6 +477,50 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNavConsultations(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavConsultations
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavConsultations
+
+    private void btnNavSchedule(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavSchedule
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavSchedule
+
+    private void btnLogout(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogout
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLogout
+
+    private void btnNavCases(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavCases
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavCases
+
+    private void btnNavReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavReviews
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavReviews
+
+    private void btnNavProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavProfile
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNavProfile
+
+    private void btnPrevWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevWeek
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnPrevWeek
+
+    private void btnNextWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextWeek
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNextWeek
+
+    private void btnSaveProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProfile
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveProfile
+
+    private void btnResetProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetProfile
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnResetProfile
+
+    private void tblCalendar(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendar
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblCalendar
 
     /**
      * @param args the command line arguments
@@ -456,12 +548,13 @@ public class DoctorDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddConsultDetails;
     private javax.swing.JButton btnLogout;
-    private javax.swing.JButton btnNavCases1;
-    private javax.swing.JButton btnNavConsultations1;
-    private javax.swing.JButton btnNavProfile1;
-    private javax.swing.JButton btnNavReviews1;
-    private javax.swing.JButton btnNavSchedule1;
+    private javax.swing.JButton btnNavCases;
+    private javax.swing.JButton btnNavConsultations;
+    private javax.swing.JButton btnNavProfile;
+    private javax.swing.JButton btnNavReviews;
+    private javax.swing.JButton btnNavSchedule;
     private javax.swing.JButton btnNextWeek;
     private javax.swing.JButton btnPrevWeek;
     private javax.swing.JButton btnResetProfile;

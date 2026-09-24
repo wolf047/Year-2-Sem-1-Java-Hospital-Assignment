@@ -52,7 +52,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         tblPrescriptionItems = new javax.swing.JTable();
         btnRemoveItem = new javax.swing.JButton();
         btnCloseDialog = new javax.swing.JButton();
-        btnSavePrescription1 = new javax.swing.JButton();
+        btnSavePrescription = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Write Prescription");
@@ -75,9 +75,15 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         getContentPane().add(lblPrescriptionFilterHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 76, 300, 18));
 
         cmbFormFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbFormFilter.addActionListener(this::cmbFormFilter);
         getContentPane().add(cmbFormFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 98, 170, 26));
 
         txtDrugSearch.setText("Search drug name...");
+        txtDrugSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtDrugSearch(evt);
+            }
+        });
         getContentPane().add(txtDrugSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 98, 320, 26));
 
         tblDrugResults.setModel(new javax.swing.table.DefaultTableModel(
@@ -105,6 +111,11 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         tblDrugResults.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblDrugResults.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblDrugResults.getTableHeader().setReorderingAllowed(false);
+        tblDrugResults.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDrugResults(evt);
+            }
+        });
         scrDrugResults.setViewportView(tblDrugResults);
         tblDrugResults.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -146,6 +157,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         btnAddItem.setForeground(new java.awt.Color(255, 255, 255));
         btnAddItem.setText("+ Add Drug to Prescription");
         btnAddItem.setFocusPainted(false);
+        btnAddItem.addActionListener(this::btnAddItem);
         getContentPane().add(btnAddItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 442, 520, 30));
 
         lblItemsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -184,22 +196,54 @@ public class PrescriptionDialog extends javax.swing.JDialog {
 
         btnRemoveItem.setText("Remove Selected");
         btnRemoveItem.setFocusPainted(false);
+        btnRemoveItem.addActionListener(this::btnRemoveItem);
         getContentPane().add(btnRemoveItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 646, 250, 32));
 
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseDialog.setText("Close Page");
+        btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 700, 250, 36));
 
-        btnSavePrescription1.setBackground(new java.awt.Color(38, 117, 154));
-        btnSavePrescription1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnSavePrescription1.setForeground(new java.awt.Color(255, 255, 255));
-        btnSavePrescription1.setText("Save Prescription");
-        getContentPane().add(btnSavePrescription1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 700, 250, 36));
+        btnSavePrescription.setBackground(new java.awt.Color(38, 117, 154));
+        btnSavePrescription.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSavePrescription.setForeground(new java.awt.Color(255, 255, 255));
+        btnSavePrescription.setText("Save Prescription");
+        btnSavePrescription.addActionListener(this::btnSavePrescription);
+        getContentPane().add(btnSavePrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 700, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmbFormFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFormFilter
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbFormFilter
+
+    private void btnAddItem(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItem
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAddItem
+
+    private void btnRemoveItem(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItem
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRemoveItem
+
+    private void btnSavePrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePrescription
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSavePrescription
+
+    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseDialog
+
+    private void tblDrugResults(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDrugResults
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblDrugResults
+
+    private void txtDrugSearch(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDrugSearch
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDrugSearch
+
 
     /**
      * @param args the command line arguments
@@ -242,7 +286,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnAddItem;
     private javax.swing.JButton btnCloseDialog;
     private javax.swing.JButton btnRemoveItem;
-    private javax.swing.JButton btnSavePrescription1;
+    private javax.swing.JButton btnSavePrescription;
     private javax.swing.JComboBox<String> cmbFormFilter;
     private javax.swing.JLabel lblDosageHeader;
     private javax.swing.JLabel lblDosageUnit;

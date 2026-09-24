@@ -39,7 +39,7 @@ public class CasesDialog extends javax.swing.JDialog {
         lblDiagnosticsHeader = new javax.swing.JLabel();
         scrCaseConsultations = new javax.swing.JScrollPane();
         tblCaseConsultations = new javax.swing.JTable();
-        lblConsultationsHeader1 = new javax.swing.JLabel();
+        lblConsultationsHeader = new javax.swing.JLabel();
         scrCaseDiagnostics = new javax.swing.JScrollPane();
         tblCaseDiagnostics = new javax.swing.JTable();
         btnViewConsultation = new javax.swing.JButton();
@@ -50,7 +50,7 @@ public class CasesDialog extends javax.swing.JDialog {
         lblPatientGender = new javax.swing.JLabel();
         lblPatientBloodType = new javax.swing.JLabel();
         lblPatientAllergies = new javax.swing.JLabel();
-        btnViewDiagnosticResult1 = new javax.swing.JButton();
+        btnViewDiagnosticResult = new javax.swing.JButton();
         btnCloseDialog = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -88,6 +88,7 @@ public class CasesDialog extends javax.swing.JDialog {
         btnSaveSummary.setBackground(new java.awt.Color(38, 117, 154));
         btnSaveSummary.setForeground(new java.awt.Color(255, 255, 255));
         btnSaveSummary.setText("Save Summary");
+        btnSaveSummary.addActionListener(this::btnSaveSummary);
         getContentPane().add(btnSaveSummary, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 258, 140, 26));
 
         lblDiagnosticsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -119,9 +120,9 @@ public class CasesDialog extends javax.swing.JDialog {
 
         getContentPane().add(scrCaseConsultations, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 312, 520, 120));
 
-        lblConsultationsHeader1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        lblConsultationsHeader1.setText("Consultations: ");
-        getContentPane().add(lblConsultationsHeader1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 292, 300, 18));
+        lblConsultationsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblConsultationsHeader.setText("Consultations: ");
+        getContentPane().add(lblConsultationsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 292, 300, 18));
 
         tblCaseDiagnostics.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -148,12 +149,14 @@ public class CasesDialog extends javax.swing.JDialog {
         getContentPane().add(scrCaseDiagnostics, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 520, 120));
 
         btnViewConsultation.setText("View Details");
+        btnViewConsultation.addActionListener(this::btnViewConsultation);
         getContentPane().add(btnViewConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 438, 160, 30));
 
         btnCloseCase.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseCase.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseCase.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseCase.setText("Close Case");
+        btnCloseCase.addActionListener(this::btnCloseCase);
         getContentPane().add(btnCloseCase, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 668, 250, 36));
 
         lblCaseRoleNote.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
@@ -177,18 +180,59 @@ public class CasesDialog extends javax.swing.JDialog {
         lblPatientAllergies.setText("Allergies: ");
         getContentPane().add(lblPatientAllergies, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 134, 520, 20));
 
-        btnViewDiagnosticResult1.setText("View Result");
-        getContentPane().add(btnViewDiagnosticResult1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 622, 160, 30));
+        btnViewDiagnosticResult.setText("View Result");
+        btnViewDiagnosticResult.addActionListener(this::btnViewDiagnosticResult);
+        getContentPane().add(btnViewDiagnosticResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 622, 160, 30));
 
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseDialog.setText("Close Page");
+        btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSaveSummary(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveSummary
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveSummary
+
+    private void btnViewConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewConsultation
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnViewConsultation
+
+    private void btnViewDiagnosticResult(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewDiagnosticResult
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnViewDiagnosticResult
+
+    private void btnCloseCase(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseCase
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseCase
+
+    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseDialog
+
+    private void btnSaveSummary(java.awt.event.ActionEvent evt) {
+    // TODO add your handling code here:
+    }
+
+    private void btnViewConsultation(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void btnViewDiagnosticResult(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void btnCloseCase(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void btnCloseDialog(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+}
     /**
      * @param args the command line arguments
      */
@@ -231,12 +275,12 @@ public class CasesDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnCloseDialog;
     private javax.swing.JButton btnSaveSummary;
     private javax.swing.JButton btnViewConsultation;
-    private javax.swing.JButton btnViewDiagnosticResult1;
+    private javax.swing.JButton btnViewDiagnosticResult;
     private javax.swing.JLabel lblCaseHeader;
     private javax.swing.JLabel lblCaseMeta;
     private javax.swing.JLabel lblCaseRoleNote;
     private javax.swing.JLabel lblCaseStatusBadge;
-    private javax.swing.JLabel lblConsultationsHeader1;
+    private javax.swing.JLabel lblConsultationsHeader;
     private javax.swing.JLabel lblDiagnosticsHeader;
     private javax.swing.JLabel lblPatientAge;
     private javax.swing.JLabel lblPatientAllergies;

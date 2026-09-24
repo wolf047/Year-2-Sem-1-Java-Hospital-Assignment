@@ -47,7 +47,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         tblRequestList = new javax.swing.JTable();
         btnRemoveRequest = new javax.swing.JButton();
         btnCloseDialog = new javax.swing.JButton();
-        btnSubmitRequests1 = new javax.swing.JButton();
+        btnSubmitRequests = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Request Diagnostic Service");
@@ -68,12 +68,19 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         getContentPane().add(lblDiagFilterHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 76, 300, 18));
 
         cmbCategoryFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbCategoryFilter.addActionListener(this::cmbCategoryFilter);
         getContentPane().add(cmbCategoryFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 98, 170, 26));
 
         cmbTypeFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbTypeFilter.addActionListener(this::cmbTypeFilter);
         getContentPane().add(cmbTypeFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 98, 200, 26));
 
         txtServiceSearch.setText("Search service...");
+        txtServiceSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtServiceSearch(evt);
+            }
+        });
         getContentPane().add(txtServiceSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 134, 520, 26));
 
         lblSelectedService.setForeground(new java.awt.Color(102, 102, 102));
@@ -104,6 +111,11 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         tblServiceResults.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblServiceResults.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblServiceResults.getTableHeader().setReorderingAllowed(false);
+        tblServiceResults.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblServiceResults(evt);
+            }
+        });
         scrServiceResults.setViewportView(tblServiceResults);
         tblServiceResults.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -125,6 +137,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         btnAddRequest.setForeground(new java.awt.Color(255, 255, 255));
         btnAddRequest.setText("+ Add to Request List");
         btnAddRequest.setFocusPainted(false);
+        btnAddRequest.addActionListener(this::btnAddRequest);
         getContentPane().add(btnAddRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 520, 30));
 
         lblRequestsHeader.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -162,22 +175,59 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
 
         btnRemoveRequest.setText("Remove Selected");
         btnRemoveRequest.setFocusPainted(false);
+        btnRemoveRequest.addActionListener(this::btnRemoveRequest);
         getContentPane().add(btnRemoveRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 644, 250, 32));
 
         btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
         btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseDialog.setText("Close Page");
+        btnCloseDialog.addActionListener(this::btnCloseDialog);
         getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
 
-        btnSubmitRequests1.setBackground(new java.awt.Color(38, 117, 154));
-        btnSubmitRequests1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnSubmitRequests1.setForeground(new java.awt.Color(255, 255, 255));
-        btnSubmitRequests1.setText("Submit Requests");
-        getContentPane().add(btnSubmitRequests1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 698, 250, 36));
+        btnSubmitRequests.setBackground(new java.awt.Color(38, 117, 154));
+        btnSubmitRequests.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSubmitRequests.setForeground(new java.awt.Color(255, 255, 255));
+        btnSubmitRequests.setText("Submit Requests");
+        btnSubmitRequests.addActionListener(this::btnSubmitRequests);
+        getContentPane().add(btnSubmitRequests, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 698, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmbCategoryFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCategoryFilter
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbCategoryFilter
+
+    private void cmbTypeFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTypeFilter
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbTypeFilter
+
+    private void btnAddRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddRequest
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAddRequest
+
+    private void btnRemoveRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveRequest
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRemoveRequest
+
+    private void btnSubmitRequests(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitRequests
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSubmitRequests
+
+    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseDialog
+
+    private void txtServiceSearch(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtServiceSearch
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtServiceSearch
+
+    private void tblServiceResults(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblServiceResults
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblServiceResults
+
+
 
     /**
      * @param args the command line arguments
@@ -220,7 +270,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnAddRequest;
     private javax.swing.JButton btnCloseDialog;
     private javax.swing.JButton btnRemoveRequest;
-    private javax.swing.JButton btnSubmitRequests1;
+    private javax.swing.JButton btnSubmitRequests;
     private javax.swing.JComboBox<String> cmbCategoryFilter;
     private javax.swing.JComboBox<String> cmbTypeFilter;
     private javax.swing.JLabel lblDiagFilterHeader;

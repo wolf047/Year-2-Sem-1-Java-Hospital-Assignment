@@ -255,6 +255,17 @@ public class MedicalManager extends User{
         LocalTime startTime = LocalTime.parse(startStr, timeFormatter);
         LocalTime endTime = LocalTime.parse(endStr, timeFormatter);
         
+        java.time.LocalDateTime targetStart = date.atTime(startTime);
+        java.time.LocalDateTime targetEnd = date.atTime(endTime);
+        // handle overnight shifts
+        if (targetEnd.isBefore(targetStart)) {
+            targetEnd = targetEnd.plusDays(1);
+        }
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        
+        
+        
         return false;
     }
     

@@ -145,7 +145,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Write Prescription");
         setModal(true);
-        setName("prescription"); // NOI18N
+        setName("prescriptions"); // NOI18N
         setPreferredSize(new java.awt.Dimension(560, 795));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

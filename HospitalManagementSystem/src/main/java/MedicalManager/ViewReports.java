@@ -213,7 +213,7 @@ public class ViewReports extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Revenue by Payment Method");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, -1, -1));
 
@@ -445,9 +445,9 @@ public class ViewReports extends javax.swing.JFrame {
 
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel8.setText("Recent Patient Feedback");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
 
         reviewsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -501,10 +501,12 @@ public class ViewReports extends javax.swing.JFrame {
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 780, 490));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("APU Medical Centre");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setForeground(new java.awt.Color(192, 57, 43));
         logoutBtn1.setText("Logout");
         logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
         getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));

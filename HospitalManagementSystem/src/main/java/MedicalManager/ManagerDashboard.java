@@ -261,6 +261,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 280, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("APU Medical Centre");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
@@ -292,6 +293,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
 
         logoutBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn.setForeground(new java.awt.Color(192, 57, 43));
         logoutBtn.setText("Logout");
         logoutBtn.addActionListener(this::logoutBtnActionPerformed);
         jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));

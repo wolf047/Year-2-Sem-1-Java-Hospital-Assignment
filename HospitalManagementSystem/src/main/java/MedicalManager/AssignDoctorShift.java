@@ -182,6 +182,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         getContentPane().add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("APU Medical Centre");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 

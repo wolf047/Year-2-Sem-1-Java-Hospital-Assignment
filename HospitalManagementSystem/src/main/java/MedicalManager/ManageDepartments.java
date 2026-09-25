@@ -118,6 +118,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel6.setText("DEPARTMENT NAME");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 170, -1));
 
+        saveBtn.setBackground(new java.awt.Color(204, 255, 204));
         saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveBtn.setText("Save");
         saveBtn.addActionListener(this::saveBtnActionPerformed);
@@ -143,21 +144,25 @@ public class ManageDepartments extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 760, 210));
 
+        updateBtn.setBackground(new java.awt.Color(255, 255, 204));
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
         updateBtn.addActionListener(this::updateBtnActionPerformed);
-        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, 80, -1));
+        getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, 80, -1));
 
+        deleteBtn.setBackground(new java.awt.Color(255, 204, 204));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addActionListener(this::deleteBtnActionPerformed);
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 240, -1, -1));
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 240, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("APU Medical Centre");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setForeground(new java.awt.Color(192, 57, 43));
         logoutBtn1.setText("Logout");
         logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
         getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
@@ -194,7 +199,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         clearBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         clearBtn.setText("Clear");
         clearBtn.addActionListener(this::clearBtnActionPerformed);
-        getContentPane().add(clearBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 240, -1, -1));
+        getContentPane().add(clearBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 240, -1, -1));
 
         pack();
         setLocationRelativeTo(null);

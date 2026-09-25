@@ -1152,20 +1152,27 @@ public class Doctor extends User implements DoctorServices {
     // =====================================================================
     // REVIEWS
     // =====================================================================
+    // rows: {consultationId, patientName, rating, dateReviewed, comments}
     public ArrayList<Object[]> getReviews() {
         ArrayList<Object[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
         TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        if (reviews == null || consults == null) {
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        if (reviews == null || consults == null || cases == null) {
             return rows;
         }
-        for (ArrayList<String> r : reviews.values()) { // 0 consultation_id, 1 rating, 2 comments
+        for (ArrayList<String> r : reviews.values()) { // 0 consultation_id, 1 rating, 2 comments, 3 date_reviewed
             int consultId = Integer.parseInt(r.get(0));
-            ArrayList<String> c = consults.get(consultId); // 1 doctor_id
+            ArrayList<String> c = consults.get(consultId); // 0 case_id, 1 doctor_id
             if (c == null || !c.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
-            rows.add(new Object[]{consultId, r.get(1), r.get(2)});
+            String patientName = "Unknown";
+            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0))); // 0 patient_id
+            if (k != null) {
+                patientName = getPatientName(k.get(0));
+            }
+            rows.add(new Object[]{consultId, patientName, r.get(1), r.get(3), r.get(2)});
         }
         return rows;
     }
@@ -1177,7 +1184,7 @@ public class Doctor extends User implements DoctorServices {
         }
         int total = 0;
         for (Object[] row : reviews) {
-            total += Integer.parseInt((String) row[1]);
+            total += Integer.parseInt((String) row[2]);
         }
         double average = (double) total / reviews.size();
         return String.format("Average rating: %.1f out of 5 (%d review%s).",

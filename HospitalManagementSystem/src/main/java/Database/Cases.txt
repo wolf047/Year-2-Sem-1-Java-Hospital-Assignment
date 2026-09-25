@@ -28,3 +28,43 @@
 28,59,10,05-08-2026,,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
 29,57,10,16-08-2026,,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
 30,43,33,26-08-2026,,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
+31,40,35,24-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
+32,41,35,24-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
+33,42,35,24-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
+34,43,35,24-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
+35,44,35,24-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
+36,45,35,24-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
+37,46,35,24-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
+38,47,35,24-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
+39,48,35,24-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+40,49,35,24-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
+41,50,35,25-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
+42,51,35,25-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
+43,52,35,25-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
+44,53,35,25-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
+45,54,35,25-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
+46,55,35,25-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
+47,56,35,25-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
+48,57,35,25-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
+49,58,35,25-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+50,59,35,25-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
+51,60,35,26-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
+52,61,35,26-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
+53,62,35,26-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
+54,63,35,26-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
+55,64,35,26-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
+56,65,35,26-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
+57,69,35,26-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
+58,40,35,26-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
+59,41,35,26-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+60,42,35,26-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
+61,43,35,27-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
+62,44,35,27-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
+63,45,35,27-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
+64,46,35,27-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
+65,47,35,27-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
+66,48,35,27-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
+67,49,35,27-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
+68,50,35,27-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
+69,51,35,27-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+70,52,35,27-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0

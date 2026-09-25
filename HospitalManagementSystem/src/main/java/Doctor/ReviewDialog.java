@@ -30,7 +30,7 @@ public class ReviewDialog extends javax.swing.JDialog {
         lblPatientName.setText("Patient: " + patientName);
         lblRating.setText("Rating: " + rating + " / 5");
         lblDateReviewed.setText("Reviewed on: " + dateReviewed);
-        txtComments.setText(comments);
+        lblComments.setText("<html>" + comments + "</html>");
     }
 
     /**
@@ -48,14 +48,13 @@ public class ReviewDialog extends javax.swing.JDialog {
         lblRating = new javax.swing.JLabel();
         lblDateReviewed = new javax.swing.JLabel();
         lblCommentsHeader = new javax.swing.JLabel();
-        scrComments = new javax.swing.JScrollPane();
-        txtComments = new javax.swing.JTextArea();
+        lblComments = new javax.swing.JLabel();
         btnClose = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Review Details");
         setModal(true);
-        setPreferredSize(new java.awt.Dimension(460, 430));
+        setPreferredSize(new java.awt.Dimension(460, 360));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -79,21 +78,16 @@ public class ReviewDialog extends javax.swing.JDialog {
         lblCommentsHeader.setText("Comments:");
         getContentPane().add(lblCommentsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 300, 20));
 
-        txtComments.setEditable(false);
-        txtComments.setColumns(20);
-        txtComments.setLineWrap(true);
-        txtComments.setRows(5);
-        txtComments.setWrapStyleWord(true);
-        scrComments.setViewportView(txtComments);
-
-        getContentPane().add(scrComments, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 184, 420, 180));
+        lblComments.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        lblComments.setText("<html></html>");
+        getContentPane().add(lblComments, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 184, 420, 100));
 
         btnClose.setBackground(new java.awt.Color(38, 117, 154));
         btnClose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnClose.setForeground(new java.awt.Color(255, 255, 255));
         btnClose.setText("Close");
         btnClose.addActionListener(this::btnClose);
-        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 380, 140, 30));
+        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 300, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -142,13 +136,12 @@ public class ReviewDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClose;
+    private javax.swing.JLabel lblComments;
     private javax.swing.JLabel lblCommentsHeader;
     private javax.swing.JLabel lblConsultationId;
     private javax.swing.JLabel lblDateReviewed;
     private javax.swing.JLabel lblPatientName;
     private javax.swing.JLabel lblRating;
     private javax.swing.JLabel lblReviewHeader;
-    private javax.swing.JScrollPane scrComments;
-    private javax.swing.JTextArea txtComments;
     // End of variables declaration//GEN-END:variables
 }

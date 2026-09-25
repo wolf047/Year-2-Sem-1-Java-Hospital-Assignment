@@ -54,15 +54,16 @@ public class ReviewDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Review Details");
         setModal(true);
-        setPreferredSize(new java.awt.Dimension(475, 380));
+        setName("reviews"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(475, 390));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblReviewHeader.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        lblReviewHeader.setText("Review Details");
+        lblReviewHeader.setText("lblReviewHeader");
         getContentPane().add(lblReviewHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 400, 26));
 
-        lblConsultationId.setText("Consultation #");
+        lblConsultationId.setText("lblConsultationId");
         getContentPane().add(lblConsultationId, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 56, 420, 20));
 
         lblPatientName.setText("Patient: ");
@@ -87,7 +88,7 @@ public class ReviewDialog extends javax.swing.JDialog {
         btnClose.setForeground(new java.awt.Color(255, 255, 255));
         btnClose.setText("Close");
         btnClose.addActionListener(this::btnClose);
-        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 250, 36));
+        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 420, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

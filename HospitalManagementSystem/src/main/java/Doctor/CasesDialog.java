@@ -111,7 +111,7 @@ public class CasesDialog extends javax.swing.JDialog {
         setTitle("Cases Details");
         setModal(true);
         setName("cases"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 750));
+        setPreferredSize(new java.awt.Dimension(560, 760));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

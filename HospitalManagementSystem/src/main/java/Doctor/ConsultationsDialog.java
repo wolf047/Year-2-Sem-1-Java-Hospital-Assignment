@@ -192,7 +192,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         setTitle("Consultation Notes");
         setModal(true);
         setName("consultations"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 910));
+        setPreferredSize(new java.awt.Dimension(560, 920));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

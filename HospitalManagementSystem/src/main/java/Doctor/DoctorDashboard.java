@@ -1,0 +1,873 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package Doctor;
+
+import HelperFunction.SessionUser;
+import Users.UserLogin;
+import java.awt.CardLayout;
+import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author Sascha
+ */
+public class DoctorDashboard extends javax.swing.JFrame {
+
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DoctorDashboard.class.getName());
+
+    // =====================================================================
+    // FIELDS
+    // =====================================================================
+    private DoctorServices doctor;                          // the doctor object, seen through the interface
+    private final Color NAV_BG = new Color(30, 95, 125);    // menu background
+    private final Color BLUE = new Color(38, 117, 154);     // theme blue
+
+    /**
+     * Creates new form PatientDashboard
+     */
+    public DoctorDashboard() {
+        initComponents();
+
+        // make every table read-only and consistent
+        javax.swing.JTable[] tables = {tblSchedule, tblCalendar, tblCases, tblReviews};
+        for (javax.swing.JTable t : tables) {
+            t.setDefaultEditor(Object.class, null);
+            t.getTableHeader().setReorderingAllowed(false);
+            t.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            t.setRowHeight(25);
+            t.setSelectionBackground(BLUE);
+            t.setSelectionForeground(Color.WHITE);
+        }
+        tblCases.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    openSelectedCase();
+                }
+            }
+        });
+
+        this.doctor = (Doctor) SessionUser.getCurrentUser();
+
+        setLocationRelativeTo(null);
+        lblWelcome.setText("Welcome, " + doctor.getFullName());
+        loadProfile();
+        loadSchedule();
+        doctor.loadWeek(0);
+        loadCalendar();
+        loadCases();
+        loadReviews();
+        showPage("consultations", btnNavConsultations);
+    }
+
+    // =====================================================================
+    // NAVIGATION
+    // =====================================================================
+    private void showPage(String cardName, JButton activeButton) {
+        CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+        cardLayout.show(pnlContent, cardName);
+
+        JButton[] menu = {btnNavConsultations, btnNavSchedule, btnNavCases, btnNavReviews, btnNavProfile};
+        for (JButton b : menu) {
+            b.setBackground(NAV_BG);
+            b.setForeground(Color.WHITE);
+        }
+        activeButton.setBackground(Color.WHITE);
+        activeButton.setForeground(BLUE);
+
+        if (cardName.equals("profile")) {
+            getRootPane().setDefaultButton(btnSaveProfile);
+        } else {
+            getRootPane().setDefaultButton(null);
+        }
+    }
+
+    // =====================================================================
+    // PROFILE PAGE
+    // =====================================================================
+    private void loadProfile() {
+        txtDoctorID.setText(doctor.getDoctorCode());
+        txtFirstName.setText(doctor.getFirst());
+        txtLastName.setText(doctor.getLast());
+        txtDepartment.setText(doctor.getDepartmentName());
+        txtSpecialization.setText(doctor.getSpecialization());
+        txtOffDay.setText(doctor.getOffDayText());
+        txtPhone.setText(doctor.getPhone());
+        txtEmail.setText(doctor.getEmail());
+
+        pwdCurrent.setText("");
+        pwdNew.setText("");
+        pwdConfirm.setText("");
+    }
+
+    // =====================================================================
+    // SCHEDULE PAGE
+    // =====================================================================
+    private void loadSchedule() {
+        DefaultTableModel model = (DefaultTableModel) tblSchedule.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getSchedule()) {
+            model.addRow(row);
+        }
+    }
+
+    // =====================================================================
+    // CONSULTATIONS PAGE
+    // =====================================================================
+    private void loadCalendar() {
+        lblWeekRange.setText(doctor.getWeekRange());
+
+        DefaultTableModel model = (DefaultTableModel) tblCalendar.getModel();
+        model.setRowCount(0);
+        model.setColumnIdentifiers(doctor.getWeekHeaders());
+        for (Object[] row : doctor.getWeekRows()) {
+            model.addRow(row);
+        }
+    }
+
+    private void openSelectedConsultation() {
+        int row = tblCalendar.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a consultation from the calendar.");
+            return;
+        }
+        int consultId = doctor.getWeekConsultId(row, tblCalendar.getSelectedColumn());
+        if (consultId < 0) {
+            return;
+        }
+        ConsultationsDialog dialog = new ConsultationsDialog(this, true, doctor, consultId);
+        dialog.setVisible(true);
+        loadCalendar();
+    }
+
+    // =====================================================================
+    // CASES PAGE
+    // =====================================================================
+    private void loadCases() {
+        DefaultTableModel model = (DefaultTableModel) tblCases.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getCases()) {
+            model.addRow(row);
+        }
+    }
+
+    private void openSelectedCase() {
+        int row = tblCases.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a case from the list.");
+            return;
+        }
+        int caseId = doctor.getCaseId(row);
+        if (caseId < 0) {
+            return;
+        }
+        CasesDialog dialog = new CasesDialog(this, true, doctor, caseId);
+        dialog.setVisible(true);
+        loadCases();
+    }
+
+    // =====================================================================
+    // REVIEWS PAGE
+    // =====================================================================
+    private void loadReviews() {
+        DefaultTableModel model = (DefaultTableModel) tblReviews.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getReviews()) {
+            model.addRow(row);
+        }
+        lblRatingSummary.setText(doctor.getRatingSummary());
+    }
+
+    // Shows the full, untruncated details of the selected review
+    private void openSelectedReview() {
+        int row = tblReviews.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a review from the list.");
+            return;
+        }
+        int consultId = (Integer) tblReviews.getValueAt(row, 0);
+        String patientName = tblReviews.getValueAt(row, 1).toString();
+        String rating = tblReviews.getValueAt(row, 2).toString();
+        String dateReviewed = tblReviews.getValueAt(row, 3).toString();
+        String comments = tblReviews.getValueAt(row, 4).toString();
+        ReviewDialog dialog = new ReviewDialog(this, true, consultId, patientName, rating, dateReviewed, comments);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        lblWelcome = new javax.swing.JLabel();
+        pnlHeader = new javax.swing.JPanel();
+        lblPortalTitle = new javax.swing.JLabel();
+        pnlNav = new javax.swing.JPanel();
+        btnLogout = new javax.swing.JButton();
+        btnNavConsultations = new javax.swing.JButton();
+        btnNavSchedule = new javax.swing.JButton();
+        btnNavCases = new javax.swing.JButton();
+        btnNavReviews = new javax.swing.JButton();
+        btnNavProfile = new javax.swing.JButton();
+        pnlContent = new javax.swing.JPanel();
+        pnlProfile = new javax.swing.JPanel();
+        lblProfileTitle = new javax.swing.JLabel();
+        lblProfessionalHeader = new javax.swing.JLabel();
+        lblContactHeader = new javax.swing.JLabel();
+        lblPasswordHeader = new javax.swing.JLabel();
+        lblDoctorID = new javax.swing.JLabel();
+        txtDoctorID = new javax.swing.JTextField();
+        lblFirstName = new javax.swing.JLabel();
+        lblLastName = new javax.swing.JLabel();
+        lblDepartment = new javax.swing.JLabel();
+        lblSpecialization = new javax.swing.JLabel();
+        lblOffDay = new javax.swing.JLabel();
+        txtFirstName = new javax.swing.JTextField();
+        txtLastName = new javax.swing.JTextField();
+        txtDepartment = new javax.swing.JTextField();
+        txtSpecialization = new javax.swing.JTextField();
+        txtOffDay = new javax.swing.JTextField();
+        lblPhone = new javax.swing.JLabel();
+        lblEmail = new javax.swing.JLabel();
+        txtPhone = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        lblCurrentPwd = new javax.swing.JLabel();
+        pwdCurrent = new javax.swing.JPasswordField();
+        lblNewPwd = new javax.swing.JLabel();
+        pwdNew = new javax.swing.JPasswordField();
+        lblConfirmPwd = new javax.swing.JLabel();
+        pwdConfirm = new javax.swing.JPasswordField();
+        lblPwdHint = new javax.swing.JLabel();
+        btnSaveProfile = new javax.swing.JButton();
+        btnResetProfile = new javax.swing.JButton();
+        pnlCases = new javax.swing.JPanel();
+        lblCasesTitle = new javax.swing.JLabel();
+        scrCases = new javax.swing.JScrollPane();
+        tblCases = new javax.swing.JTable();
+        btnViewCaseDetails = new javax.swing.JButton();
+        pnlSchedule = new javax.swing.JPanel();
+        lblScheduleTitle = new javax.swing.JLabel();
+        scrSchedule = new javax.swing.JScrollPane();
+        tblSchedule = new javax.swing.JTable();
+        pnlConsultations = new javax.swing.JPanel();
+        lblConsultationsTitle = new javax.swing.JLabel();
+        btnPrevWeek = new javax.swing.JButton();
+        btnNextWeek = new javax.swing.JButton();
+        lblWeekRange = new javax.swing.JLabel();
+        scrCalendar = new javax.swing.JScrollPane();
+        tblCalendar = new javax.swing.JTable();
+        btnAddConsultDetails = new javax.swing.JButton();
+        pnlReviews = new javax.swing.JPanel();
+        lblReviewsTitle = new javax.swing.JLabel();
+        lblRatingSummary = new javax.swing.JLabel();
+        scrReviews = new javax.swing.JScrollPane();
+        tblReviews = new javax.swing.JTable();
+        btnViewReviews = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("HMS Doctor Portal");
+        setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblWelcome.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
+        lblWelcome.setText("Welcome, Doctor");
+        getContentPane().add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, 300, 30));
+
+        pnlHeader.setBackground(new java.awt.Color(38, 117, 154));
+        pnlHeader.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblPortalTitle.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblPortalTitle.setForeground(new java.awt.Color(255, 255, 255));
+        lblPortalTitle.setText("APU Medical Centre - Doctor Portal");
+        pnlHeader.add(lblPortalTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 450, 30));
+
+        getContentPane().add(pnlHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
+
+        pnlNav.setBackground(new java.awt.Color(30, 95, 125));
+        pnlNav.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnLogout.setBackground(new java.awt.Color(30, 95, 125));
+        btnLogout.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnLogout.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogout.setText("LOGOUT");
+        btnLogout.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        btnLogout.setFocusPainted(false);
+        btnLogout.setFocusable(false);
+        btnLogout.setRolloverEnabled(false);
+        btnLogout.addActionListener(this::btnLogout);
+        pnlNav.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, 160, 40));
+
+        btnNavConsultations.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavConsultations.setForeground(new java.awt.Color(38, 117, 154));
+        btnNavConsultations.setText("Consultations");
+        btnNavConsultations.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 15, 1, 1));
+        btnNavConsultations.setFocusPainted(false);
+        btnNavConsultations.setFocusable(false);
+        btnNavConsultations.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavConsultations.addActionListener(this::btnNavConsultations);
+        pnlNav.add(btnNavConsultations, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 160, 40));
+
+        btnNavSchedule.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavSchedule.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavSchedule.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavSchedule.setText("Schedule");
+        btnNavSchedule.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavSchedule.setFocusPainted(false);
+        btnNavSchedule.setFocusable(false);
+        btnNavSchedule.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavSchedule.addActionListener(this::btnNavSchedule);
+        pnlNav.add(btnNavSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 160, 40));
+
+        btnNavCases.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavCases.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavCases.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavCases.setText("Cases");
+        btnNavCases.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavCases.setFocusPainted(false);
+        btnNavCases.setFocusable(false);
+        btnNavCases.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavCases.addActionListener(this::btnNavCases);
+        pnlNav.add(btnNavCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 160, 40));
+
+        btnNavReviews.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavReviews.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavReviews.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavReviews.setText("Reviews");
+        btnNavReviews.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavReviews.setFocusPainted(false);
+        btnNavReviews.setFocusable(false);
+        btnNavReviews.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavReviews.addActionListener(this::btnNavReviews);
+        pnlNav.add(btnNavReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 160, 40));
+
+        btnNavProfile.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavProfile.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnNavProfile.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavProfile.setText("Profile");
+        btnNavProfile.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        btnNavProfile.setFocusPainted(false);
+        btnNavProfile.setFocusable(false);
+        btnNavProfile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnNavProfile.addActionListener(this::btnNavProfile);
+        pnlNav.add(btnNavProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, 160, 40));
+
+        getContentPane().add(pnlNav, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 180, 550));
+
+        pnlContent.setBackground(new java.awt.Color(255, 255, 255));
+        pnlContent.setLayout(new java.awt.CardLayout());
+
+        pnlProfile.setBackground(new java.awt.Color(255, 255, 255));
+        pnlProfile.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblProfileTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblProfileTitle.setForeground(new java.awt.Color(17, 17, 17));
+        lblProfileTitle.setText("Profile");
+        pnlProfile.add(lblProfileTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        lblProfessionalHeader.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblProfessionalHeader.setForeground(new java.awt.Color(38, 117, 154));
+        lblProfessionalHeader.setText("Professional Details");
+        pnlProfile.add(lblProfessionalHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 275, 22));
+
+        lblContactHeader.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblContactHeader.setForeground(new java.awt.Color(38, 117, 154));
+        lblContactHeader.setText("Contact Details");
+        pnlProfile.add(lblContactHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 55, 275, 22));
+
+        lblPasswordHeader.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblPasswordHeader.setForeground(new java.awt.Color(38, 117, 154));
+        lblPasswordHeader.setText("Change Password");
+        pnlProfile.add(lblPasswordHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 223, 275, 22));
+
+        lblDoctorID.setText("Doctor ID: ");
+        pnlProfile.add(lblDoctorID, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 85, 275, 18));
+
+        txtDoctorID.setEditable(false);
+        txtDoctorID.setText("txtDoctorID");
+        pnlProfile.add(txtDoctorID, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 105, 275, 28));
+
+        lblFirstName.setText("First Name: ");
+        pnlProfile.add(lblFirstName, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 141, 275, 18));
+
+        lblLastName.setText("Last Name: ");
+        pnlProfile.add(lblLastName, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 197, 275, 18));
+
+        lblDepartment.setText("Department: ");
+        pnlProfile.add(lblDepartment, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 253, 275, 18));
+
+        lblSpecialization.setText("Specialization: ");
+        pnlProfile.add(lblSpecialization, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 309, 100, 16));
+
+        lblOffDay.setText("Off Day: ");
+        pnlProfile.add(lblOffDay, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 365, 60, 16));
+
+        txtFirstName.setEditable(false);
+        txtFirstName.setText("txtFirstName");
+        pnlProfile.add(txtFirstName, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 161, 275, 28));
+
+        txtLastName.setEditable(false);
+        txtLastName.setText("txtLastName");
+        pnlProfile.add(txtLastName, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 217, 275, 28));
+
+        txtDepartment.setEditable(false);
+        txtDepartment.setText("txtDepartment");
+        pnlProfile.add(txtDepartment, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 273, 275, 28));
+
+        txtSpecialization.setEditable(false);
+        txtSpecialization.setText("txtSpecialization");
+        pnlProfile.add(txtSpecialization, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 329, 275, 28));
+
+        txtOffDay.setEditable(false);
+        txtOffDay.setText("txtOffDay");
+        pnlProfile.add(txtOffDay, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 385, 275, 28));
+
+        lblPhone.setText("Phone Number: ");
+        pnlProfile.add(lblPhone, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 85, 275, 18));
+
+        lblEmail.setText("E-mail Address: ");
+        pnlProfile.add(lblEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 141, 275, 18));
+
+        txtPhone.setText("txtPhone");
+        pnlProfile.add(txtPhone, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 105, 275, 28));
+
+        txtEmail.setText("txtEmail");
+        pnlProfile.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 161, 275, 28));
+
+        lblCurrentPwd.setText("Current Password: ");
+        pnlProfile.add(lblCurrentPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 253, 275, 18));
+
+        pwdCurrent.setText("pwdCurrent");
+        pnlProfile.add(pwdCurrent, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 273, 275, 28));
+
+        lblNewPwd.setText("New Password: ");
+        pnlProfile.add(lblNewPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 309, 275, 18));
+
+        pwdNew.setText("pwdNew");
+        pnlProfile.add(pwdNew, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 329, 275, 28));
+
+        lblConfirmPwd.setText("Confirm New Password: ");
+        pnlProfile.add(lblConfirmPwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 365, 275, 18));
+
+        pwdConfirm.setText("pwdConfirm");
+        pnlProfile.add(pwdConfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 385, 275, 28));
+
+        lblPwdHint.setText("Leave blank to keep current password");
+        pnlProfile.add(lblPwdHint, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 421, 275, 22));
+
+        btnSaveProfile.setBackground(new java.awt.Color(38, 117, 154));
+        btnSaveProfile.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSaveProfile.setForeground(new java.awt.Color(255, 255, 255));
+        btnSaveProfile.setText("Save");
+        btnSaveProfile.addActionListener(this::btnSaveProfile);
+        pnlProfile.add(btnSaveProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 451, 132, 36));
+
+        btnResetProfile.setBackground(new java.awt.Color(38, 117, 154));
+        btnResetProfile.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnResetProfile.setForeground(new java.awt.Color(255, 255, 255));
+        btnResetProfile.setText("Reset");
+        btnResetProfile.setFocusPainted(false);
+        btnResetProfile.addActionListener(this::btnResetProfile);
+        pnlProfile.add(btnResetProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(454, 451, 132, 36));
+
+        pnlContent.add(pnlProfile, "profile");
+
+        pnlCases.setBackground(new java.awt.Color(255, 255, 255));
+        pnlCases.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblCasesTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblCasesTitle.setForeground(new java.awt.Color(17, 17, 17));
+        lblCasesTitle.setText("Cases");
+        pnlCases.add(lblCasesTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        tblCases.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Case ID", "Patient", "Doctor-in-Charge", "Category", "Type", "Open Date", "Close Date", "Status"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false, false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCases.setColumnSelectionAllowed(true);
+        tblCases.setRowHeight(25);
+        tblCases.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblCases.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblCases.getTableHeader().setReorderingAllowed(false);
+        scrCases.setViewportView(tblCases);
+        tblCases.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 420));
+
+        btnViewCaseDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewCaseDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewCaseDetails.setText("View Case Details");
+        btnViewCaseDetails.addActionListener(this::btnViewCaseDetails);
+        pnlCases.add(btnViewCaseDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
+
+        pnlContent.add(pnlCases, "cases");
+
+        pnlSchedule.setBackground(new java.awt.Color(255, 255, 255));
+        pnlSchedule.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblScheduleTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblScheduleTitle.setForeground(new java.awt.Color(17, 17, 17));
+        lblScheduleTitle.setText("Schedule");
+        pnlSchedule.add(lblScheduleTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        tblSchedule.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Date", "Start Time", "End Time"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblSchedule.setRowHeight(25);
+        tblSchedule.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblSchedule.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblSchedule.getTableHeader().setReorderingAllowed(false);
+        scrSchedule.setViewportView(tblSchedule);
+
+        pnlSchedule.add(scrSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
+
+        pnlContent.add(pnlSchedule, "schedule");
+
+        pnlConsultations.setBackground(new java.awt.Color(255, 255, 255));
+        pnlConsultations.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblConsultationsTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblConsultationsTitle.setForeground(new java.awt.Color(17, 17, 17));
+        lblConsultationsTitle.setText("Consultations");
+        pnlConsultations.add(lblConsultationsTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        btnPrevWeek.setBackground(new java.awt.Color(38, 117, 154));
+        btnPrevWeek.setForeground(new java.awt.Color(255, 255, 255));
+        btnPrevWeek.setText("← Prev Week");
+        btnPrevWeek.setFocusPainted(false);
+        btnPrevWeek.setRolloverEnabled(false);
+        btnPrevWeek.addActionListener(this::btnPrevWeek);
+        pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 120, 28));
+
+        btnNextWeek.setBackground(new java.awt.Color(38, 117, 154));
+        btnNextWeek.setForeground(new java.awt.Color(255, 255, 255));
+        btnNextWeek.setText("Next Week →");
+        btnNextWeek.setFocusPainted(false);
+        btnNextWeek.setRolloverEnabled(false);
+        btnNextWeek.addActionListener(this::btnNextWeek);
+        pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 55, 120, 28));
+
+        lblWeekRange.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        lblWeekRange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblWeekRange.setText("Week of —");
+        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 55, 200, 28));
+
+        tblCalendar.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Date", "Case ID", "Time Slot", "Complaint", "Room ID", "Status"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCalendar.setColumnSelectionAllowed(true);
+        tblCalendar.setRowHeight(25);
+        tblCalendar.getTableHeader().setReorderingAllowed(false);
+        tblCalendar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCalendar(evt);
+            }
+        });
+        scrCalendar.setViewportView(tblCalendar);
+        tblCalendar.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        pnlConsultations.add(scrCalendar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 580, 370));
+
+        btnAddConsultDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnAddConsultDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddConsultDetails.setText("+ Add Consultation Details");
+        btnAddConsultDetails.addActionListener(this::btnAddConsultDetails);
+        pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
+
+        pnlContent.add(pnlConsultations, "consultations");
+
+        pnlReviews.setBackground(new java.awt.Color(255, 255, 255));
+        pnlReviews.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblReviewsTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        lblReviewsTitle.setForeground(new java.awt.Color(17, 17, 17));
+        lblReviewsTitle.setText("Reviews");
+        pnlReviews.add(lblReviewsTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        lblRatingSummary.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblRatingSummary.setForeground(new java.awt.Color(38, 117, 154));
+        lblRatingSummary.setText("Average rating: —");
+        pnlReviews.add(lblRatingSummary, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 400, 20));
+
+        tblReviews.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Consultation ID", "Patient Name", "Rating", "Date Reviewed", "Comments"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblReviews.setRowHeight(25);
+        tblReviews.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblReviews.getTableHeader().setReorderingAllowed(false);
+        tblReviews.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblReviews(evt);
+            }
+        });
+        scrReviews.setViewportView(tblReviews);
+
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 400));
+
+        btnViewReviews.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewReviews.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewReviews.setText("View Review Details");
+        btnViewReviews.addActionListener(this::btnViewReviews);
+        pnlReviews.add(btnViewReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
+
+        pnlContent.add(pnlReviews, "reviews");
+
+        getContentPane().add(pnlContent, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 50, 620, 550));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNavConsultations(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavConsultations
+        loadCalendar();
+        showPage("consultations", btnNavConsultations);
+    }//GEN-LAST:event_btnNavConsultations
+
+    private void btnNavSchedule(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavSchedule
+        loadSchedule();
+        showPage("schedule", btnNavSchedule);
+    }//GEN-LAST:event_btnNavSchedule
+
+    private void btnLogout(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogout
+        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (choice == JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new UserLogin().setVisible(true);
+            dispose();
+        }
+    }//GEN-LAST:event_btnLogout
+
+    private void btnNavCases(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavCases
+        loadCases();
+        showPage("cases", btnNavCases);
+    }//GEN-LAST:event_btnNavCases
+
+    private void btnNavReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavReviews
+        loadReviews();
+        showPage("reviews", btnNavReviews);
+    }//GEN-LAST:event_btnNavReviews
+
+    private void btnNavProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavProfile
+        loadProfile();
+        showPage("profile", btnNavProfile);
+    }//GEN-LAST:event_btnNavProfile
+
+    private void btnPrevWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevWeek
+        doctor.loadWeek(-1);
+        loadCalendar();
+    }//GEN-LAST:event_btnPrevWeek
+
+    private void btnNextWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextWeek
+        doctor.loadWeek(1);
+        loadCalendar();
+    }//GEN-LAST:event_btnNextWeek
+
+    private void btnSaveProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProfile
+        String result = doctor.saveProfile(
+                txtPhone.getText().trim(),
+                txtEmail.getText().trim(),
+                new String(pwdCurrent.getPassword()),
+                new String(pwdNew.getPassword()),
+                new String(pwdConfirm.getPassword()));
+
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            loadProfile();
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, "Profile updated.");
+        loadProfile();
+    }//GEN-LAST:event_btnSaveProfile
+
+    private void btnResetProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetProfile
+        loadProfile();
+    }//GEN-LAST:event_btnResetProfile
+
+    private void tblCalendar(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendar
+        if (evt.getClickCount() == 2) {
+            openSelectedConsultation();
+        }
+    }//GEN-LAST:event_tblCalendar
+
+    private void btnViewReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReviews
+        openSelectedReview();
+    }//GEN-LAST:event_btnViewReviews
+
+    private void tblReviews(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            openSelectedReview();
+        }
+    }
+
+    private void btnAddConsultDetails(java.awt.event.ActionEvent evt) {
+        openSelectedConsultation();
+    }
+
+    private void btnViewCaseDetails(java.awt.event.ActionEvent evt) {
+        openSelectedCase();
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new DoctorDashboard().setVisible(true));
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddConsultDetails;
+    private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnNavCases;
+    private javax.swing.JButton btnNavConsultations;
+    private javax.swing.JButton btnNavProfile;
+    private javax.swing.JButton btnNavReviews;
+    private javax.swing.JButton btnNavSchedule;
+    private javax.swing.JButton btnNextWeek;
+    private javax.swing.JButton btnPrevWeek;
+    private javax.swing.JButton btnResetProfile;
+    private javax.swing.JButton btnSaveProfile;
+    private javax.swing.JButton btnViewCaseDetails;
+    private javax.swing.JButton btnViewReviews;
+    private javax.swing.JLabel lblCasesTitle;
+    private javax.swing.JLabel lblConfirmPwd;
+    private javax.swing.JLabel lblConsultationsTitle;
+    private javax.swing.JLabel lblContactHeader;
+    private javax.swing.JLabel lblCurrentPwd;
+    private javax.swing.JLabel lblDepartment;
+    private javax.swing.JLabel lblDoctorID;
+    private javax.swing.JLabel lblEmail;
+    private javax.swing.JLabel lblFirstName;
+    private javax.swing.JLabel lblLastName;
+    private javax.swing.JLabel lblNewPwd;
+    private javax.swing.JLabel lblOffDay;
+    private javax.swing.JLabel lblPasswordHeader;
+    private javax.swing.JLabel lblPhone;
+    private javax.swing.JLabel lblPortalTitle;
+    private javax.swing.JLabel lblProfessionalHeader;
+    private javax.swing.JLabel lblProfileTitle;
+    private javax.swing.JLabel lblPwdHint;
+    private javax.swing.JLabel lblRatingSummary;
+    private javax.swing.JLabel lblReviewsTitle;
+    private javax.swing.JLabel lblScheduleTitle;
+    private javax.swing.JLabel lblSpecialization;
+    private javax.swing.JLabel lblWeekRange;
+    private javax.swing.JLabel lblWelcome;
+    private javax.swing.JPanel pnlCases;
+    private javax.swing.JPanel pnlConsultations;
+    private javax.swing.JPanel pnlContent;
+    private javax.swing.JPanel pnlHeader;
+    private javax.swing.JPanel pnlNav;
+    private javax.swing.JPanel pnlProfile;
+    private javax.swing.JPanel pnlReviews;
+    private javax.swing.JPanel pnlSchedule;
+    private javax.swing.JPasswordField pwdConfirm;
+    private javax.swing.JPasswordField pwdCurrent;
+    private javax.swing.JPasswordField pwdNew;
+    private javax.swing.JScrollPane scrCalendar;
+    private javax.swing.JScrollPane scrCases;
+    private javax.swing.JScrollPane scrReviews;
+    private javax.swing.JScrollPane scrSchedule;
+    private javax.swing.JTable tblCalendar;
+    private javax.swing.JTable tblCases;
+    private javax.swing.JTable tblReviews;
+    private javax.swing.JTable tblSchedule;
+    private javax.swing.JTextField txtDepartment;
+    private javax.swing.JTextField txtDoctorID;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtFirstName;
+    private javax.swing.JTextField txtLastName;
+    private javax.swing.JTextField txtOffDay;
+    private javax.swing.JTextField txtPhone;
+    private javax.swing.JTextField txtSpecialization;
+    // End of variables declaration//GEN-END:variables
+}

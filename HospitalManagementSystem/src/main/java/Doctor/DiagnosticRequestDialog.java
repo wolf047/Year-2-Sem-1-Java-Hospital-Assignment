@@ -151,7 +151,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         setTitle("Request Diagnostic Service");
         setModal(true);
         setName("diagnostics"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 795));
+        setPreferredSize(new java.awt.Dimension(570, 795));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

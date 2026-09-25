@@ -4,7 +4,7 @@ import Users.Role;
 import HelperFunction.SessionUser;
 import HelperFunction.FileHandling;
 import MedicalManager.*;
-import Doctor.Doctor;
+//import Doctor.Doctor;
 import Doctor.DoctorDashboard;
 import java.util.*;
 import java.time.LocalDate;
@@ -161,10 +161,10 @@ public class UserLogin extends javax.swing.JFrame {
                             return;
 
                         case Doctor:
-                            Doctor doctor = new Doctor(id, first, last, phone, email, password, gender, dob, role);
-                            SessionUser.login(doctor);
-                            new DoctorDashboard().setVisible(true);
-                            this.dispose();
+//                            Doctor doctor = new Doctor(id, first, last, phone, email, password, gender, dob, role);
+//                            SessionUser.login(doctor);
+//                            new DoctorDashboard().setVisible(true);
+//                            this.dispose();
                             return;
                     }
                 }

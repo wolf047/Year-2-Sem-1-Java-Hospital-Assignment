@@ -19,29 +19,12 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private DoctorServices doctor;
     private int consultId = -1;
 
-    // A diagnostic request drafted (or already on file) for this consultation, pending the
-    // doctor's "Save Progress"/"Complete Consultation" click. requestId is -1 for a brand new
-    // draft that has not been submitted yet.
-    private static class PendingDiagRequest {
-        int requestId;
-        String serviceId;
-        String serviceName;
-        String requestDate;
-        String remarks;
-
-        PendingDiagRequest(int requestId, String serviceId, String serviceName, String requestDate, String remarks) {
-            this.requestId = requestId;
-            this.serviceId = serviceId;
-            this.serviceName = serviceName;
-            this.requestDate = requestDate;
-            this.remarks = remarks;
-        }
-    }
-
     // Nothing from the Prescription/Diagnostic Request dialogs is written to file until the
     // doctor clicks "Save Progress" or "Complete Consultation" here. Cancel discards all of it.
     private ArrayList<String[]> pendingPrescriptionItems = new ArrayList<>();
-    private ArrayList<PendingDiagRequest> pendingDiagRequests = new ArrayList<>();
+    // pendingDiagRequests rows: {requestId, serviceId, serviceName, requestDate, remarks}.
+    // requestId is -1 for a brand new draft that has not been submitted yet.
+    private ArrayList<Object[]> pendingDiagRequests = new ArrayList<>();
     private ArrayList<Integer> originalDiagRequestIds = new ArrayList<>();
 
     /**
@@ -76,12 +59,10 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private void loadPendingState() {
         pendingPrescriptionItems = doctor.getPrescriptionItems(consultId);
 
-        pendingDiagRequests = new ArrayList<>();
+        pendingDiagRequests = doctor.getDiagnosticRequestItems(consultId);
         originalDiagRequestIds = new ArrayList<>();
-        for (Object[] row : doctor.getDiagnosticRequestItems(consultId)) {
-            int requestId = (Integer) row[0];
-            pendingDiagRequests.add(new PendingDiagRequest(requestId, (String) row[1], (String) row[2], (String) row[3], (String) row[4]));
-            originalDiagRequestIds.add(requestId);
+        for (Object[] row : pendingDiagRequests) {
+            originalDiagRequestIds.add((Integer) row[0]);
         }
     }
 
@@ -111,8 +92,8 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
         DefaultTableModel diagnosticModel = (DefaultTableModel) tblDiagnosticRequestsView.getModel();
         diagnosticModel.setRowCount(0);
-        for (PendingDiagRequest req : pendingDiagRequests) {
-            diagnosticModel.addRow(new Object[]{req.serviceName, req.requestDate, req.remarks});
+        for (Object[] req : pendingDiagRequests) {
+            diagnosticModel.addRow(new Object[]{req[2], req[3], req[4]});
         }
         btnDeleteDiagRequest.setEnabled(canEdit && !pendingDiagRequests.isEmpty());
     }
@@ -138,10 +119,10 @@ public class ConsultationsDialog extends javax.swing.JDialog {
             }
         }
 
-        for (Integer originalId : originalDiagRequestIds) {
+        for (int originalId : originalDiagRequestIds) {
             boolean stillPending = false;
-            for (PendingDiagRequest req : pendingDiagRequests) {
-                if (req.requestId == originalId) {
+            for (Object[] req : pendingDiagRequests) {
+                if ((Integer) req[0] == originalId) {
                     stillPending = true;
                     break;
                 }
@@ -152,9 +133,9 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         }
 
         ArrayList<String[]> newRequests = new ArrayList<>();
-        for (PendingDiagRequest req : pendingDiagRequests) {
-            if (req.requestId == -1) {
-                newRequests.add(new String[]{req.serviceId, req.remarks});
+        for (Object[] req : pendingDiagRequests) {
+            if ((Integer) req[0] == -1) {
+                newRequests.add(new String[]{(String) req[1], (String) req[4]});
             }
         }
         if (!newRequests.isEmpty()) {
@@ -399,7 +380,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         dialog.setVisible(true);
         if (dialog.isSaved()) {
             for (String[] request : dialog.getResultRequests()) {
-                pendingDiagRequests.add(new PendingDiagRequest(-1, request[0], request[1], doctor.today(), request[2]));
+                pendingDiagRequests.add(new Object[]{-1, request[0], request[1], doctor.today(), request[2]});
             }
         }
         refresh();

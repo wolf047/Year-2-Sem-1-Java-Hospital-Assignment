@@ -17,7 +17,6 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DiagnosticRequestDialog.class.getName());
 
     private DoctorServices doctor;
-    private int consultId = -1;
     // requests already added to the request list being built: {serviceId, serviceName, category, type, remarks}
     private ArrayList<String[]> pendingRequests = new ArrayList<>();
     private int selectedServiceId = -1;
@@ -26,7 +25,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     private String selectedType = "";
 
     // Nothing is written to file from this dialog. The caller (ConsultationsDialog) only
-    // submits these requests when its own "Save Details" is clicked.
+    // submits these requests when its own "Save Progress"/"Complete Consultation" is clicked.
     private boolean saved = false;
     private ArrayList<String[]> resultRequests = new ArrayList<>();
 
@@ -43,7 +42,6 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.doctor = doctor;
-        this.consultId = consultId;
 
         lblDiagHeader.setText("Request Diagnostic Service");
         lblDiagMeta.setText("Consultation #" + consultId);

@@ -17,7 +17,6 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PrescriptionDialog.class.getName());
 
     private DoctorServices doctor;
-    private int consultId = -1;
     // items already added to the prescription being built: {drugId, drugName, dosage, frequency, duration, instructions}
     private ArrayList<String[]> pendingItems = new ArrayList<>();
     private int selectedDrugId = -1;
@@ -25,7 +24,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
     private String selectedForm = "";
 
     // Nothing is written to file from this dialog. The caller (ConsultationsDialog) only
-    // applies these items when its own "Save Details" is clicked.
+    // applies these items when its own "Save Progress"/"Complete Consultation" is clicked.
     private boolean saved = false;
     private ArrayList<String[]> resultItems = new ArrayList<>();
 
@@ -44,7 +43,6 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.doctor = doctor;
-        this.consultId = consultId;
 
         lblPrescriptionMeta.setText("Consultation #" + consultId);
         txtDrugSearch.setText("");

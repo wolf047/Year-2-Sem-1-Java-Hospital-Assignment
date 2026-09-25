@@ -251,6 +251,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails = new javax.swing.JButton();
         pnlReviews = new javax.swing.JPanel();
         lblReviewsTitle = new javax.swing.JLabel();
+        lblRatingSummary = new javax.swing.JLabel();
         scrReviews = new javax.swing.JScrollPane();
         tblReviews = new javax.swing.JTable();
 
@@ -605,6 +606,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails.setBackground(new java.awt.Color(38, 117, 154));
         btnAddConsultDetails.setForeground(new java.awt.Color(255, 255, 255));
         btnAddConsultDetails.setText("+ Add Consultation Details");
+        btnAddConsultDetails.addActionListener(this::btnAddConsultDetails);
         pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
 
         pnlContent.add(pnlConsultations, "consultations");
@@ -616,6 +618,11 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblReviewsTitle.setForeground(new java.awt.Color(17, 17, 17));
         lblReviewsTitle.setText("Reviews");
         pnlReviews.add(lblReviewsTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
+
+        lblRatingSummary.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblRatingSummary.setForeground(new java.awt.Color(38, 117, 154));
+        lblRatingSummary.setText("Average rating: —");
+        pnlReviews.add(lblRatingSummary, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 400, 20));
 
         tblReviews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -641,7 +648,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         tblReviews.getTableHeader().setReorderingAllowed(false);
         scrReviews.setViewportView(tblReviews);
 
-        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 450));
 
         pnlContent.add(pnlReviews, "reviews");
 
@@ -786,6 +793,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblProfessionalHeader;
     private javax.swing.JLabel lblProfileTitle;
     private javax.swing.JLabel lblPwdHint;
+    private javax.swing.JLabel lblRatingSummary;
     private javax.swing.JLabel lblReviewsTitle;
     private javax.swing.JLabel lblScheduleTitle;
     private javax.swing.JLabel lblSpecialization;

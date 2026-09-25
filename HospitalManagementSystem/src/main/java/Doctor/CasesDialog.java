@@ -4,13 +4,19 @@
  */
 package Doctor;
 
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Sascha
  */
 public class CasesDialog extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CasesDialog.class.getName());
+
+    private DoctorServices doctor;
+    private int caseId = -1;
 
     /**
      * Creates new form CasesDialog
@@ -18,6 +24,54 @@ public class CasesDialog extends javax.swing.JDialog {
     public CasesDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    // Used by the doctor dashboard to open one specific case
+    public CasesDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int caseId) {
+        super(parent, modal);
+        initComponents();
+        this.doctor = doctor;
+        this.caseId = caseId;
+
+        if (!doctor.loadCase(caseId)) {
+            JOptionPane.showMessageDialog(this, "This case could not be found.");
+            dispose();
+            return;
+        }
+        refresh();
+    }
+
+    // Redraws every field from the doctor object's current data
+    private void refresh() {
+        lblCaseHeader.setText(doctor.getCaseTitle());
+        lblCaseMeta.setText(doctor.getCaseMeta());
+        lblCaseStatusBadge.setText(doctor.isCaseOpen() ? "OPEN" : "CLOSED");
+        lblCaseRoleNote.setText(doctor.getCaseRoleNote());
+
+        String[] patientInfo = doctor.getCasePatient(); // {age, gender, bloodType, allergies}
+        lblPatientAge.setText("Age: " + patientInfo[0]);
+        lblPatientGender.setText("Gender: " + patientInfo[1]);
+        lblPatientBloodType.setText("Blood Type: " + patientInfo[2]);
+        lblPatientAllergies.setText("Allergies: " + patientInfo[3]);
+
+        txtCaseSummary.setText(doctor.getCaseSummary());
+        boolean inCharge = doctor.isCaseInCharge();
+        boolean open = doctor.isCaseOpen();
+        txtCaseSummary.setEditable(inCharge && open);
+        btnSaveSummary.setEnabled(inCharge && open);
+        btnCloseCase.setEnabled(inCharge && open);
+
+        DefaultTableModel consultModel = (DefaultTableModel) tblCaseConsultations.getModel();
+        consultModel.setRowCount(0);
+        for (Object[] row : doctor.getCaseConsultRows()) {
+            consultModel.addRow(row);
+        }
+
+        DefaultTableModel testModel = (DefaultTableModel) tblCaseDiagnostics.getModel();
+        testModel.setRowCount(0);
+        for (Object[] row : doctor.getCaseTestRows()) {
+            testModel.addRow(row);
+        }
     }
 
     /**
@@ -51,13 +105,13 @@ public class CasesDialog extends javax.swing.JDialog {
         lblPatientBloodType = new javax.swing.JLabel();
         lblPatientAllergies = new javax.swing.JLabel();
         btnViewDiagnosticResult = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cases Details");
         setModal(true);
         setName("cases"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 750));
+        setPreferredSize(new java.awt.Dimension(560, 760));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -184,35 +238,71 @@ public class CasesDialog extends javax.swing.JDialog {
         btnViewDiagnosticResult.addActionListener(this::btnViewDiagnosticResult);
         getContentPane().add(btnViewDiagnosticResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 622, 160, 30));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 668, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveSummary(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveSummary
-        // TODO add your handling code here:
+        String result = doctor.saveCaseSummary(txtCaseSummary.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Case summary saved.");
+        doctor.loadCase(caseId);
+        refresh();
     }//GEN-LAST:event_btnSaveSummary
 
     private void btnViewConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewConsultation
-        // TODO add your handling code here:
+        int row = tblCaseConsultations.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a consultation.");
+            return;
+        }
+        int consultId = doctor.getCaseConsultId(row);
+        if (consultId < 0) {
+            return;
+        }
+        ConsultationsDialog dialog = new ConsultationsDialog((java.awt.Frame) getOwner(), true, doctor, consultId);
+        dialog.setVisible(true);
+        doctor.loadCase(caseId);
+        refresh();
     }//GEN-LAST:event_btnViewConsultation
 
     private void btnViewDiagnosticResult(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewDiagnosticResult
-        // TODO add your handling code here:
+        int row = tblCaseDiagnostics.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a diagnostic request.");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, doctor.getCaseTestDetail(row), "Diagnostic Result", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnViewDiagnosticResult
 
     private void btnCloseCase(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseCase
-        // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(this, "Close this case? This cannot be undone.",
+                "Confirm Close", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        String result = doctor.closeCase();
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Case closed.");
+        doctor.loadCase(caseId);
+        refresh();
     }//GEN-LAST:event_btnCloseCase
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
+        dispose();
+    }//GEN-LAST:event_btnCancel
 
     /**
      * @param args the command line arguments
@@ -252,8 +342,8 @@ public class CasesDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCloseCase;
-    private javax.swing.JButton btnCloseDialog;
     private javax.swing.JButton btnSaveSummary;
     private javax.swing.JButton btnViewConsultation;
     private javax.swing.JButton btnViewDiagnosticResult;

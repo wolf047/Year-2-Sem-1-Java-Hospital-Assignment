@@ -60,7 +60,8 @@ public interface DoctorServices {
     String getVitalSigns();
     String getNotes();
     boolean canEditConsultation();
-    String saveConsultation(String vitals, String notes);
+    String saveConsultationProgress(String vitals, String notes);
+    String completeConsultation(String vitals, String notes);
 
     ArrayList<String> getDrugForms();
     ArrayList<Object[]> searchDrugs(String form, String text);

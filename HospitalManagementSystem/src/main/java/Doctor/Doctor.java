@@ -258,11 +258,13 @@ public class Doctor extends User implements DoctorServices {
         return !k.get(3).isEmpty();
     }
 
-    // A consultation stays "booked" until the day it happened is over. Once that day has
-    // passed, this turns it into "completed" (details were added) or "cancelled" (they were
-    // not), and saves that change. c is the consultation's field list (without its id).
+    // A consultation stays "booked" or "incomplete" until the day it happened is over. Once
+    // that day has passed: a still-"booked" consultation (the doctor never saved anything)
+    // becomes "completed" if details were somehow entered or "cancelled" if not; an
+    // "incomplete" one (details saved but not manually marked complete) becomes "completed".
+    // c is the consultation's field list (without its id).
     private void autoFinalizeConsultation(int consultId, ArrayList<String> c) {
-        if (!c.get(5).equals("booked")) {
+        if (!c.get(5).equals("booked") && !c.get(5).equals("incomplete")) {
             return;
         }
         LocalDate consultDate;
@@ -274,9 +276,11 @@ public class Doctor extends User implements DoctorServices {
         if (!LocalDate.now().isAfter(consultDate)) {
             return;
         }
-        String newStatus = "cancelled";
-        if (!c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty()) {
+        String newStatus;
+        if (c.get(5).equals("incomplete")) {
             newStatus = "completed";
+        } else {
+            newStatus = (!c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty()) ? "completed" : "cancelled";
         }
         c.set(5, newStatus);
 
@@ -692,7 +696,7 @@ public class Doctor extends User implements DoctorServices {
             return "This consultation was conducted by " + getDoctorName(this.consultDoctorId)
                     + ". You may view it but cannot make changes.";
         }
-        if (!this.consultStatus.equals("booked")) {
+        if (!this.consultStatus.equals("booked") && !this.consultStatus.equals("incomplete")) {
             return "This consultation is " + this.consultStatus + " and can no longer be edited.";
         }
         if (isCaseClosed(this.consultCaseId)) {
@@ -732,7 +736,8 @@ public class Doctor extends User implements DoctorServices {
         return this.consultNotes;
     }
 
-    // Own, still-booked, same-day, case-not-closed consultation whose start time has passed
+    // Own, same-day, case-not-closed consultation that is either "booked" with its start time
+    // already passed, or "incomplete" (which by definition only exists on the day it started).
     public boolean canEditConsultation() {
         if (this.currentConsultId == -1) {
             return false;
@@ -740,7 +745,7 @@ public class Doctor extends User implements DoctorServices {
         if (!this.consultDoctorId.equals(String.valueOf(this.user_id))) {
             return false;
         }
-        if (!this.consultStatus.equals("booked")) {
+        if (!this.consultStatus.equals("booked") && !this.consultStatus.equals("incomplete")) {
             return false;
         }
         if (isCaseClosed(this.consultCaseId)) {
@@ -755,6 +760,9 @@ public class Doctor extends User implements DoctorServices {
         if (!consultDateParsed.equals(LocalDate.now())) {
             return false;
         }
+        if (this.consultStatus.equals("incomplete")) {
+            return true;
+        }
         try {
             return !LocalTime.now().isBefore(LocalTime.parse(this.consultStart));
         } catch (Exception e) {
@@ -762,8 +770,8 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-    // Saves the consultation's vitals and notes. Returns null if saved, or the error message.
-    public String saveConsultation(String vitals, String notes) {
+    // Saves the consultation's vitals, notes, and status. Returns null if saved, or the error message.
+    private String saveConsultation(String vitals, String notes, String newStatus) {
         if (this.currentConsultId == -1) {
             return "No consultation loaded.";
         }
@@ -781,7 +789,7 @@ public class Doctor extends User implements DoctorServices {
         record.add(this.consultComplaint);
         record.add(vitals.trim());
         record.add(notes.trim());
-        record.add(this.consultStatus);
+        record.add(newStatus);
         record.add(this.consultRoom);
         record.add(this.consultDate);
         record.add(this.consultStart);
@@ -791,7 +799,19 @@ public class Doctor extends User implements DoctorServices {
 
         this.consultVitals = vitals.trim();
         this.consultNotes = notes.trim();
+        this.consultStatus = newStatus;
         return null;
+    }
+
+    // Saves vitals/notes and marks the consultation "incomplete": details saved but not yet
+    // marked complete, still editable for the rest of the day.
+    public String saveConsultationProgress(String vitals, String notes) {
+        return saveConsultation(vitals, notes, "incomplete");
+    }
+
+    // Saves vitals/notes and marks the consultation "completed": no longer editable.
+    public String completeConsultation(String vitals, String notes) {
+        return saveConsultation(vitals, notes, "completed");
     }
 
     // =====================================================================

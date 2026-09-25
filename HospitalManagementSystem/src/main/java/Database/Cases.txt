@@ -28,11 +28,3 @@
 28,59,10,05-08-2026,,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
 29,57,10,16-08-2026,,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
 30,43,33,26-08-2026,,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
-31,44,35,24-09-2026,24-09-2026,diagnosis,scheduled,`Follow up review of neurological symptoms in a child with prior seizure evaluation`,0
-32,39,35,25-09-2026,25-09-2026,healthcheck,scheduled,`Routine developmental assessment for a child under paediatric neurology follow up`,0
-33,41,35,25-09-2026,25-09-2026,diagnosis,walkin,`Recurrent headaches with associated visual disturbance in a child`,0
-34,47,35,25-09-2026,25-09-2026,diagnosis,scheduled,`Follow up assessment of febrile seizure with normal interval development`,0
-35,36,35,25-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a child with suspected absence seizures`,0
-36,42,35,25-09-2026,,diagnosis,walkin,`New onset unsteady gait in a toddler referred for neurological assessment`,0
-37,45,35,25-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy`,0
-38,48,35,26-09-2026,,healthcheck,scheduled,`Scheduled paediatric neurology developmental follow up`,0

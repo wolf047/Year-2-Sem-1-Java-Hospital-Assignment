@@ -20,7 +20,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private int consultId = -1;
 
     // A diagnostic request drafted (or already on file) for this consultation, pending the
-    // doctor's "Save Details"/"Complete Consultation" click. requestId is -1 for a brand new
+    // doctor's "Save Progress"/"Complete Consultation" click. requestId is -1 for a brand new
     // draft that has not been submitted yet.
     private static class PendingDiagRequest {
         int requestId;
@@ -39,7 +39,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }
 
     // Nothing from the Prescription/Diagnostic Request dialogs is written to file until the
-    // doctor clicks "Save Details" or "Complete Consultation" here. Cancel discards all of it.
+    // doctor clicks "Save Progress" or "Complete Consultation" here. Cancel discards all of it.
     private ArrayList<String[]> pendingPrescriptionItems = new ArrayList<>();
     private ArrayList<PendingDiagRequest> pendingDiagRequests = new ArrayList<>();
     private ArrayList<Integer> originalDiagRequestIds = new ArrayList<>();
@@ -98,7 +98,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         txtVitalSigns.setEditable(canEdit);
         txtNotes.setEditable(canEdit);
         btnSaveProgress.setEnabled(canEdit);
-        btnSaveDetails.setEnabled(canEdit);
+        btnCompleteConsultation.setEnabled(canEdit);
         btnAddPrescription.setEnabled(canEdit);
         btnAddDiagRequest.setEnabled(canEdit);
 
@@ -118,10 +118,13 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }
 
     // Saves vitals/notes, the drafted prescription, and the drafted diagnostic requests
-    // (new ones added, existing ones removed) all together. Returns false and shows the
+    // (new ones added, existing ones removed) all together, marking the consultation
+    // "completed" or "incomplete" depending on markComplete. Returns false and shows the
     // error if any step fails, leaving the dialog open with the drafts untouched.
-    private boolean saveEverything() {
-        String result = doctor.saveConsultation(txtVitalSigns.getText(), txtNotes.getText());
+    private boolean saveEverything(boolean markComplete) {
+        String result = markComplete
+                ? doctor.completeConsultation(txtVitalSigns.getText(), txtNotes.getText())
+                : doctor.saveConsultationProgress(txtVitalSigns.getText(), txtNotes.getText());
         if (result != null) {
             JOptionPane.showMessageDialog(this, result);
             return false;
@@ -202,7 +205,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         tblDiagnosticRequestsView = new javax.swing.JTable();
         btnSaveProgress = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        btnCompleteConsultation1 = new javax.swing.JButton();
+        btnCompleteConsultation = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Consultation Notes");
@@ -356,22 +359,21 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnCancel.addActionListener(this::btnCancel);
         getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 780, 250, 36));
 
-        btnCompleteConsultation1.setBackground(new java.awt.Color(38, 117, 154));
-        btnCompleteConsultation1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCompleteConsultation1.setForeground(new java.awt.Color(255, 255, 255));
-        btnCompleteConsultation1.setText("Complete Consultation");
-        btnCompleteConsultation1.addActionListener(this::btnCompleteConsultation1);
-        getContentPane().add(btnCompleteConsultation1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 520, 36));
+        btnCompleteConsultation.setBackground(new java.awt.Color(38, 117, 154));
+        btnCompleteConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCompleteConsultation.setForeground(new java.awt.Color(255, 255, 255));
+        btnCompleteConsultation.setText("Complete Consultation");
+        btnCompleteConsultation.addActionListener(this::btnCompleteConsultation);
+        getContentPane().add(btnCompleteConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 520, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveProgress(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProgress
-        if (!saveEverything()) {
+        if (!saveEverything(false)) {
             return;
         }
-        JOptionPane.showMessageDialog(this, "Consultation updated.");
-        dispose();
+        JOptionPane.showMessageDialog(this, "Progress saved.");
     }//GEN-LAST:event_btnSaveProgress
 
     private void btnAddPrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPrescription
@@ -433,9 +435,13 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnCancel
 
-    private void btnCompleteConsultation1(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation1
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCompleteConsultation1
+    private void btnCompleteConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation
+        if (!saveEverything(true)) {
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Consultation completed.");
+        dispose();
+    }//GEN-LAST:event_btnCompleteConsultation
 
 
     /**
@@ -479,7 +485,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnAddDiagRequest;
     private javax.swing.JButton btnAddPrescription;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnCompleteConsultation1;
+    private javax.swing.JButton btnCompleteConsultation;
     private javax.swing.JButton btnDeleteDiagRequest;
     private javax.swing.JButton btnSaveProgress;
     private javax.swing.JButton btnViewCase;

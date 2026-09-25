@@ -43,7 +43,7 @@ public final class FileHandling {
         FILENAME_HEADERS.put("Invoices.txt", List.of("invoice_id", "case_id", "date_issued", "total_amount", "deleted"));
         FILENAME_HEADERS.put("InvoiceItems.txt", List.of("invoice_item_id", "invoice_id", "item_name", "quantity", "amount_charged", "deleted"));
         FILENAME_HEADERS.put("Receipts.txt", List.of("receipt_id", "invoice_id", "insurance_id", "payment_method", "amount_paid", "payment_date", "deleted"));
-        FILENAME_HEADERS.put("Reviews.txt", List.of("review_id", "consultation_id", "rating", "comments", "deleted"));
+        FILENAME_HEADERS.put("Reviews.txt", List.of("review_id", "consultation_id", "rating", "comments", "date_reviewed", "deleted"));
         FILENAME_HEADERS.put("Shifts.txt", List.of("shift_id", "department_id", "date", "start_time", "end_time", "deleted"));
         FILENAME_HEADERS.put("ShiftDoctors.txt", List.of("assignment_id", "shift_id", "doctor_id", "deleted"));
     }

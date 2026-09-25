@@ -182,6 +182,21 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblRatingSummary.setText(doctor.getRatingSummary());
     }
 
+    // Shows the full, untruncated details of the selected review
+    private void openSelectedReview() {
+        int row = tblReviews.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+        int consultId = (Integer) tblReviews.getValueAt(row, 0);
+        String patientName = tblReviews.getValueAt(row, 1).toString();
+        String rating = tblReviews.getValueAt(row, 2).toString();
+        String dateReviewed = tblReviews.getValueAt(row, 3).toString();
+        String comments = tblReviews.getValueAt(row, 4).toString();
+        ReviewDialog dialog = new ReviewDialog(this, true, consultId, patientName, rating, dateReviewed, comments);
+        dialog.setVisible(true);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -629,17 +644,17 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         tblReviews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Consultation ID", "Rating", "Comments"
+                "Consultation ID", "Patient Name", "Rating", "Date Reviewed", "Comments"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -650,6 +665,11 @@ public class DoctorDashboard extends javax.swing.JFrame {
         tblReviews.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblReviews.getTableHeader().setReorderingAllowed(false);
+        tblReviews.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblReviews(evt);
+            }
+        });
         scrReviews.setViewportView(tblReviews);
 
         pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 450));
@@ -732,6 +752,12 @@ public class DoctorDashboard extends javax.swing.JFrame {
             openSelectedConsultation();
         }
     }//GEN-LAST:event_tblCalendar
+
+    private void tblReviews(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            openSelectedReview();
+        }
+    }
 
     private void btnAddConsultDetails(java.awt.event.ActionEvent evt) {
         openSelectedConsultation();

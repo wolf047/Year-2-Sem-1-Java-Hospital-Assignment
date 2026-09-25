@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MedicalManager extends User{
+public class MedicalManager extends User implements ReportGenerator{
     public MedicalManager(int user_id, String first_name, String last_name, String phone,
             String email, String password, String gender, LocalDate dob, Role role){
         super(user_id, first_name, last_name, phone, email, password, gender, dob, role);

@@ -57,7 +57,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblWelcome.setText("Welcome, " + doctor.getFullName());
         loadProfile();
         loadSchedule();
-        doctor.loadWeek(0);
         loadCalendar();
         loadCases();
         loadReviews();
@@ -119,6 +118,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     // CONSULTATIONS PAGE
     // =====================================================================
     private void loadCalendar() {
+        doctor.loadWeek(0); // re-reads Consultations.txt for the current week (offset unchanged)
         lblWeekRange.setText(doctor.getWeekRange());
 
         DefaultTableModel model = (DefaultTableModel) tblCalendar.getModel();
@@ -141,8 +141,17 @@ public class DoctorDashboard extends javax.swing.JFrame {
         }
         ConsultationsDialog dialog = new ConsultationsDialog(this, true, doctor, consultId);
         dialog.setVisible(true);
-        loadCalendar();
-    }
+        refreshAfterDialog();
+      }
+
+      // A consultation or case dialog can change both consultations and cases
+      // (e.g. completing a consultation, or closing a case via "View Case"),
+      // so redraw every table that shows them once the dialog is closed.
+      private void refreshAfterDialog() {
+          loadCalendar();      // original line 144
+          loadCases();
+          loadSchedule();
+      }     
 
     // =====================================================================
     // CASES PAGE
@@ -167,7 +176,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         }
         CasesDialog dialog = new CasesDialog(this, true, doctor, caseId);
         dialog.setVisible(true);
-        loadCases();
+        refreshAfterDialog();
     }
 
     // =====================================================================

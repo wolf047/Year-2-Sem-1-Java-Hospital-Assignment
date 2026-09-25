@@ -491,6 +491,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
             }
         });
         tblCases.setColumnSelectionAllowed(true);
+        tblCases.setRowHeight(25);
         tblCases.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblCases.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblCases.getTableHeader().setReorderingAllowed(false);
@@ -534,6 +535,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblSchedule.setRowHeight(25);
         tblSchedule.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblSchedule.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblSchedule.getTableHeader().setReorderingAllowed(false);
@@ -592,6 +594,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
             }
         });
         tblCalendar.setColumnSelectionAllowed(true);
+        tblCalendar.setRowHeight(25);
         tblCalendar.getTableHeader().setReorderingAllowed(false);
         tblCalendar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -643,6 +646,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblReviews.setRowHeight(25);
         tblReviews.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblReviews.getTableHeader().setReorderingAllowed(false);

@@ -186,6 +186,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private void openSelectedReview() {
         int row = tblReviews.getSelectedRow();
         if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a review from the list.");
             return;
         }
         int consultId = (Integer) tblReviews.getValueAt(row, 0);
@@ -761,7 +762,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_tblCalendar
 
     private void btnViewReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReviews
-        // TODO add your handling code here:
+        openSelectedReview();
     }//GEN-LAST:event_btnViewReviews
 
     private void tblReviews(java.awt.event.MouseEvent evt) {

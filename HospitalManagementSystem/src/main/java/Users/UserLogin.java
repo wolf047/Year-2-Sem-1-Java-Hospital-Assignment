@@ -6,6 +6,8 @@ import HelperFunction.FileHandling;
 import MedicalManager.*;
 import Doctor.Doctor;
 import Doctor.DoctorDashboard;
+import Admin.Admin;
+import Admin.AdminDashboard;
 import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -161,10 +163,10 @@ public class UserLogin extends javax.swing.JFrame {
                             return;
 
                         case Admin:
-                            // Admin admin = new Admin(...);
-                            // SessionUser.login(admin);
-                            // new AdminDashboard().setVisible(true);
-                            // this.dispose();
+                            Admin admin = new Admin(id, first, last, phone, email, password, gender, dob, role);
+                            SessionUser.login(admin);
+                            new AdminDashboard().setVisible(true);
+                            this.dispose();
                             return;
                     }
                 }

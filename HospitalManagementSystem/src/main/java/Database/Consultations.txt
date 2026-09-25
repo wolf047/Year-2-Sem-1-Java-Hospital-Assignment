@@ -76,8 +76,8 @@
 76,40,35,`Assessment of speech and motor developmental delay`,`BP 122/73 mmHg, HR 90 bpm, RR 26 per min, Temp 37.3 C, SpO2 97 percent`,`Stable condition. No new neurological deficits found on examination.`,completed,11,24-09-2026,22:00,22:30,0
 77,41,35,`Follow up review of neurological symptoms`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,1,25-09-2026,07:00,07:30,0
 78,42,35,`Recurrent headaches with associated visual disturbance`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,2,25-09-2026,08:00,08:30,0
-79,43,35,`New onset unsteady gait and clumsiness`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,3,25-09-2026,09:00,09:30,0
-80,44,35,`Review of electroencephalogram findings`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,4,25-09-2026,10:00,10:30,0
+79,43,35,`New onset unsteady gait and clumsiness`,,`Appointment slot reserved. Patient to attend as scheduled.`,completed,3,25-09-2026,09:00,09:30,0
+80,44,35,`Review of electroencephalogram findings`,,`Appointment slot reserved. Patient to attend as scheduled.`,incomplete,4,25-09-2026,10:00,10:30,0
 81,45,35,`Scheduled review of ongoing management for childhood epilepsy`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,5,25-09-2026,11:00,11:30,0
 82,46,35,`Routine developmental assessment`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,6,25-09-2026,18:00,18:30,0
 83,47,35,`Follow up assessment of febrile seizure`,,`Appointment slot reserved. Patient to attend as scheduled.`,booked,7,25-09-2026,19:00,19:30,0

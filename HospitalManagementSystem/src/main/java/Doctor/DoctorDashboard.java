@@ -251,7 +251,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails = new javax.swing.JButton();
         pnlReviews = new javax.swing.JPanel();
         lblReviewsTitle = new javax.swing.JLabel();
-        lblRatingSummary = new javax.swing.JLabel();
         scrReviews = new javax.swing.JScrollPane();
         tblReviews = new javax.swing.JTable();
 
@@ -557,7 +556,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnPrevWeek.setFocusPainted(false);
         btnPrevWeek.setRolloverEnabled(false);
         btnPrevWeek.addActionListener(this::btnPrevWeek);
-        pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 110, 28));
+        pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 120, 28));
 
         btnNextWeek.setBackground(new java.awt.Color(38, 117, 154));
         btnNextWeek.setForeground(new java.awt.Color(255, 255, 255));
@@ -565,12 +564,12 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnNextWeek.setFocusPainted(false);
         btnNextWeek.setRolloverEnabled(false);
         btnNextWeek.addActionListener(this::btnNextWeek);
-        pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 55, 110, 28));
+        pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 55, 120, 28));
 
         lblWeekRange.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         lblWeekRange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWeekRange.setText("Week of —");
-        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 55, 300, 28));
+        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 55, 200, 28));
 
         tblCalendar.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -606,7 +605,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails.setBackground(new java.awt.Color(38, 117, 154));
         btnAddConsultDetails.setForeground(new java.awt.Color(255, 255, 255));
         btnAddConsultDetails.setText("+ Add Consultation Details");
-        btnAddConsultDetails.addActionListener(this::btnAddConsultDetails);
         pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
 
         pnlContent.add(pnlConsultations, "consultations");
@@ -618,11 +616,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblReviewsTitle.setForeground(new java.awt.Color(17, 17, 17));
         lblReviewsTitle.setText("Reviews");
         pnlReviews.add(lblReviewsTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
-
-        lblRatingSummary.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblRatingSummary.setForeground(new java.awt.Color(38, 117, 154));
-        lblRatingSummary.setText("Average rating: —");
-        pnlReviews.add(lblRatingSummary, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 400, 20));
 
         tblReviews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -648,7 +641,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         tblReviews.getTableHeader().setReorderingAllowed(false);
         scrReviews.setViewportView(tblReviews);
 
-        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 450));
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
 
         pnlContent.add(pnlReviews, "reviews");
 
@@ -793,7 +786,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblProfessionalHeader;
     private javax.swing.JLabel lblProfileTitle;
     private javax.swing.JLabel lblPwdHint;
-    private javax.swing.JLabel lblRatingSummary;
     private javax.swing.JLabel lblReviewsTitle;
     private javax.swing.JLabel lblScheduleTitle;
     private javax.swing.JLabel lblSpecialization;

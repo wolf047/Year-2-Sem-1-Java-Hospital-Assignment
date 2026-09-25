@@ -204,8 +204,8 @@ public class Patient extends User implements PatientServices {
         if (reviews == null) {
             return null;
         }
-        for (ArrayList<String> r : reviews.values()) { // 0 consultation_id, 1 rating, 2 comments, 3 deleted
-            if (r.get(0).equals(String.valueOf(consultId)) && r.get(3).equals("0")) {
+        for (ArrayList<String> r : reviews.values()) { // 0 consultation_id, 1 rating, 2 comments, 3 date_reviewed, 4 deleted
+            if (r.get(0).equals(String.valueOf(consultId)) && r.get(4).equals("0")) {
                 return r;
             }
         }
@@ -319,6 +319,7 @@ public class Patient extends User implements PatientServices {
         record.add(consultId);
         record.add(String.valueOf(rating));
         record.add(comment);
+        record.add(LocalDate.now().format(DATE));
         record.add("0");
         FileHandling.addRecord("Reviews.txt", record);
         return null;

@@ -6,7 +6,7 @@ import java.util.*;
 import HelperFunction.FileHandling;
 import java.time.format.DateTimeFormatter;
 
-public class User {
+public abstract class User {
     protected String first_name, last_name, phone, email, password, gender;
     protected int user_id;
     protected LocalDate dob;

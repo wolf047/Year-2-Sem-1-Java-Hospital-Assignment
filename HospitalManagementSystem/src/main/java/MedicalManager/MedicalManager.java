@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MedicalManager extends User{
+public class MedicalManager extends User implements ReportGenerator{
     public MedicalManager(int user_id, String first_name, String last_name, String phone,
             String email, String password, String gender, LocalDate dob, Role role){
         super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
@@ -438,31 +438,111 @@ public class MedicalManager extends User{
     
     public List<String[]> getRevenueTableData(){
         List<String[]> data = new ArrayList<>();
-        
+        TreeMap<Integer, ArrayList<String>> receipts = FileHandling.readActiveRecords("Receipts.txt");
+        if (receipts != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : receipts.entrySet()) {
+                String rcptId = String.format("RCPT%03d", entry.getKey());
+                String invId = String.format("INV%03d", Integer.parseInt(entry.getValue().get(0)));
+                String paymentMethod = entry.getValue().get(2).toUpperCase().replace("_", " "); 
+                String amount = String.format("RM %.2f", Double.parseDouble(entry.getValue().get(3)));
+                String date = entry.getValue().get(4);
+                
+                data.add(new String[]{rcptId, invId, paymentMethod, amount, date});
+            }
+        }
         return data;
     }
     
     public List<String[]> getCasesTableData(){
         List<String[]> data = new ArrayList<>();
-        
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readActiveRecords("Cases.txt");
+        if (cases != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : cases.entrySet()) {
+                String caseId = String.format("CASE%03d", entry.getKey());
+                String patientId = String.format("USER%03d", Integer.parseInt(entry.getValue().get(0)));
+                String category = entry.getValue().get(4).toUpperCase();
+                String type = entry.getValue().get(5).toUpperCase();
+                
+                String closeDate = entry.getValue().get(3);
+                String status = (closeDate == null || closeDate.trim().isEmpty() || closeDate.equalsIgnoreCase("null")) ? "OPEN" : "CLOSED";
+                
+                data.add(new String[]{caseId, patientId, category, type, status});
+            }
+        }
         return data;
     }
     
     public List<String[]> getConsultationsTableData(){
         List<String[]> data = new ArrayList<>();
-        
+        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
+        if (consults != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : consults.entrySet()) {
+                String consId = String.format("CONS%03d", entry.getKey());
+                String caseId = String.format("CASE%03d", Integer.parseInt(entry.getValue().get(0)));
+                String docId = String.format("USER%03d", Integer.parseInt(entry.getValue().get(1)));
+                String status = entry.getValue().get(5).toUpperCase(); // consultation_status
+                String date = entry.getValue().get(7);
+                
+                data.add(new String[]{consId, caseId, docId, date, status});
+            }
+        }
         return data;
     }
       
     public List<String[]> getWardTableData(){
         List<String[]> data = new ArrayList<>();
-        
+        TreeMap<Integer, ArrayList<String>> wards = FileHandling.readActiveRecords("InpatientWards.txt");
+        TreeMap<Integer, ArrayList<String>> beds = FileHandling.readActiveRecords("InpatientBeds.txt");
+        TreeMap<Integer, ArrayList<String>> admissions = FileHandling.readActiveRecords("Admissions.txt");
+
+        if (wards != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : wards.entrySet()) {
+                int wardId = entry.getKey();
+                String wardIdStr = String.format("WARD%02d", wardId);
+                String deptId = String.format("DEP%03d", Integer.parseInt(entry.getValue().get(0)));
+                int capacity = Integer.parseInt(entry.getValue().get(2));
+                
+                int occupied = 0;
+                // Count occupied beds physically located in this specific ward
+                if (beds != null && admissions != null) {
+                    for (Map.Entry<Integer, ArrayList<String>> bed : beds.entrySet()) {
+                        if (Integer.parseInt(bed.getValue().get(0)) == wardId) {
+                            int currentBedId = bed.getKey();
+                            // Check if this bed is currently assigned to an active admission
+                            for (ArrayList<String> adm : admissions.values()) {
+                                if (Integer.parseInt(adm.get(1)) == currentBedId) {
+                                    String disDate = adm.size() > 3 ? adm.get(3) : "";
+                                    if (disDate == null || disDate.trim().isEmpty() || disDate.equalsIgnoreCase("null")) {
+                                        occupied++;
+                                        break; 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                int available = Math.max(0, capacity - occupied);
+                data.add(new String[]{wardIdStr, deptId, String.valueOf(capacity), String.valueOf(occupied), String.valueOf(available)});
+            }
+        }
         return data;
     }
     
-    public List<String[]> getReviewTableData(){
+    public List<String[]> getReviewsTableData(){
         List<String[]> data = new ArrayList<>();
-        
+        TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
+        if (reviews != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : reviews.entrySet()) {
+                String revId = String.format("REV%03d", entry.getKey());
+                String consId = String.format("CONS%03d", Integer.parseInt(entry.getValue().get(0)));
+                String rating = entry.getValue().get(1) + " / 5";
+                
+                // Remove the backticks (`) from the text file strings
+                String comment = entry.getValue().get(2).replace("`", ""); 
+                
+                data.add(new String[]{revId, consId, rating, comment});
+            }
+        }
         return data;
     }
     

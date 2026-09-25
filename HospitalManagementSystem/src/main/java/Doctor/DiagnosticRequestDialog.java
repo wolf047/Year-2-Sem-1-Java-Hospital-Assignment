@@ -4,13 +4,30 @@
  */
 package Doctor;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Sascha
  */
 public class DiagnosticRequestDialog extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DiagnosticRequestDialog.class.getName());
+
+    private DoctorServices doctor;
+    // requests already added to the request list being built: {serviceId, serviceName, category, type, remarks}
+    private ArrayList<String[]> pendingRequests = new ArrayList<>();
+    private int selectedServiceId = -1;
+    private String selectedServiceName = "";
+    private String selectedCategory = "";
+    private String selectedType = "";
+
+    // Nothing is written to file from this dialog. The caller (ConsultationsDialog) only
+    // submits these requests when its own "Save Progress"/"Complete Consultation" is clicked.
+    private boolean saved = false;
+    private ArrayList<String[]> resultRequests = new ArrayList<>();
 
     /**
      * Creates new form DiagnosticRequestDialog
@@ -18,6 +35,87 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     public DiagnosticRequestDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    // Used by the Consultation dialog to request diagnostic services for one consultation
+    public DiagnosticRequestDialog(java.awt.Frame parent, boolean modal, DoctorServices doctor, int consultId) {
+        super(parent, modal);
+        initComponents();
+        this.doctor = doctor;
+
+        lblDiagHeader.setText("Request Diagnostic Service");
+        lblDiagMeta.setText("Consultation #" + consultId);
+        txtServiceSearch.setText("");
+        txtRemarks.setText("");
+
+        ArrayList<String> categories = doctor.getServiceCategories();
+        cmbCategoryFilter.setModel(new javax.swing.DefaultComboBoxModel<>(categories.toArray(new String[0])));
+        loadTypesForCategory();
+
+        if (!doctor.canEditConsultation()) {
+            lblSelectedService.setText("You cannot request diagnostic services for this consultation.");
+            setInputsEnabled(false);
+        } else {
+            searchServices();
+        }
+    }
+
+    // true once the doctor clicked "Submit Requests" in this dialog
+    public boolean isSaved() {
+        return saved;
+    }
+
+    // the drafted requests as {serviceId, serviceName, remarks}, only meaningful when isSaved() is true
+    public ArrayList<String[]> getResultRequests() {
+        ArrayList<String[]> result = new ArrayList<>();
+        for (String[] r : resultRequests) {
+            result.add(new String[]{r[0], r[1], r[4]});
+        }
+        return result;
+    }
+
+    private void setInputsEnabled(boolean enabled) {
+        cmbCategoryFilter.setEnabled(enabled);
+        cmbTypeFilter.setEnabled(enabled);
+        txtServiceSearch.setEnabled(enabled);
+        tblServiceResults.setEnabled(enabled);
+        txtRemarks.setEnabled(enabled);
+        btnAddRequest.setEnabled(enabled);
+        btnRemoveRequest.setEnabled(enabled);
+        btnSubmitRequests.setEnabled(enabled);
+    }
+
+    private void loadTypesForCategory() {
+        String category = "All";
+        if (cmbCategoryFilter.getSelectedItem() != null) {
+            category = cmbCategoryFilter.getSelectedItem().toString();
+        }
+        ArrayList<String> types = doctor.getServiceTypes(category);
+        cmbTypeFilter.setModel(new javax.swing.DefaultComboBoxModel<>(types.toArray(new String[0])));
+    }
+
+    private void searchServices() {
+        String category = "All";
+        if (cmbCategoryFilter.getSelectedItem() != null) {
+            category = cmbCategoryFilter.getSelectedItem().toString();
+        }
+        String type = "All";
+        if (cmbTypeFilter.getSelectedItem() != null) {
+            type = cmbTypeFilter.getSelectedItem().toString();
+        }
+        DefaultTableModel model = (DefaultTableModel) tblServiceResults.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.searchServices(category, type, txtServiceSearch.getText())) {
+            model.addRow(row);
+        }
+    }
+
+    private void refreshRequestsTable() {
+        DefaultTableModel model = (DefaultTableModel) tblRequestList.getModel();
+        model.setRowCount(0);
+        for (String[] request : pendingRequests) {
+            model.addRow(new Object[]{request[1], request[2], request[3], request[4]});
+        }
     }
 
     /**
@@ -46,12 +144,14 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         scrRequestList = new javax.swing.JScrollPane();
         tblRequestList = new javax.swing.JTable();
         btnRemoveRequest = new javax.swing.JButton();
-        btnCloseDialog = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         btnSubmitRequests = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Request Diagnostic Service");
         setModal(true);
+        setName("diagnostics"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(570, 795));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -178,12 +278,12 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
         btnRemoveRequest.addActionListener(this::btnRemoveRequest);
         getContentPane().add(btnRemoveRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 644, 250, 32));
 
-        btnCloseDialog.setBackground(new java.awt.Color(38, 117, 154));
-        btnCloseDialog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCloseDialog.setForeground(new java.awt.Color(255, 255, 255));
-        btnCloseDialog.setText("Close Page");
-        btnCloseDialog.addActionListener(this::btnCloseDialog);
-        getContentPane().add(btnCloseDialog, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
+        btnCancel.setBackground(new java.awt.Color(38, 117, 154));
+        btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancel);
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 698, 250, 36));
 
         btnSubmitRequests.setBackground(new java.awt.Color(38, 117, 154));
         btnSubmitRequests.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -196,35 +296,69 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbCategoryFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCategoryFilter
-        // TODO add your handling code here:
+        loadTypesForCategory();
+        searchServices();
     }//GEN-LAST:event_cmbCategoryFilter
 
     private void cmbTypeFilter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTypeFilter
-        // TODO add your handling code here:
+        searchServices();
     }//GEN-LAST:event_cmbTypeFilter
 
     private void btnAddRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddRequest
-        // TODO add your handling code here:
+        if (selectedServiceId < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a service from the results above.");
+            return;
+        }
+        String remarks = txtRemarks.getText();
+        String error = doctor.checkText(remarks);
+        if (error != null) {
+            JOptionPane.showMessageDialog(this, error);
+            return;
+        }
+        pendingRequests.add(new String[]{String.valueOf(selectedServiceId), selectedServiceName,
+            selectedCategory, selectedType, remarks.trim()});
+        refreshRequestsTable();
+        txtRemarks.setText("");
     }//GEN-LAST:event_btnAddRequest
 
     private void btnRemoveRequest(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveRequest
-        // TODO add your handling code here:
+        int row = tblRequestList.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a request to remove.");
+            return;
+        }
+        pendingRequests.remove(row);
+        refreshRequestsTable();
     }//GEN-LAST:event_btnRemoveRequest
 
     private void btnSubmitRequests(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitRequests
-        // TODO add your handling code here:
+        if (pendingRequests.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please add at least one service to the request list.");
+            return;
+        }
+        resultRequests = pendingRequests;
+        saved = true;
+        dispose();
     }//GEN-LAST:event_btnSubmitRequests
 
-    private void btnCloseDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseDialog
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCloseDialog
+    private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel
+        dispose();
+    }//GEN-LAST:event_btnCancel
 
     private void txtServiceSearch(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtServiceSearch
-        // TODO add your handling code here:
+        searchServices();
     }//GEN-LAST:event_txtServiceSearch
 
     private void tblServiceResults(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblServiceResults
-        // TODO add your handling code here:
+        int row = tblServiceResults.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+        selectedServiceId = doctor.getServiceResultId(row);
+        selectedServiceName = tblServiceResults.getValueAt(row, 0).toString();
+        selectedCategory = tblServiceResults.getValueAt(row, 1).toString();
+        selectedType = tblServiceResults.getValueAt(row, 2).toString();
+        lblSelectedService.setText("Selected: " + selectedServiceName);
     }//GEN-LAST:event_tblServiceResults
 
 
@@ -268,7 +402,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddRequest;
-    private javax.swing.JButton btnCloseDialog;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnRemoveRequest;
     private javax.swing.JButton btnSubmitRequests;
     private javax.swing.JComboBox<String> cmbCategoryFilter;

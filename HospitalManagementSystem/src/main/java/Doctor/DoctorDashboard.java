@@ -4,19 +4,207 @@
  */
 package Doctor;
 
+import HelperFunction.SessionUser;
+import Users.UserLogin;
+import java.awt.CardLayout;
+import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Sascha
  */
 public class DoctorDashboard extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DoctorDashboard.class.getName());
+
+    // =====================================================================
+    // FIELDS
+    // =====================================================================
+    private DoctorServices doctor;                          // the doctor object, seen through the interface
+    private final Color NAV_BG = new Color(30, 95, 125);    // menu background
+    private final Color BLUE = new Color(38, 117, 154);     // theme blue
 
     /**
      * Creates new form PatientDashboard
      */
     public DoctorDashboard() {
         initComponents();
+
+        // make every table read-only and consistent
+        javax.swing.JTable[] tables = {tblSchedule, tblCalendar, tblCases, tblReviews};
+        for (javax.swing.JTable t : tables) {
+            t.setDefaultEditor(Object.class, null);
+            t.getTableHeader().setReorderingAllowed(false);
+            t.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            t.setRowHeight(25);
+            t.setSelectionBackground(BLUE);
+            t.setSelectionForeground(Color.WHITE);
+        }
+        tblCases.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    openSelectedCase();
+                }
+            }
+        });
+
+        this.doctor = (Doctor) SessionUser.getCurrentUser();
+
+        setLocationRelativeTo(null);
+        lblWelcome.setText("Welcome, " + doctor.getFullName());
+        loadProfile();
+        loadSchedule();
+        loadCalendar();
+        loadCases();
+        loadReviews();
+        showPage("consultations", btnNavConsultations);
+    }
+
+    // =====================================================================
+    // NAVIGATION
+    // =====================================================================
+    private void showPage(String cardName, JButton activeButton) {
+        CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+        cardLayout.show(pnlContent, cardName);
+
+        JButton[] menu = {btnNavConsultations, btnNavSchedule, btnNavCases, btnNavReviews, btnNavProfile};
+        for (JButton b : menu) {
+            b.setBackground(NAV_BG);
+            b.setForeground(Color.WHITE);
+        }
+        activeButton.setBackground(Color.WHITE);
+        activeButton.setForeground(BLUE);
+
+        if (cardName.equals("profile")) {
+            getRootPane().setDefaultButton(btnSaveProfile);
+        } else {
+            getRootPane().setDefaultButton(null);
+        }
+    }
+
+    // =====================================================================
+    // PROFILE PAGE
+    // =====================================================================
+    private void loadProfile() {
+        txtDoctorID.setText(doctor.getDoctorCode());
+        txtFirstName.setText(doctor.getFirst());
+        txtLastName.setText(doctor.getLast());
+        txtDepartment.setText(doctor.getDepartmentName());
+        txtSpecialization.setText(doctor.getSpecialization());
+        txtOffDay.setText(doctor.getOffDayText());
+        txtPhone.setText(doctor.getPhone());
+        txtEmail.setText(doctor.getEmail());
+
+        pwdCurrent.setText("");
+        pwdNew.setText("");
+        pwdConfirm.setText("");
+    }
+
+    // =====================================================================
+    // SCHEDULE PAGE
+    // =====================================================================
+    private void loadSchedule() {
+        DefaultTableModel model = (DefaultTableModel) tblSchedule.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getSchedule()) {
+            model.addRow(row);
+        }
+    }
+
+    // =====================================================================
+    // CONSULTATIONS PAGE
+    // =====================================================================
+    private void loadCalendar() {
+        doctor.loadWeek(0); // re-reads Consultations.txt for the current week (offset unchanged)
+        lblWeekRange.setText(doctor.getWeekRange());
+
+        DefaultTableModel model = (DefaultTableModel) tblCalendar.getModel();
+        model.setRowCount(0);
+        model.setColumnIdentifiers(doctor.getWeekHeaders());
+        for (Object[] row : doctor.getWeekRows()) {
+            model.addRow(row);
+        }
+    }
+
+    private void openSelectedConsultation() {
+        int row = tblCalendar.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a consultation from the calendar.");
+            return;
+        }
+        int consultId = doctor.getWeekConsultId(row, tblCalendar.getSelectedColumn());
+        if (consultId < 0) {
+            return;
+        }
+        ConsultationsDialog dialog = new ConsultationsDialog(this, true, doctor, consultId);
+        dialog.setVisible(true);
+        refreshAfterDialog();
+      }
+
+      // A consultation or case dialog can change both consultations and cases
+      // (e.g. completing a consultation, or closing a case via "View Case"),
+      // so redraw every table that shows them once the dialog is closed.
+      private void refreshAfterDialog() {
+          loadCalendar();      // original line 144
+          loadCases();
+          loadSchedule();
+      }     
+
+    // =====================================================================
+    // CASES PAGE
+    // =====================================================================
+    private void loadCases() {
+        DefaultTableModel model = (DefaultTableModel) tblCases.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getCases()) {
+            model.addRow(row);
+        }
+    }
+
+    private void openSelectedCase() {
+        int row = tblCases.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a case from the list.");
+            return;
+        }
+        int caseId = doctor.getCaseId(row);
+        if (caseId < 0) {
+            return;
+        }
+        CasesDialog dialog = new CasesDialog(this, true, doctor, caseId);
+        dialog.setVisible(true);
+        refreshAfterDialog();
+    }
+
+    // =====================================================================
+    // REVIEWS PAGE
+    // =====================================================================
+    private void loadReviews() {
+        DefaultTableModel model = (DefaultTableModel) tblReviews.getModel();
+        model.setRowCount(0);
+        for (Object[] row : doctor.getReviews()) {
+            model.addRow(row);
+        }
+        lblRatingSummary.setText(doctor.getRatingSummary());
+    }
+
+    // Shows the full, untruncated details of the selected review
+    private void openSelectedReview() {
+        int row = tblReviews.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a review from the list.");
+            return;
+        }
+        int consultId = (Integer) tblReviews.getValueAt(row, 0);
+        String patientName = tblReviews.getValueAt(row, 1).toString();
+        String rating = tblReviews.getValueAt(row, 2).toString();
+        String dateReviewed = tblReviews.getValueAt(row, 3).toString();
+        String comments = tblReviews.getValueAt(row, 4).toString();
+        ReviewDialog dialog = new ReviewDialog(this, true, consultId, patientName, rating, dateReviewed, comments);
+        dialog.setVisible(true);
     }
 
     /**
@@ -73,6 +261,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblCasesTitle = new javax.swing.JLabel();
         scrCases = new javax.swing.JScrollPane();
         tblCases = new javax.swing.JTable();
+        btnViewCaseDetails = new javax.swing.JButton();
         pnlSchedule = new javax.swing.JPanel();
         lblScheduleTitle = new javax.swing.JLabel();
         scrSchedule = new javax.swing.JScrollPane();
@@ -87,8 +276,10 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails = new javax.swing.JButton();
         pnlReviews = new javax.swing.JPanel();
         lblReviewsTitle = new javax.swing.JLabel();
+        lblRatingSummary = new javax.swing.JLabel();
         scrReviews = new javax.swing.JScrollPane();
         tblReviews = new javax.swing.JTable();
+        btnViewReviews = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HMS Doctor Portal");
@@ -326,13 +517,20 @@ public class DoctorDashboard extends javax.swing.JFrame {
             }
         });
         tblCases.setColumnSelectionAllowed(true);
+        tblCases.setRowHeight(25);
         tblCases.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblCases.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblCases.getTableHeader().setReorderingAllowed(false);
         scrCases.setViewportView(tblCases);
         tblCases.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
+        pnlCases.add(scrCases, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 420));
+
+        btnViewCaseDetails.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewCaseDetails.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewCaseDetails.setText("View Case Details");
+        btnViewCaseDetails.addActionListener(this::btnViewCaseDetails);
+        pnlCases.add(btnViewCaseDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
 
         pnlContent.add(pnlCases, "cases");
 
@@ -363,6 +561,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblSchedule.setRowHeight(25);
         tblSchedule.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblSchedule.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblSchedule.getTableHeader().setReorderingAllowed(false);
@@ -386,7 +585,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnPrevWeek.setFocusPainted(false);
         btnPrevWeek.setRolloverEnabled(false);
         btnPrevWeek.addActionListener(this::btnPrevWeek);
-        pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 110, 28));
+        pnlConsultations.add(btnPrevWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, 120, 28));
 
         btnNextWeek.setBackground(new java.awt.Color(38, 117, 154));
         btnNextWeek.setForeground(new java.awt.Color(255, 255, 255));
@@ -394,12 +593,12 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnNextWeek.setFocusPainted(false);
         btnNextWeek.setRolloverEnabled(false);
         btnNextWeek.addActionListener(this::btnNextWeek);
-        pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 55, 110, 28));
+        pnlConsultations.add(btnNextWeek, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 55, 120, 28));
 
         lblWeekRange.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         lblWeekRange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWeekRange.setText("Week of —");
-        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 55, 300, 28));
+        pnlConsultations.add(lblWeekRange, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 55, 200, 28));
 
         tblCalendar.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -421,6 +620,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
             }
         });
         tblCalendar.setColumnSelectionAllowed(true);
+        tblCalendar.setRowHeight(25);
         tblCalendar.getTableHeader().setReorderingAllowed(false);
         tblCalendar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -435,6 +635,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         btnAddConsultDetails.setBackground(new java.awt.Color(38, 117, 154));
         btnAddConsultDetails.setForeground(new java.awt.Color(255, 255, 255));
         btnAddConsultDetails.setText("+ Add Consultation Details");
+        btnAddConsultDetails.addActionListener(this::btnAddConsultDetails);
         pnlConsultations.add(btnAddConsultDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 200, 26));
 
         pnlContent.add(pnlConsultations, "consultations");
@@ -447,31 +648,48 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblReviewsTitle.setText("Reviews");
         pnlReviews.add(lblReviewsTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 400, 30));
 
+        lblRatingSummary.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblRatingSummary.setForeground(new java.awt.Color(38, 117, 154));
+        lblRatingSummary.setText("Average rating: —");
+        pnlReviews.add(lblRatingSummary, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 400, 20));
+
         tblReviews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Consultation ID", "Rating", "Comments"
+                "Consultation ID", "Patient Name", "Rating", "Date Reviewed", "Comments"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        tblReviews.setRowHeight(25);
         tblReviews.setSelectionBackground(new java.awt.Color(38, 117, 154));
         tblReviews.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblReviews.getTableHeader().setReorderingAllowed(false);
+        tblReviews.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblReviews(evt);
+            }
+        });
         scrReviews.setViewportView(tblReviews);
 
-        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 580, 470));
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 400));
+
+        btnViewReviews.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewReviews.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewReviews.setText("View Review Details");
+        btnViewReviews.addActionListener(this::btnViewReviews);
+        pnlReviews.add(btnViewReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
 
         pnlContent.add(pnlReviews, "reviews");
 
@@ -481,48 +699,94 @@ public class DoctorDashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNavConsultations(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavConsultations
-        // TODO add your handling code here:
+        loadCalendar();
+        showPage("consultations", btnNavConsultations);
     }//GEN-LAST:event_btnNavConsultations
 
     private void btnNavSchedule(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavSchedule
-        // TODO add your handling code here:
+        loadSchedule();
+        showPage("schedule", btnNavSchedule);
     }//GEN-LAST:event_btnNavSchedule
 
     private void btnLogout(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogout
-        // TODO add your handling code here:
+        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (choice == JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new UserLogin().setVisible(true);
+            dispose();
+        }
     }//GEN-LAST:event_btnLogout
 
     private void btnNavCases(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavCases
-        // TODO add your handling code here:
+        loadCases();
+        showPage("cases", btnNavCases);
     }//GEN-LAST:event_btnNavCases
 
     private void btnNavReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavReviews
-        // TODO add your handling code here:
+        loadReviews();
+        showPage("reviews", btnNavReviews);
     }//GEN-LAST:event_btnNavReviews
 
     private void btnNavProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavProfile
-        // TODO add your handling code here:
+        loadProfile();
+        showPage("profile", btnNavProfile);
     }//GEN-LAST:event_btnNavProfile
 
     private void btnPrevWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevWeek
-        // TODO add your handling code here:
+        doctor.loadWeek(-1);
+        loadCalendar();
     }//GEN-LAST:event_btnPrevWeek
 
     private void btnNextWeek(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextWeek
-        // TODO add your handling code here:
+        doctor.loadWeek(1);
+        loadCalendar();
     }//GEN-LAST:event_btnNextWeek
 
     private void btnSaveProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProfile
-        // TODO add your handling code here:
+        String result = doctor.saveProfile(
+                txtPhone.getText().trim(),
+                txtEmail.getText().trim(),
+                new String(pwdCurrent.getPassword()),
+                new String(pwdNew.getPassword()),
+                new String(pwdConfirm.getPassword()));
+
+        if (result != null) {
+            JOptionPane.showMessageDialog(this, result);
+            loadProfile();
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, "Profile updated.");
+        loadProfile();
     }//GEN-LAST:event_btnSaveProfile
 
     private void btnResetProfile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetProfile
-        // TODO add your handling code here:
+        loadProfile();
     }//GEN-LAST:event_btnResetProfile
 
     private void tblCalendar(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendar
-        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            openSelectedConsultation();
+        }
     }//GEN-LAST:event_tblCalendar
+
+    private void btnViewReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReviews
+        openSelectedReview();
+    }//GEN-LAST:event_btnViewReviews
+
+    private void tblReviews(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            openSelectedReview();
+        }
+    }
+
+    private void btnAddConsultDetails(java.awt.event.ActionEvent evt) {
+        openSelectedConsultation();
+    }
+
+    private void btnViewCaseDetails(java.awt.event.ActionEvent evt) {
+        openSelectedCase();
+    }
 
     /**
      * @param args the command line arguments
@@ -561,6 +825,8 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnPrevWeek;
     private javax.swing.JButton btnResetProfile;
     private javax.swing.JButton btnSaveProfile;
+    private javax.swing.JButton btnViewCaseDetails;
+    private javax.swing.JButton btnViewReviews;
     private javax.swing.JLabel lblCasesTitle;
     private javax.swing.JLabel lblConfirmPwd;
     private javax.swing.JLabel lblConsultationsTitle;
@@ -579,6 +845,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblProfessionalHeader;
     private javax.swing.JLabel lblProfileTitle;
     private javax.swing.JLabel lblPwdHint;
+    private javax.swing.JLabel lblRatingSummary;
     private javax.swing.JLabel lblReviewsTitle;
     private javax.swing.JLabel lblScheduleTitle;
     private javax.swing.JLabel lblSpecialization;

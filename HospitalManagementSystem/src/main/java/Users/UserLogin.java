@@ -153,18 +153,18 @@ public class UserLogin extends javax.swing.JFrame {
                             this.dispose();
                             return;
 
-                        case Admin:
-                            // Admin admin = new Admin(...);
-                            // SessionUser.login(admin);
-                            // new AdminDashboard().setVisible(true);
-                            // this.dispose();
-                            return;
-
                         case Doctor:
                             Doctor doctor = new Doctor(id, first, last, phone, email, password, gender, dob, role);
                             SessionUser.login(doctor);
                             new DoctorDashboard().setVisible(true);
                             this.dispose();
+                            return;
+
+                        case Admin:
+                            // Admin admin = new Admin(...);
+                            // SessionUser.login(admin);
+                            // new AdminDashboard().setVisible(true);
+                            // this.dispose();
                             return;
                     }
                 }

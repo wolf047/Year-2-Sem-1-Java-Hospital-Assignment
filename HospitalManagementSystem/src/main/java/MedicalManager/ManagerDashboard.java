@@ -182,7 +182,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel18.setText("INPATIENT WARDS");
-        jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 120, -1));
+        jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, -1));
 
         usedBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         usedBedsLbl.setText("18 Beds In Use");
@@ -197,7 +197,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        jLabel15.setText("TOTAL REVENUE");
+        jLabel15.setText("BILLED REVENUE");
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
         revenueLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N

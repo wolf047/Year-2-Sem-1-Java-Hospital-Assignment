@@ -343,8 +343,8 @@ public class CasesDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCloseCase;
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnCloseCase;
     private javax.swing.JButton btnSaveSummary;
     private javax.swing.JButton btnViewConsultation;
     private javax.swing.JButton btnViewDiagnosticResult;

@@ -97,7 +97,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         boolean canEdit = doctor.canEditConsultation();
         txtVitalSigns.setEditable(canEdit);
         txtNotes.setEditable(canEdit);
-        btnCompleteConsultation.setEnabled(canEdit);
+        btnSaveProgress.setEnabled(canEdit);
         btnSaveDetails.setEnabled(canEdit);
         btnAddPrescription.setEnabled(canEdit);
         btnAddDiagRequest.setEnabled(canEdit);
@@ -200,9 +200,9 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         btnDeleteDiagRequest = new javax.swing.JButton();
         scrDiagnosticRequestsView = new javax.swing.JScrollPane();
         tblDiagnosticRequestsView = new javax.swing.JTable();
-        btnCompleteConsultation = new javax.swing.JButton();
+        btnSaveProgress = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        btnSaveDetails = new javax.swing.JButton();
+        btnCompleteConsultation1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Consultation Notes");
@@ -275,14 +275,14 @@ public class ConsultationsDialog extends javax.swing.JDialog {
 
         lblPrescriptionHeader.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         lblPrescriptionHeader.setText("Prescription:");
-        getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 466, 140, 22));
+        getContentPane().add(lblPrescriptionHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 416, 140, 22));
 
         btnAddPrescription.setBackground(new java.awt.Color(38, 117, 154));
         btnAddPrescription.setForeground(new java.awt.Color(255, 255, 255));
         btnAddPrescription.setText("Add Prescription");
         btnAddPrescription.setFocusPainted(false);
         btnAddPrescription.addActionListener(this::btnAddPrescription);
-        getContentPane().add(btnAddPrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 590, 200, 26));
+        getContentPane().add(btnAddPrescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 540, 200, 26));
 
         tblPrescriptionItemsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -303,23 +303,23 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         tblPrescriptionItemsView.getTableHeader().setReorderingAllowed(false);
         scrPrescriptionItemsView.setViewportView(tblPrescriptionItemsView);
 
-        getContentPane().add(scrPrescriptionItemsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 494, 520, 86));
+        getContentPane().add(scrPrescriptionItemsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 444, 520, 86));
 
         lblDiagnosticHeader.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         lblDiagnosticHeader.setText("Diagnostic Requests:");
-        getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 626, 170, 22));
+        getContentPane().add(lblDiagnosticHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 576, 170, 22));
 
         btnAddDiagRequest.setBackground(new java.awt.Color(38, 117, 154));
         btnAddDiagRequest.setForeground(new java.awt.Color(255, 255, 255));
         btnAddDiagRequest.setText("Add Request");
         btnAddDiagRequest.setFocusPainted(false);
         btnAddDiagRequest.addActionListener(this::btnAddDiagRequest);
-        getContentPane().add(btnAddDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 778, 200, 26));
+        getContentPane().add(btnAddDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 728, 200, 26));
 
         btnDeleteDiagRequest.setText("Delete Selected");
         btnDeleteDiagRequest.setFocusPainted(false);
         btnDeleteDiagRequest.addActionListener(this::btnDeleteDiagRequest);
-        getContentPane().add(btnDeleteDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 778, 200, 26));
+        getContentPane().add(btnDeleteDiagRequest, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 728, 200, 26));
 
         tblDiagnosticRequestsView.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -340,45 +340,39 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         tblDiagnosticRequestsView.getTableHeader().setReorderingAllowed(false);
         scrDiagnosticRequestsView.setViewportView(tblDiagnosticRequestsView);
 
-        getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 658, 520, 110));
+        getContentPane().add(scrDiagnosticRequestsView, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 608, 520, 110));
 
-        btnCompleteConsultation.setBackground(new java.awt.Color(38, 117, 154));
-        btnCompleteConsultation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnCompleteConsultation.setForeground(new java.awt.Color(255, 255, 255));
-        btnCompleteConsultation.setText("Complete Consultation");
-        btnCompleteConsultation.addActionListener(this::btnCompleteConsultation);
-        getContentPane().add(btnCompleteConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 250, 36));
+        btnSaveProgress.setBackground(new java.awt.Color(38, 117, 154));
+        btnSaveProgress.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSaveProgress.setForeground(new java.awt.Color(255, 255, 255));
+        btnSaveProgress.setText("Save Progress");
+        btnSaveProgress.addActionListener(this::btnSaveProgress);
+        getContentPane().add(btnSaveProgress, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 780, 250, 36));
 
         btnCancel.setBackground(new java.awt.Color(38, 117, 154));
         btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCancel.setForeground(new java.awt.Color(255, 255, 255));
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(this::btnCancel);
-        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 830, 250, 36));
+        getContentPane().add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 780, 250, 36));
 
-        btnSaveDetails.setBackground(new java.awt.Color(38, 117, 154));
-        btnSaveDetails.setForeground(new java.awt.Color(255, 255, 255));
-        btnSaveDetails.setText("Save Details");
-        btnSaveDetails.addActionListener(this::btnSaveDetails);
-        getContentPane().add(btnSaveDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 414, 140, 26));
+        btnCompleteConsultation1.setBackground(new java.awt.Color(38, 117, 154));
+        btnCompleteConsultation1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCompleteConsultation1.setForeground(new java.awt.Color(255, 255, 255));
+        btnCompleteConsultation1.setText("Complete Consultation");
+        btnCompleteConsultation1.addActionListener(this::btnCompleteConsultation1);
+        getContentPane().add(btnCompleteConsultation1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 830, 520, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCompleteConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation
+    private void btnSaveProgress(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProgress
         if (!saveEverything()) {
             return;
         }
         JOptionPane.showMessageDialog(this, "Consultation updated.");
         dispose();
-    }//GEN-LAST:event_btnCompleteConsultation
-
-    private void btnSaveDetails(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveDetails
-        if (!saveEverything()) {
-            return;
-        }
-        JOptionPane.showMessageDialog(this, "Details saved.");
-    }//GEN-LAST:event_btnSaveDetails
+    }//GEN-LAST:event_btnSaveProgress
 
     private void btnAddPrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPrescription
         if (!doctor.canEditConsultation()) {
@@ -439,6 +433,10 @@ public class ConsultationsDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnCancel
 
+    private void btnCompleteConsultation1(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation1
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCompleteConsultation1
+
 
     /**
      * @param args the command line arguments
@@ -481,9 +479,9 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnAddDiagRequest;
     private javax.swing.JButton btnAddPrescription;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnCompleteConsultation;
+    private javax.swing.JButton btnCompleteConsultation1;
     private javax.swing.JButton btnDeleteDiagRequest;
-    private javax.swing.JButton btnSaveDetails;
+    private javax.swing.JButton btnSaveProgress;
     private javax.swing.JButton btnViewCase;
     private javax.swing.JLabel lblComplaintHeader;
     private javax.swing.JLabel lblConsultHeader;

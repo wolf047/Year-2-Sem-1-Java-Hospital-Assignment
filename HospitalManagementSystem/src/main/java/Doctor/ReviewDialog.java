@@ -54,7 +54,7 @@ public class ReviewDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Review Details");
         setModal(true);
-        setPreferredSize(new java.awt.Dimension(460, 360));
+        setPreferredSize(new java.awt.Dimension(475, 380));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -78,8 +78,8 @@ public class ReviewDialog extends javax.swing.JDialog {
         lblCommentsHeader.setText("Comments:");
         getContentPane().add(lblCommentsHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 300, 20));
 
-        lblComments.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lblComments.setText("<html></html>");
+        lblComments.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         getContentPane().add(lblComments, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 184, 420, 100));
 
         btnClose.setBackground(new java.awt.Color(38, 117, 154));
@@ -87,7 +87,7 @@ public class ReviewDialog extends javax.swing.JDialog {
         btnClose.setForeground(new java.awt.Color(255, 255, 255));
         btnClose.setText("Close");
         btnClose.addActionListener(this::btnClose);
-        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 300, 250, 36));
+        getContentPane().add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 250, 36));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

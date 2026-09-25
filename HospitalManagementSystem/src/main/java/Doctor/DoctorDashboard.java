@@ -269,6 +269,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         lblRatingSummary = new javax.swing.JLabel();
         scrReviews = new javax.swing.JScrollPane();
         tblReviews = new javax.swing.JTable();
+        btnViewReviews = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HMS Doctor Portal");
@@ -672,7 +673,13 @@ public class DoctorDashboard extends javax.swing.JFrame {
         });
         scrReviews.setViewportView(tblReviews);
 
-        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 450));
+        pnlReviews.add(scrReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 580, 400));
+
+        btnViewReviews.setBackground(new java.awt.Color(38, 117, 154));
+        btnViewReviews.setForeground(new java.awt.Color(255, 255, 255));
+        btnViewReviews.setText("View Review Details");
+        btnViewReviews.addActionListener(this::btnViewReviews);
+        pnlReviews.add(btnViewReviews, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 200, 32));
 
         pnlContent.add(pnlReviews, "reviews");
 
@@ -753,6 +760,10 @@ public class DoctorDashboard extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tblCalendar
 
+    private void btnViewReviews(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReviews
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnViewReviews
+
     private void tblReviews(java.awt.event.MouseEvent evt) {
         if (evt.getClickCount() == 2) {
             openSelectedReview();
@@ -805,6 +816,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnResetProfile;
     private javax.swing.JButton btnSaveProfile;
     private javax.swing.JButton btnViewCaseDetails;
+    private javax.swing.JButton btnViewReviews;
     private javax.swing.JLabel lblCasesTitle;
     private javax.swing.JLabel lblConfirmPwd;
     private javax.swing.JLabel lblConsultationsTitle;

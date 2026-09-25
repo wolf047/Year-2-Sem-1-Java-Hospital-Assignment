@@ -293,6 +293,7 @@ public class Doctor extends User implements DoctorServices {
     // =====================================================================
     // SCHEDULE (doctor's own shift assignments)
     // =====================================================================
+    // Only today's and future shifts are shown; past shifts are left out.
     public ArrayList<Object[]> getSchedule() {
         ArrayList<Object[]> rows = new ArrayList<>();
         // Some ShiftDoctors.txt rows are missing the trailing "deleted" column,
@@ -302,6 +303,7 @@ public class Doctor extends User implements DoctorServices {
         if (assignments == null || shifts == null) {
             return rows;
         }
+        LocalDate today = LocalDate.now();
         for (ArrayList<String> a : assignments.values()) { // 0 shift_id, 1 doctor_id, 2 deleted (may be missing)
             if (a.size() > 2 && a.get(2).equals("1")) {
                 continue;
@@ -311,6 +313,15 @@ public class Doctor extends User implements DoctorServices {
             }
             ArrayList<String> s = shifts.get(Integer.parseInt(a.get(0))); // 1 date, 2 start, 3 end
             if (s == null) {
+                continue;
+            }
+            LocalDate shiftDate;
+            try {
+                shiftDate = LocalDate.parse(s.get(1), DATE);
+            } catch (Exception e) {
+                continue;
+            }
+            if (shiftDate.isBefore(today)) {
                 continue;
             }
             rows.add(new Object[]{s.get(1), s.get(2), s.get(3)});

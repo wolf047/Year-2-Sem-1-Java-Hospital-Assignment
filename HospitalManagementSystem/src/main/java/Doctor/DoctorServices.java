@@ -26,6 +26,7 @@ public interface DoctorServices {
 
     ArrayList<Object[]> getSchedule();
 
+    void finalizeAllConsultations();
     void loadWeek(int weekOffset);
     Object[][] getWeekRows();
     String[] getWeekHeaders();

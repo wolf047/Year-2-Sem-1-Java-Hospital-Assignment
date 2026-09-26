@@ -52,6 +52,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         });
 
         this.doctor = (Doctor) SessionUser.getCurrentUser();
+        doctor.finalizeAllConsultations();
 
         setLocationRelativeTo(null);
         lblWelcome.setText("Welcome, " + doctor.getFullName());

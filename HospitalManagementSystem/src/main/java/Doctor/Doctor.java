@@ -4,6 +4,7 @@ import HelperFunction.FileHandling;
 import Users.Role;
 import Users.User;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -248,14 +249,18 @@ public class Doctor extends User implements DoctorServices {
     }
 
     // "booked" and "incomplete" are both provisional: this brings either one to its finalized
-    // status once the relevant deadline has passed, and writes the change back to file.
-    //   - "booked", same day, slot end time reached: becomes "cancelled" (no details were ever
-    //     saved during the slot - if they had been, saveConsultationProgress() would already
-    //     have moved it to "incomplete").
-    //   - "booked" or "incomplete", the day after: "incomplete" always becomes "completed";
-    //     a still-"booked" consultation becomes "completed" if it somehow has details, else
-    //     "cancelled" (this is the same-day rule's fallback, for a day the doctor never opened
-    //     the app on).
+    // status once the relevant deadline has passed, and writes the change back to file. Safe to
+    // call repeatedly (idempotent) - called on every load of a consultation or its containing
+    // week, and meant to also be run as a standalone sweep (see finalizeAllConsultations()) as a
+    // stand-in for a daily job, since this desktop app has no background scheduler.
+    //   - "booked": becomes "cancelled" once the slot's end time has passed, but only if no
+    //     details were ever saved - if they had been, saveConsultationProgress() would already
+    //     have moved it to "incomplete" the moment it was saved. A "booked" consultation that
+    //     somehow has details (should not happen through normal app usage) is left alone; no
+    //     transition is defined for that case.
+    //   - "incomplete": becomes "completed" once the calendar day has rolled over since the slot
+    //     date - it remains editable for the rest of that same day regardless of the slot's end
+    //     time.
     // c is the consultation's field list (without its id).
     private void autoFinalizeConsultation(int consultId, ArrayList<String> c) {
         String status = c.get(5);
@@ -263,33 +268,26 @@ public class Doctor extends User implements DoctorServices {
             return;
         }
         LocalDate consultDate;
+        LocalTime slotEnd;
         try {
             consultDate = LocalDate.parse(c.get(7), DATE);
+            slotEnd = LocalTime.parse(c.get(9));
         } catch (Exception e) {
             return;
         }
-        LocalDate today = LocalDate.now();
         boolean hasDetails = !c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty();
 
         String newStatus;
-        if (today.isAfter(consultDate)) {
-            newStatus = status.equals("incomplete") ? "completed" : (hasDetails ? "completed" : "cancelled");
-        } else if (today.equals(consultDate) && status.equals("booked")) {
-            LocalTime slotEnd;
-            try {
-                slotEnd = LocalTime.parse(c.get(9));
-            } catch (Exception e) {
+        if (status.equals("incomplete")) {
+            if (!LocalDate.now().isAfter(consultDate)) {
                 return;
             }
-            if (LocalTime.now().isBefore(slotEnd)) {
-                return;
-            }
-            newStatus = hasDetails ? "completed" : "cancelled";
+            newStatus = "completed";
         } else {
-            return;
-        }
-        if (newStatus.equals(status)) {
-            return;
+            if (hasDetails || LocalDateTime.now().isBefore(LocalDateTime.of(consultDate, slotEnd))) {
+                return;
+            }
+            newStatus = "cancelled";
         }
         c.set(5, newStatus);
 
@@ -297,6 +295,24 @@ public class Doctor extends User implements DoctorServices {
         record.add(String.valueOf(consultId));
         record.addAll(c);
         FileHandling.editRecord("Consultations.txt", record);
+    }
+
+    // Runs autoFinalizeConsultation over every one of this doctor's own active consultations,
+    // not just the ones in a currently-visible week - a practical proxy for the spec's "daily
+    // job", since this desktop app has no background scheduler. Meant to be called once at
+    // dashboard start-up.
+    public void finalizeAllConsultations() {
+        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
+        if (consults == null) {
+            return;
+        }
+        for (Integer consultId : consults.keySet()) {
+            ArrayList<String> c = consults.get(consultId);
+            if (!c.get(1).equals(String.valueOf(this.user_id))) {
+                continue;
+            }
+            autoFinalizeConsultation(consultId, c);
+        }
     }
 
     // =====================================================================
@@ -751,9 +767,11 @@ public class Doctor extends User implements DoctorServices {
         return this.consultNotes;
     }
 
-    // Own, same-day, case-not-closed consultation that is either "booked" and currently within
-    // its slot (start time reached, end time not yet reached - autoFinalizeConsultation cancels
-    // it the moment the slot ends), or "incomplete" (editable for the rest of that day).
+    // Own, case-not-closed consultation that is either "booked" and its slot has started (no
+    // upper bound - autoFinalizeConsultation cancels it automatically once the slot ends with
+    // nothing ever saved, so a "booked" record reaching here past its end time just hasn't been
+    // swept yet), or "incomplete" on the same day it was saved (the day after, autoFinalize
+    // moves it to "completed").
     public boolean canEditConsultation() {
         if (this.currentConsultId == -1) {
             return false;
@@ -773,15 +791,12 @@ public class Doctor extends User implements DoctorServices {
         } catch (Exception e) {
             return false;
         }
-        if (!consultDateParsed.equals(LocalDate.now())) {
-            return false;
-        }
         if (this.consultStatus.equals("incomplete")) {
-            return true;
+            return consultDateParsed.equals(LocalDate.now());
         }
         try {
-            LocalTime now = LocalTime.now();
-            return !now.isBefore(LocalTime.parse(this.consultStart)) && now.isBefore(LocalTime.parse(this.consultEnd));
+            LocalDateTime slotStart = LocalDateTime.of(consultDateParsed, LocalTime.parse(this.consultStart));
+            return !LocalDateTime.now().isBefore(slotStart);
         } catch (Exception e) {
             return false;
         }

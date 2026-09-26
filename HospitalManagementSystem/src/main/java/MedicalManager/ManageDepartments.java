@@ -87,8 +87,8 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel4.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -194,7 +194,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         profileBtn.addActionListener(this::profileBtnActionPerformed);
         jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         clearBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         clearBtn.setText("Clear");

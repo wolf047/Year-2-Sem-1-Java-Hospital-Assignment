@@ -106,8 +106,8 @@ public class ManagerProfile extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -179,7 +179,7 @@ public class ManagerProfile extends javax.swing.JFrame {
         saveBtn.setForeground(new java.awt.Color(255, 255, 255));
         saveBtn.setText("Save Profile Changes");
         saveBtn.addActionListener(this::saveBtnActionPerformed);
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 490, -1, -1));
+        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 490, -1, 40));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
@@ -219,7 +219,7 @@ public class ManagerProfile extends javax.swing.JFrame {
         logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
         jPanel2.add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 50));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         phoneTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         getContentPane().add(phoneTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 300, -1));

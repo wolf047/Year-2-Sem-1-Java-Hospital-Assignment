@@ -200,8 +200,8 @@ public class ViewReports extends javax.swing.JFrame {
         jLabel4.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -301,7 +301,7 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane4.setViewportView(wardBedsTable);
 
-        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 700, 250));
+        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 730, 250));
 
         jPanel21.setBackground(new java.awt.Color(255, 255, 255));
         jPanel21.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -309,7 +309,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel22.setBackground(new java.awt.Color(255, 255, 255));
         jPanel21.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setText("TOTAL CAPACITY");
         jPanel21.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
@@ -325,7 +325,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel24.setBackground(new java.awt.Color(255, 255, 255));
         jPanel23.add(jPanel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel10.setText("AVAILABLE");
         jPanel23.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
@@ -341,7 +341,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel26.setBackground(new java.awt.Color(255, 255, 255));
         jPanel25.add(jPanel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
 
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel11.setText("CURRENTLY OCCUPIED");
         jPanel25.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
@@ -372,7 +372,7 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(consultationsTable);
 
-        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 690, 160));
+        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 720, 160));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Clinical Activity Summary");
@@ -391,7 +391,7 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(casesTable);
 
-        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 690, 140));
+        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 720, 140));
 
         jPanel13.setBackground(new java.awt.Color(255, 255, 255));
         jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -462,7 +462,7 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane5.setViewportView(reviewsTable);
 
-        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 720, 260));
+        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 740, 260));
 
         jPanel19.setBackground(new java.awt.Color(255, 255, 255));
         jPanel19.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -538,7 +538,7 @@ public class ViewReports extends javax.swing.JFrame {
         profileBtn.addActionListener(this::profileBtnActionPerformed);
         jPanel5.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
 
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 50));
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         pack();
         setLocationRelativeTo(null);

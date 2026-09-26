@@ -16,7 +16,7 @@ public class Doctor extends User implements DoctorServices {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-// FIELDS DECLARATION
+// VARIABLE DECLARATION
     // DOCTOR DETAILS
     private String department_id, specialization, off_day;
     private int practice_start_year;

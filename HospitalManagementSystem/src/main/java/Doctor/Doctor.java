@@ -170,9 +170,6 @@ public class Doctor extends User implements DoctorServices {
         }
 
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        if (users == null || !users.containsKey(this.user_id)) {
-            return "Your account could not be found.";
-        }
         for (Integer id : users.keySet()) {
             if (id != this.user_id && users.get(id).get(5).equalsIgnoreCase(newEmail)) {
                 return "This email is already used by another account.";

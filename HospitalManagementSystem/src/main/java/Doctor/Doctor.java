@@ -16,7 +16,7 @@ public class Doctor extends User implements DoctorServices {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-// FIELDS DECLARATION   
+// FIELDS DECLARATION
     // DOCTOR DETAILS
     private String department_id, specialization, off_day;
     private int practice_start_year;
@@ -26,7 +26,7 @@ public class Doctor extends User implements DoctorServices {
     private LocalDate weekStart;
     private ArrayList<Object[]> weekRows = new ArrayList<>();
     private ArrayList<Integer> weekConsultIds = new ArrayList<>();
-    
+
     // CONSULTATION DIALOG
     private int currentConsultId = -1;
     private String consultCaseId, consultDoctorId, consultComplaint, consultVitals, consultNotes,
@@ -44,7 +44,7 @@ public class Doctor extends User implements DoctorServices {
     private ArrayList<Object[]> caseTestRows = new ArrayList<>();
     private ArrayList<String> caseTestDetails = new ArrayList<>();
 
-    // PRESCRIPTION DIAGNOSTIC SEARCH RESULTS 
+    // PRESCRIPTION DIAGNOSTIC SEARCH RESULTS
     private ArrayList<Integer> drugResultIds = new ArrayList<>();
     private ArrayList<Integer> serviceResultIds = new ArrayList<>();
 
@@ -68,7 +68,7 @@ public class Doctor extends User implements DoctorServices {
         if (users == null || !users.containsKey(this.user_id)) {
             return;
         }
-        
+
         // Users(user_id, first_name, last_name, dob, gender, phone, email, password, role, deleted)
         ArrayList<String> userValue = users.get(this.user_id);
         this.first_name = userValue.get(0);
@@ -103,107 +103,7 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-    public String getFullName() {
-        return this.first_name + " " + this.last_name;
-    }
-
-    public String getFirst() {
-        return this.first_name;
-    }
-
-    public String getLast() {
-        return this.last_name;
-    }
-
-    public String getPhone() {
-        return this.phone;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    // prepend prefix
-    public String getDoctorCode() {
-        return String.format("DOC%03d", this.user_id);
-    }
-
-    public String getDepartmentName() {
-        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readAllRecords("Departments.txt");
-        if (departments == null || this.department_id.isEmpty()) {
-            return "";
-        }
-        // Departments(department_id, department_name, description, manager_id, deleted)
-        ArrayList<String> departmentValue = departments.get(Integer.parseInt(this.department_id));
-        if (departmentValue == null) {
-            return "";
-        }
-        return departmentValue.get(0);
-    }
-
-    public String getSpecialization() {
-        return this.specialization;
-    }
-
-    public String getOffDayText() {
-        if (this.off_day == null || this.off_day.isEmpty()) {
-            return "";
-        }
-        return capitalize(this.off_day);
-    }
-
-// PROFILE
-    /* 
-    successful save: null
-    error: String error message
-    */
-    public String saveProfile(String phone, String newEmail, String current, String newPwd, String confirm) {
-        if (!phone.matches("01\\d-\\d{7,8}")) {
-            return "Phone must look like 012-3456789.";
-        }
-        if (!newEmail.matches("[A-Za-z0-9._-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.(com|net|org|edu|gov|my)")) {
-            return "Please enter a valid email.";
-        }
-
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        for (Integer id : users.keySet()) {
-            if (id != this.user_id && users.get(id).get(5).equalsIgnoreCase(newEmail)) {
-                return "This email is already used by another account.";
-            }
-        }
-
-        String newPassword = users.get(this.user_id).get(6);
-        if (!current.isEmpty() || !newPwd.isEmpty() || !confirm.isEmpty()) {
-            if (!current.equals(newPassword)) {
-                return "Current password is incorrect.";
-            }
-            if (newPwd.length() < 8) {
-                return "New password must be at least 8 characters long.";
-            }
-            if (newPwd.contains("`")) {
-                return "Password cannot contain a backtick (`) character.";
-            }
-            if (!newPwd.equals(confirm)) {
-                return "New passwords do not match.";
-            }
-            newPassword = newPwd;
-        }
-
-        ArrayList<String> userRecord = new ArrayList<>();
-        userRecord.add(String.valueOf(this.user_id));
-        userRecord.addAll(users.get(this.user_id));
-        userRecord.set(5, phone);
-        userRecord.set(6, newEmail);
-        userRecord.set(7, newPassword);
-        FileHandling.editRecord("Users.txt", userRecord);
-
-        this.phone = phone;
-        this.email = newEmail;
-        this.password = newPassword;
-        return null;
-    }
-
-// HELPER FUNCTIONS
+// HELPERS AND MISC
     private String capitalize(String text) {
         if (text == null || text.isEmpty()) {
             return text;
@@ -233,20 +133,8 @@ public class Doctor extends User implements DoctorServices {
         return users.get(id).get(0) + " " + users.get(id).get(1);
     }
 
-    // case has close_date: true
-    private boolean isCaseClosed(String caseId) {
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        if (cases == null) {
-            return false;
-        }
-        ArrayList<String> caseValue = cases.get(Integer.parseInt(caseId));
-        if (caseValue == null) {
-            return false;
-        }
-        return !caseValue.get(3).isEmpty();
-    }
-
-    // updates consultation status with reference to date and consultation details 
+// CONSULTATION DASHBOARD
+    // updates consultation status with reference to date and consultation details
     private void autoFinalizeConsultation(int consultId, ArrayList<String> consultationValue) {
         // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
         String status = consultationValue.get(5); // consultation_status
@@ -283,7 +171,7 @@ public class Doctor extends User implements DoctorServices {
         FileHandling.editRecord("Consultations.txt", consultationRecord);
     }
 
-    
+
     public void finalizeAllConsultations() {
         TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
         if (consultations == null) {
@@ -298,41 +186,6 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-
-// SCHEDULE
-    public ArrayList<Object[]> getSchedule() {
-        ArrayList<Object[]> rows = new ArrayList<>();
-        // ShiftDoctors(assignment_id, shift_id, doctor_id, deleted)
-        // Shifts(shift_id, department_id, date, start_time, end_time, deleted)
-        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
-        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
-        if (assignments == null || shifts == null) {
-            return rows;
-        }
-        LocalDate today = LocalDate.now();
-        for (ArrayList<String> assignmentValue : assignments.values()) {
-            if (!assignmentValue.get(1).equals(String.valueOf(this.user_id))) {
-                continue;
-            }
-            ArrayList<String> shiftValue = shifts.get(Integer.parseInt(assignmentValue.get(0)));
-            if (shiftValue == null) {
-                continue;
-            }
-            LocalDate shiftDate;
-            try {
-                shiftDate = LocalDate.parse(shiftValue.get(1), DATE);
-            } catch (Exception e) {
-                continue;
-            }
-            if (shiftDate.isBefore(today)) {
-                continue;
-            }
-            rows.add(new Object[]{shiftValue.get(1), shiftValue.get(2), shiftValue.get(3)});
-        }
-        return rows;
-    }
-
-// CONSULTATION
     public void loadWeek(int weekOffset) {
         // weekOffset = -1 previous week, 0 stay on current week, +1 next week
         this.weekOffset += weekOffset;
@@ -389,264 +242,20 @@ public class Doctor extends User implements DoctorServices {
         return weekConsultIds.get(row);
     }
 
-// CASES
-    public ArrayList<Object[]> getCases() {
-        caseRows.clear();
-        caseIds.clear();
-
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readActiveRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
-        if (cases == null) {
-            return caseRows;
-        }
-
-        TreeSet<Integer> involvedCaseIds = new TreeSet<>();
-        if (consultations != null) {
-            for (ArrayList<String> consultationValue : consultations.values()) { 
-                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
-                if (consultationValue.get(1).equals(String.valueOf(this.user_id))) {
-                    involvedCaseIds.add(Integer.parseInt(consultationValue.get(0)));
-                }
-            }
-        }
-
-        for (Integer caseId : cases.keySet()) {
-            // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
-            ArrayList<String> caseValue = cases.get(caseId);
-            boolean inCharge = caseValue.get(1).equals(String.valueOf(this.user_id));
-            if (!inCharge && !involvedCaseIds.contains(caseId)) {
-                continue;
-            }
-            String status = "Open";
-            if (!caseValue.get(3).isEmpty()) { // close_date
-                status = "Closed";
-            }
-            caseRows.add(new Object[]{caseId, getPatientName(caseValue.get(0)), getDoctorName(caseValue.get(1)),
-                capitalize(caseValue.get(4)), capitalize(caseValue.get(5)), caseValue.get(2), caseValue.get(3), status});
-            caseIds.add(caseId);
-        }
-        return caseRows;
-    }
-
-    public int getCaseId(int row) {
-        if (row < 0 || row >= caseIds.size()) {
-            return -1;
-        }
-        return caseIds.get(row);
-    }
-
-    public boolean loadCase(int caseId) {
-        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        if (cases == null || !cases.containsKey(caseId)) {
-            return false;
-        }
-        
-        // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
-        ArrayList<String> caseValue = cases.get(caseId);
-        if (caseValue.get(7).equals("1")) {
-            return false;
-        }
-        this.currentCaseId = caseId;
-        this.casePatientId = caseValue.get(0);
-        this.caseDoctorInCharge = caseValue.get(1);
-        this.caseOpenDate = caseValue.get(2);
-        this.caseCloseDate = caseValue.get(3);
-        this.caseCategory = caseValue.get(4);
-        this.caseType = caseValue.get(5);
-        this.caseSummary = caseValue.get(6);
-
-        caseConsultRows.clear();
-        caseConsultIds.clear();
-        caseTestRows.clear();
-        caseTestDetails.clear();
-
-        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
-        TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
-        TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
-
-        if (consultations != null) {
-            for (Integer consultId : consultations.keySet()) {
-                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
-                ArrayList<String> consultationValue = consultations.get(consultId);
-                if (!consultationValue.get(0).equals(String.valueOf(caseId))) {
-                    continue;
-                }
-                autoFinalizeConsultation(consultId, consultationValue);
-                caseConsultRows.add(new Object[]{consultationValue.get(7), getDoctorName(consultationValue.get(1)), consultationValue.get(2), capitalize(consultationValue.get(5))});
-                caseConsultIds.add(consultId);
-
-                if (requests != null && services != null) {
-                    for (ArrayList<String> requestValue : requests.values()) {
-                        // DiagnosticServiceRequests(request_id, consultation_id, service_id, request_date, request_remarks, result_date, results, deleted)
-                        // DiagnosticServiceCatalogue(service_id, service_name, category, type, price, deleted)
-                        if (!requestValue.get(0).equals(String.valueOf(consultId))) {
-                            continue;
-                        }
-                        String serviceName = "Unknown";
-                        ArrayList<String> serviceValue = services.get(Integer.parseInt(requestValue.get(1)));
-                        if (serviceValue != null) {
-                            serviceName = serviceValue.get(0);
-                        }
-                        String status = "Pending";
-                        String results = "Not available yet";
-                        if (!requestValue.get(4).isEmpty()) {
-                            status = "Ready";
-                            results = requestValue.get(5);
-                        }
-                        caseTestRows.add(new Object[]{serviceName, requestValue.get(2), status, requestValue.get(4)});
-                        caseTestDetails.add(serviceName
-                                + "\n\nRequested by: " + getDoctorName(consultationValue.get(1)) + " on " + requestValue.get(2)
-                                + "\n\nRemarks: " + requestValue.get(3)
-                                + "\n\nResults: " + results);
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    public String getCaseTitle() {
-        return "Case #" + this.currentCaseId + " - " + capitalize(this.caseCategory) + " (" + capitalize(this.caseType) + ")";
-    }
-
-    public String getCaseMeta() {
-        return "Patient: " + getPatientName(this.casePatientId) + "  |  Opened: " + this.caseOpenDate;
-    }
-
-    public String getCaseRoleNote() {
-        if (!isCaseOpen()) {
-            return "Case is closed and cannot be edited.";
-        }
-        if (isCaseInCharge()) {
-            return "Doctor-in-charge.";
-        }
-        return "View-only as contributing doctor. Only " + getDoctorName(this.caseDoctorInCharge) + " can edit this case.";
-    }
-
-    public boolean isCaseOpen() {
-        return this.caseCloseDate == null || this.caseCloseDate.isEmpty();
-    }
-
-    public boolean isCaseInCharge() {
-        return this.caseDoctorInCharge != null && this.caseDoctorInCharge.equals(String.valueOf(this.user_id));
-    }
-
-    public String[] getCasePatient() {
-        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
-        TreeMap<Integer, ArrayList<String>> patients = FileHandling.readAllRecords("Patients.txt");
-        int patientId = Integer.parseInt(this.casePatientId);
-
-        String age = "-";
-        String gender = "-";
-        if (users != null && users.containsKey(patientId)) {
-            ArrayList<String> userValue = users.get(patientId);
-            gender = userValue.get(3);
-            try {
-                LocalDate dob = LocalDate.parse(userValue.get(2), DATE);
-                age = String.valueOf(Period.between(dob, LocalDate.now()).getYears());
-            } catch (Exception e) {
-                age = "-";
-            }
-        }
-        String bloodType = "-";
-        String allergies = "-";
-        if (patients != null && patients.containsKey(patientId)) {
-            ArrayList<String> patientValue = patients.get(patientId);
-            bloodType = patientValue.get(0);
-            allergies = patientValue.get(1);
-        }
-        return new String[]{age, gender, bloodType, allergies};
-    }
-
-    public String getCaseSummary() {
-        return this.caseSummary;
-    }
-
-    public ArrayList<Object[]> getCaseConsultRows() {
-        return caseConsultRows;
-    }
-
-    public int getCaseConsultId(int row) {
-        if (row < 0 || row >= caseConsultIds.size()) {
-            return -1;
-        }
-        return caseConsultIds.get(row);
-    }
-
-    public ArrayList<Object[]> getCaseTestRows() {
-        return caseTestRows;
-    }
-
-    public String getCaseTestDetail(int row) {
-        if (row < 0 || row >= caseTestDetails.size()) {
-            return "";
-        }
-        return caseTestDetails.get(row);
-    }
-
-    /* 
-    successful save: null
-    error: String error message
-    */
-    public String saveCaseSummary(String summary) {
-        if (!isCaseInCharge()) {
-            return "Only doctor-in-charge can edit case summary.";
-        }
-        if (!isCaseOpen()) {
-            return "Case is closed and cannot be edited.";
-        }
-        if (summary.contains("`")) {
-            return "Summary cannot contain a backtick (`) character.";
-        }
-
-        ArrayList<String> caseRecord = new ArrayList<>();
-        caseRecord.add(String.valueOf(this.currentCaseId));
-        caseRecord.add(this.casePatientId);
-        caseRecord.add(this.caseDoctorInCharge);
-        caseRecord.add(this.caseOpenDate);
-        caseRecord.add(this.caseCloseDate);
-        caseRecord.add(this.caseCategory);
-        caseRecord.add(this.caseType);
-        caseRecord.add(summary.trim());
-        caseRecord.add("0");
-        FileHandling.editRecord("Cases.txt", caseRecord);
-
-        this.caseSummary = summary.trim();
-        return null;
-    }
-
-    /* 
-    successful save: null
-    error: String error message
-    */
-    public String closeCase() {
-        if (!isCaseInCharge()) {
-            return "Only doctor-in-charge can close case.";
-        }
-        if (!isCaseOpen()) {
-            return "Case is already closed.";
-        }
-        if (this.caseSummary == null || this.caseSummary.trim().isEmpty()) {
-            return "Please write a case summary before closing this case.";
-        }
-
-        ArrayList<String> caseRecord = new ArrayList<>();
-        caseRecord.add(String.valueOf(this.currentCaseId));
-        caseRecord.add(this.casePatientId);
-        caseRecord.add(this.caseDoctorInCharge);
-        caseRecord.add(this.caseOpenDate);
-        caseRecord.add(today());
-        caseRecord.add(this.caseCategory);
-        caseRecord.add(this.caseType);
-        caseRecord.add(this.caseSummary);
-        caseRecord.add("0");
-        FileHandling.editRecord("Cases.txt", caseRecord);
-
-        this.caseCloseDate = today();
-        return null;
-    }
-
 // CONSULTATION DIALOG
+    // case has close_date: true
+    private boolean isCaseClosed(String caseId) {
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        if (cases == null) {
+            return false;
+        }
+        ArrayList<String> caseValue = cases.get(Integer.parseInt(caseId));
+        if (caseValue == null) {
+            return false;
+        }
+        return !caseValue.get(3).isEmpty();
+    }
+
     public boolean loadConsultation(int consultId) {
         TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readAllRecords("Consultations.txt");
         if (consultations == null || !consultations.containsKey(consultId)) {
@@ -760,7 +369,7 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-    /* 
+    /*
     successful save: null
     error: String error message
     */
@@ -805,7 +414,7 @@ public class Doctor extends User implements DoctorServices {
         return saveConsultation(vitals, notes, "completed");
     }
 
-// PRESCRIPTIONS
+// PRESCRIPTION DIALOG
     public ArrayList<String> getDrugForms() {
         ArrayList<String> selectionForms = new ArrayList<>();
         selectionForms.add("All");
@@ -985,14 +594,14 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-// DIAGNOSTIC REQUESTS
+// DIAGNOSTIC DIALOG
     public ArrayList<String> getServiceCategories() {
         ArrayList<String> selectionCategories = new ArrayList<>();
         selectionCategories.add("All");
         TreeSet<String> catalogueCategories = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> serviceValue : services.values()) { 
+            for (ArrayList<String> serviceValue : services.values()) {
                 catalogueCategories.add(serviceValue.get(1));
             }
         }
@@ -1006,7 +615,7 @@ public class Doctor extends User implements DoctorServices {
         TreeSet<String> catalogueTypes = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> serviceValue : services.values()) { 
+            for (ArrayList<String> serviceValue : services.values()) {
                 if (category != null && !category.equalsIgnoreCase("All") && !serviceValue.get(1).equalsIgnoreCase(category)) {
                     continue;
                 }
@@ -1031,7 +640,7 @@ public class Doctor extends User implements DoctorServices {
             search = searchText.trim().toLowerCase();
         }
         for (Integer serviceId : services.keySet()) {
-            ArrayList<String> serviceValue = services.get(serviceId); 
+            ArrayList<String> serviceValue = services.get(serviceId);
             if (searchCategory != null && !searchCategory.equalsIgnoreCase("All") && !serviceValue.get(1).equalsIgnoreCase(searchCategory)) {
                 continue;
             }
@@ -1114,16 +723,16 @@ public class Doctor extends User implements DoctorServices {
         return rows;
     }
 
-    /* 
+    /*
     successful save: null
     error: String error message
-    */    
+    */
     public String deleteDiagnosticRequest(int requestId) {
         ArrayList<String> requestRecord = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", requestId);
         if (requestRecord == null) {
             return "This diagnostic request could not be found.";
         }
-        int consultId = Integer.parseInt(requestRecord.get(1)); 
+        int consultId = Integer.parseInt(requestRecord.get(1));
         if (!loadConsultation(consultId) || !canEditConsultation()) {
             return "You cannot delete diagnostic requests for this consultation.";
         }
@@ -1131,7 +740,298 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-// REVIEWS
+// SCHEDULE
+    public ArrayList<Object[]> getSchedule() {
+        ArrayList<Object[]> rows = new ArrayList<>();
+        // ShiftDoctors(assignment_id, shift_id, doctor_id, deleted)
+        // Shifts(shift_id, department_id, date, start_time, end_time, deleted)
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
+        if (assignments == null || shifts == null) {
+            return rows;
+        }
+        LocalDate today = LocalDate.now();
+        for (ArrayList<String> assignmentValue : assignments.values()) {
+            if (!assignmentValue.get(1).equals(String.valueOf(this.user_id))) {
+                continue;
+            }
+            ArrayList<String> shiftValue = shifts.get(Integer.parseInt(assignmentValue.get(0)));
+            if (shiftValue == null) {
+                continue;
+            }
+            LocalDate shiftDate;
+            try {
+                shiftDate = LocalDate.parse(shiftValue.get(1), DATE);
+            } catch (Exception e) {
+                continue;
+            }
+            if (shiftDate.isBefore(today)) {
+                continue;
+            }
+            rows.add(new Object[]{shiftValue.get(1), shiftValue.get(2), shiftValue.get(3)});
+        }
+        return rows;
+    }
+
+// CASE
+    public ArrayList<Object[]> getCases() {
+        caseRows.clear();
+        caseIds.clear();
+
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readActiveRecords("Cases.txt");
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
+        if (cases == null) {
+            return caseRows;
+        }
+
+        TreeSet<Integer> involvedCaseIds = new TreeSet<>();
+        if (consultations != null) {
+            for (ArrayList<String> consultationValue : consultations.values()) {
+                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+                if (consultationValue.get(1).equals(String.valueOf(this.user_id))) {
+                    involvedCaseIds.add(Integer.parseInt(consultationValue.get(0)));
+                }
+            }
+        }
+
+        for (Integer caseId : cases.keySet()) {
+            // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
+            ArrayList<String> caseValue = cases.get(caseId);
+            boolean inCharge = caseValue.get(1).equals(String.valueOf(this.user_id));
+            if (!inCharge && !involvedCaseIds.contains(caseId)) {
+                continue;
+            }
+            String status = "Open";
+            if (!caseValue.get(3).isEmpty()) { // close_date
+                status = "Closed";
+            }
+            caseRows.add(new Object[]{caseId, getPatientName(caseValue.get(0)), getDoctorName(caseValue.get(1)),
+                capitalize(caseValue.get(4)), capitalize(caseValue.get(5)), caseValue.get(2), caseValue.get(3), status});
+            caseIds.add(caseId);
+        }
+        return caseRows;
+    }
+
+    public int getCaseId(int row) {
+        if (row < 0 || row >= caseIds.size()) {
+            return -1;
+        }
+        return caseIds.get(row);
+    }
+
+// CASE DIALOG
+    public boolean loadCase(int caseId) {
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
+        if (cases == null || !cases.containsKey(caseId)) {
+            return false;
+        }
+
+        // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
+        ArrayList<String> caseValue = cases.get(caseId);
+        if (caseValue.get(7).equals("1")) {
+            return false;
+        }
+        this.currentCaseId = caseId;
+        this.casePatientId = caseValue.get(0);
+        this.caseDoctorInCharge = caseValue.get(1);
+        this.caseOpenDate = caseValue.get(2);
+        this.caseCloseDate = caseValue.get(3);
+        this.caseCategory = caseValue.get(4);
+        this.caseType = caseValue.get(5);
+        this.caseSummary = caseValue.get(6);
+
+        caseConsultRows.clear();
+        caseConsultIds.clear();
+        caseTestRows.clear();
+        caseTestDetails.clear();
+
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
+        TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
+        TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
+
+        if (consultations != null) {
+            for (Integer consultId : consultations.keySet()) {
+                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+                ArrayList<String> consultationValue = consultations.get(consultId);
+                if (!consultationValue.get(0).equals(String.valueOf(caseId))) {
+                    continue;
+                }
+                autoFinalizeConsultation(consultId, consultationValue);
+                caseConsultRows.add(new Object[]{consultationValue.get(7), getDoctorName(consultationValue.get(1)), consultationValue.get(2), capitalize(consultationValue.get(5))});
+                caseConsultIds.add(consultId);
+
+                if (requests != null && services != null) {
+                    for (ArrayList<String> requestValue : requests.values()) {
+                        // DiagnosticServiceRequests(request_id, consultation_id, service_id, request_date, request_remarks, result_date, results, deleted)
+                        // DiagnosticServiceCatalogue(service_id, service_name, category, type, price, deleted)
+                        if (!requestValue.get(0).equals(String.valueOf(consultId))) {
+                            continue;
+                        }
+                        String serviceName = "Unknown";
+                        ArrayList<String> serviceValue = services.get(Integer.parseInt(requestValue.get(1)));
+                        if (serviceValue != null) {
+                            serviceName = serviceValue.get(0);
+                        }
+                        String status = "Pending";
+                        String results = "Not available yet";
+                        if (!requestValue.get(4).isEmpty()) {
+                            status = "Ready";
+                            results = requestValue.get(5);
+                        }
+                        caseTestRows.add(new Object[]{serviceName, requestValue.get(2), status, requestValue.get(4)});
+                        caseTestDetails.add(serviceName
+                                + "\n\nRequested by: " + getDoctorName(consultationValue.get(1)) + " on " + requestValue.get(2)
+                                + "\n\nRemarks: " + requestValue.get(3)
+                                + "\n\nResults: " + results);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public String getCaseTitle() {
+        return "Case #" + this.currentCaseId + " - " + capitalize(this.caseCategory) + " (" + capitalize(this.caseType) + ")";
+    }
+
+    public String getCaseMeta() {
+        return "Patient: " + getPatientName(this.casePatientId) + "  |  Opened: " + this.caseOpenDate;
+    }
+
+    public String getCaseRoleNote() {
+        if (!isCaseOpen()) {
+            return "Case is closed and cannot be edited.";
+        }
+        if (isCaseInCharge()) {
+            return "Doctor-in-charge.";
+        }
+        return "View-only as contributing doctor. Only " + getDoctorName(this.caseDoctorInCharge) + " can edit this case.";
+    }
+
+    public boolean isCaseOpen() {
+        return this.caseCloseDate == null || this.caseCloseDate.isEmpty();
+    }
+
+    public boolean isCaseInCharge() {
+        return this.caseDoctorInCharge != null && this.caseDoctorInCharge.equals(String.valueOf(this.user_id));
+    }
+
+    public String[] getCasePatient() {
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
+        TreeMap<Integer, ArrayList<String>> patients = FileHandling.readAllRecords("Patients.txt");
+        int patientId = Integer.parseInt(this.casePatientId);
+
+        String age = "-";
+        String gender = "-";
+        if (users != null && users.containsKey(patientId)) {
+            ArrayList<String> userValue = users.get(patientId);
+            gender = userValue.get(3);
+            try {
+                LocalDate dob = LocalDate.parse(userValue.get(2), DATE);
+                age = String.valueOf(Period.between(dob, LocalDate.now()).getYears());
+            } catch (Exception e) {
+                age = "-";
+            }
+        }
+        String bloodType = "-";
+        String allergies = "-";
+        if (patients != null && patients.containsKey(patientId)) {
+            ArrayList<String> patientValue = patients.get(patientId);
+            bloodType = patientValue.get(0);
+            allergies = patientValue.get(1);
+        }
+        return new String[]{age, gender, bloodType, allergies};
+    }
+
+    public String getCaseSummary() {
+        return this.caseSummary;
+    }
+
+    public ArrayList<Object[]> getCaseConsultRows() {
+        return caseConsultRows;
+    }
+
+    public int getCaseConsultId(int row) {
+        if (row < 0 || row >= caseConsultIds.size()) {
+            return -1;
+        }
+        return caseConsultIds.get(row);
+    }
+
+    public ArrayList<Object[]> getCaseTestRows() {
+        return caseTestRows;
+    }
+
+    public String getCaseTestDetail(int row) {
+        if (row < 0 || row >= caseTestDetails.size()) {
+            return "";
+        }
+        return caseTestDetails.get(row);
+    }
+
+    /*
+    successful save: null
+    error: String error message
+    */
+    public String saveCaseSummary(String summary) {
+        if (!isCaseInCharge()) {
+            return "Only doctor-in-charge can edit case summary.";
+        }
+        if (!isCaseOpen()) {
+            return "Case is closed and cannot be edited.";
+        }
+        if (summary.contains("`")) {
+            return "Summary cannot contain a backtick (`) character.";
+        }
+
+        ArrayList<String> caseRecord = new ArrayList<>();
+        caseRecord.add(String.valueOf(this.currentCaseId));
+        caseRecord.add(this.casePatientId);
+        caseRecord.add(this.caseDoctorInCharge);
+        caseRecord.add(this.caseOpenDate);
+        caseRecord.add(this.caseCloseDate);
+        caseRecord.add(this.caseCategory);
+        caseRecord.add(this.caseType);
+        caseRecord.add(summary.trim());
+        caseRecord.add("0");
+        FileHandling.editRecord("Cases.txt", caseRecord);
+
+        this.caseSummary = summary.trim();
+        return null;
+    }
+
+    /*
+    successful save: null
+    error: String error message
+    */
+    public String closeCase() {
+        if (!isCaseInCharge()) {
+            return "Only doctor-in-charge can close case.";
+        }
+        if (!isCaseOpen()) {
+            return "Case is already closed.";
+        }
+        if (this.caseSummary == null || this.caseSummary.trim().isEmpty()) {
+            return "Please write a case summary before closing this case.";
+        }
+
+        ArrayList<String> caseRecord = new ArrayList<>();
+        caseRecord.add(String.valueOf(this.currentCaseId));
+        caseRecord.add(this.casePatientId);
+        caseRecord.add(this.caseDoctorInCharge);
+        caseRecord.add(this.caseOpenDate);
+        caseRecord.add(today());
+        caseRecord.add(this.caseCategory);
+        caseRecord.add(this.caseType);
+        caseRecord.add(this.caseSummary);
+        caseRecord.add("0");
+        FileHandling.editRecord("Cases.txt", caseRecord);
+
+        this.caseCloseDate = today();
+        return null;
+    }
+
+// REVIEW DASHBOARD
     public ArrayList<Object[]> getReviews() {
         ArrayList<Object[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
@@ -1140,9 +1040,9 @@ public class Doctor extends User implements DoctorServices {
         if (reviews == null || consultations == null || cases == null) {
             return rows;
         }
-        for (ArrayList<String> reviewValue : reviews.values()) { 
+        for (ArrayList<String> reviewValue : reviews.values()) {
             int consultId = Integer.parseInt(reviewValue.get(0));
-            ArrayList<String> consultationValue = consultations.get(consultId); 
+            ArrayList<String> consultationValue = consultations.get(consultId);
             if (consultationValue == null || !consultationValue.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
@@ -1167,5 +1067,105 @@ public class Doctor extends User implements DoctorServices {
         }
         double average = (double) total / reviews.size();
         return String.format("Average rating: %.1f out of 5 (%d review%s).", average, reviews.size(), reviews.size() == 1 ? "" : "s");
+    }
+
+// PROFILE
+    public String getFullName() {
+        return this.first_name + " " + this.last_name;
+    }
+
+    public String getFirst() {
+        return this.first_name;
+    }
+
+    public String getLast() {
+        return this.last_name;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    // prepend prefix
+    public String getDoctorCode() {
+        return String.format("DOC%03d", this.user_id);
+    }
+
+    public String getDepartmentName() {
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readAllRecords("Departments.txt");
+        if (departments == null || this.department_id.isEmpty()) {
+            return "";
+        }
+        // Departments(department_id, department_name, description, manager_id, deleted)
+        ArrayList<String> departmentValue = departments.get(Integer.parseInt(this.department_id));
+        if (departmentValue == null) {
+            return "";
+        }
+        return departmentValue.get(0);
+    }
+
+    public String getSpecialization() {
+        return this.specialization;
+    }
+
+    public String getOffDayText() {
+        if (this.off_day == null || this.off_day.isEmpty()) {
+            return "";
+        }
+        return capitalize(this.off_day);
+    }
+
+    /*
+    successful save: null
+    error: String error message
+    */
+    public String saveProfile(String phone, String newEmail, String current, String newPwd, String confirm) {
+        if (!phone.matches("01\\d-\\d{7,8}")) {
+            return "Phone must look like 012-3456789.";
+        }
+        if (!newEmail.matches("[A-Za-z0-9._-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.(com|net|org|edu|gov|my)")) {
+            return "Please enter a valid email.";
+        }
+
+        TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
+        for (Integer id : users.keySet()) {
+            if (id != this.user_id && users.get(id).get(5).equalsIgnoreCase(newEmail)) {
+                return "This email is already used by another account.";
+            }
+        }
+
+        String newPassword = users.get(this.user_id).get(6);
+        if (!current.isEmpty() || !newPwd.isEmpty() || !confirm.isEmpty()) {
+            if (!current.equals(newPassword)) {
+                return "Current password is incorrect.";
+            }
+            if (newPwd.length() < 8) {
+                return "New password must be at least 8 characters long.";
+            }
+            if (newPwd.contains("`")) {
+                return "Password cannot contain a backtick (`) character.";
+            }
+            if (!newPwd.equals(confirm)) {
+                return "New passwords do not match.";
+            }
+            newPassword = newPwd;
+        }
+
+        ArrayList<String> userRecord = new ArrayList<>();
+        userRecord.add(String.valueOf(this.user_id));
+        userRecord.addAll(users.get(this.user_id));
+        userRecord.set(5, phone);
+        userRecord.set(6, newEmail);
+        userRecord.set(7, newPassword);
+        FileHandling.editRecord("Users.txt", userRecord);
+
+        this.phone = phone;
+        this.email = newEmail;
+        this.password = newPassword;
+        return null;
     }
 }

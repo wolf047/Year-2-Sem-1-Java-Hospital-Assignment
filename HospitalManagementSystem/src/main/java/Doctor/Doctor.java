@@ -374,10 +374,6 @@ public class Doctor extends User implements DoctorServices {
         return weekRows.toArray(new Object[0][]);
     }
 
-    public String[] getWeekHeaders() {
-        return new String[]{"Date", "Case ID", "Time Slot", "Complaint", "Room ID", "Status"};
-    }
-
     public String getWeekRange() {
         if (this.weekStart == null) {
             return "Week of —";
@@ -386,7 +382,7 @@ public class Doctor extends User implements DoctorServices {
         return this.weekStart.format(label) + " - " + this.weekStart.plusDays(6).format(label);
     }
 
-    public int getWeekConsultId(int row, int col) {
+    public int getWeekConsultId(int row) {
         if (row < 0 || row >= weekConsultIds.size()) {
             return -1;
         }

@@ -584,13 +584,13 @@ public class Doctor extends User implements DoctorServices {
         return caseTestDetails.get(row);
     }
 
-    // Saves the case summary. Returns null if saved, or the error message.
+    
     public String saveCaseSummary(String summary) {
         if (!isCaseInCharge()) {
-            return "Only the doctor in charge can edit the case summary.";
+            return "Only doctor-in-charge can edit case summary.";
         }
         if (!isCaseOpen()) {
-            return "This case is closed and can no longer be edited.";
+            return "Case is closed and cannot be edited.";
         }
         if (summary.contains("`")) {
             return "Summary cannot contain a backtick (`) character.";
@@ -612,13 +612,12 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // Closes the case. Returns null if closed, or the error message.
     public String closeCase() {
         if (!isCaseInCharge()) {
-            return "Only the doctor in charge can close this case.";
+            return "Only doctor in charge can close case.";
         }
         if (!isCaseOpen()) {
-            return "This case is already closed.";
+            return "Case is already closed.";
         }
         if (this.caseSummary == null || this.caseSummary.trim().isEmpty()) {
             return "Please write a case summary before closing this case.";

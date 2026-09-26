@@ -820,7 +820,7 @@ public class Doctor extends User implements DoctorServices {
         return selectionForms;
     }
 
-    public ArrayList<Object[]> searchDrugs(String form, String text) {
+    public ArrayList<Object[]> searchDrugs(String searchForm, String searchText) {
         ArrayList<Object[]> rows = new ArrayList<>();
         drugResultIds.clear();
 
@@ -830,12 +830,12 @@ public class Doctor extends User implements DoctorServices {
             return rows;
         }
         String search = "";
-        if (text != null) {
-            search = text.trim().toLowerCase();
+        if (searchText != null) {
+            search = searchText.trim().toLowerCase();
         }
         for (Integer drugId : drugs.keySet()) {
             ArrayList<String> drug = drugs.get(drugId);
-            if (form != null && !form.equalsIgnoreCase("All") && !drug.get(1).equalsIgnoreCase(form)) {
+            if (searchForm != null && !searchForm.equalsIgnoreCase("All") && !drug.get(1).equalsIgnoreCase(searchForm)) {
                 continue;
             }
             if (!search.isEmpty() && !drug.get(0).toLowerCase().contains(search)) {
@@ -866,7 +866,7 @@ public class Doctor extends User implements DoctorServices {
         }
         switch (form.toLowerCase()) {
             case "tablet/capsule":
-                return "Dosage (mg)";
+                return "Dosage (tab/cap)";
             case "syrup/solution":
                 return "Dosage (mL)";
             case "powder":
@@ -876,13 +876,12 @@ public class Doctor extends User implements DoctorServices {
             case "drops":
                 return "Dosage (drops)";
             case "cream/ointment/gel":
-                return "Dosage (application)";
+                return "Dosage (mL)";
             default:
                 return "Dosage";
         }
     }
 
-    // Existing items of a consultation's prescription, if any: {drugId, drugName, dosage, frequency, duration, instructions}
     public ArrayList<String[]> getPrescriptionItems(int consultId) {
         ArrayList<String[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readActiveRecords("Prescriptions.txt");
@@ -892,29 +891,27 @@ public class Doctor extends User implements DoctorServices {
             return rows;
         }
         for (Integer prescriptionId : prescriptions.keySet()) {
-            ArrayList<String> p = prescriptions.get(prescriptionId); // 0 consultation_id
-            if (!p.get(0).equals(String.valueOf(consultId))) {
+            ArrayList<String> prescriptionValue = prescriptions.get(prescriptionId);
+            if (!prescriptionValue.get(0).equals(String.valueOf(consultId))) {
                 continue;
             }
-            for (ArrayList<String> it : items.values()) {
-                // it: 0 prescription_id, 1 drug_id, 2 dosage, 3 frequency, 4 duration, 5 instructions
-                if (!it.get(0).equals(String.valueOf(prescriptionId))) {
+            for (ArrayList<String> itemValue : items.values()) {
+                if (!itemValue.get(0).equals(String.valueOf(prescriptionId))) {
                     continue;
                 }
                 String drugName = "Unknown";
                 if (drugs != null) {
-                    ArrayList<String> d = drugs.get(Integer.parseInt(it.get(1)));
-                    if (d != null) {
-                        drugName = d.get(0);
+                    ArrayList<String> drugValue = drugs.get(Integer.parseInt(itemValue.get(1)));
+                    if (drugValue != null) {
+                        drugName = drugValue.get(0);
                     }
                 }
-                rows.add(new String[]{it.get(1), drugName, it.get(2), it.get(3), it.get(4), it.get(5)});
+                rows.add(new String[]{itemValue.get(1), drugName, itemValue.get(2), itemValue.get(3), itemValue.get(4), itemValue.get(5)});
             }
         }
         return rows;
     }
 
-    // Checks one prescription item before it is added to the pending list. Returns null if valid.
     public String checkPrescriptionItem(String unit, String dosage, String frequency, String instructions) {
         double dosageValue;
         try {
@@ -934,11 +931,9 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // Creates the prescription if none exists yet, or replaces its items if one already does.
-    // items: {drugId, drugName, dosage, frequency, duration, instructions}
     public String savePrescription(int consultId, ArrayList<String[]> items) {
         if (!loadConsultation(consultId) || !canEditConsultation()) {
-            return "You cannot write a prescription for this consultation.";
+            return "Cannot write a prescription for this consultation.";
         }
         if (items == null || items.isEmpty()) {
             return "Please add at least one drug to the prescription.";
@@ -948,8 +943,8 @@ public class Doctor extends User implements DoctorServices {
         TreeMap<Integer, ArrayList<String>> prescriptions = FileHandling.readActiveRecords("Prescriptions.txt");
         if (prescriptions != null) {
             for (Integer id : prescriptions.keySet()) {
-                ArrayList<String> p = prescriptions.get(id); // 0 consultation_id
-                if (p.get(0).equals(String.valueOf(consultId))) {
+                ArrayList<String> prescriptionValue = prescriptions.get(id);
+                if (prescriptionValue.get(0).equals(String.valueOf(consultId))) {
                     prescriptionId = id;
                     break;
                 }
@@ -967,8 +962,8 @@ public class Doctor extends User implements DoctorServices {
             TreeMap<Integer, ArrayList<String>> existingItems = FileHandling.readActiveRecords("PrescriptionItems.txt");
             if (existingItems != null) {
                 for (Integer itemId : existingItems.keySet()) {
-                    ArrayList<String> it = existingItems.get(itemId); // 0 prescription_id
-                    if (it.get(0).equals(String.valueOf(prescriptionId))) {
+                    ArrayList<String> itemValue = existingItems.get(itemId);
+                    if (itemValue.get(0).equals(String.valueOf(prescriptionId))) {
                         FileHandling.removeRecord("PrescriptionItems.txt", itemId);
                     }
                 }
@@ -990,70 +985,69 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // =====================================================================
-    // DIAGNOSTIC REQUESTS
-    // =====================================================================
+// DIAGNOSTIC REQUESTS
     public ArrayList<String> getServiceCategories() {
-        ArrayList<String> categories = new ArrayList<>();
-        categories.add("All");
-        TreeSet<String> distinctCategories = new TreeSet<>();
+        ArrayList<String> selectionCategories = new ArrayList<>();
+        selectionCategories.add("All");
+        TreeSet<String> catalogueCategories = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> s : services.values()) { // 1 category
-                distinctCategories.add(capitalize(s.get(1)));
+            for (ArrayList<String> service : services.values()) { // 1 category
+                catalogueCategories.add(service.get(1));
             }
         }
-        categories.addAll(distinctCategories);
-        return categories;
+        selectionCategories.addAll(catalogueCategories);
+        return selectionCategories;
     }
 
     public ArrayList<String> getServiceTypes(String category) {
-        ArrayList<String> types = new ArrayList<>();
-        types.add("All");
-        TreeSet<String> distinctTypes = new TreeSet<>();
+        ArrayList<String> selectionTypes = new ArrayList<>();
+        selectionTypes.add("All");
+        TreeSet<String> catalogueTypes = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> s : services.values()) { // 1 category, 2 type
-                if (category != null && !category.equalsIgnoreCase("All") && !s.get(1).equalsIgnoreCase(category)) {
+            for (ArrayList<String> service : services.values()) { 
+                if (category != null && !category.equalsIgnoreCase("All") && !service.get(1).equalsIgnoreCase(category)) {
                     continue;
                 }
-                distinctTypes.add(capitalize(s.get(2)));
+                catalogueTypes.add(service.get(2));
             }
         }
-        types.addAll(distinctTypes);
-        return types;
+        selectionTypes.addAll(catalogueTypes);
+        return selectionTypes;
     }
 
-    public ArrayList<Object[]> searchServices(String category, String type, String text) {
+    public ArrayList<Object[]> searchServices(String searchCategory, String searchType, String searchText) {
         ArrayList<Object[]> rows = new ArrayList<>();
         serviceResultIds.clear();
 
+        // DiagnosticServiceCatalogue(service_id, service_name, category, type, price, deleted)
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services == null) {
             return rows;
         }
         String search = "";
-        if (text != null) {
-            search = text.trim().toLowerCase();
+        if (searchText != null) {
+            search = searchText.trim().toLowerCase();
         }
         for (Integer serviceId : services.keySet()) {
-            ArrayList<String> s = services.get(serviceId); // 0 name, 1 category, 2 type, 3 price
-            if (category != null && !category.equalsIgnoreCase("All") && !s.get(1).equalsIgnoreCase(category)) {
+            ArrayList<String> service = services.get(serviceId); 
+            if (searchCategory != null && !searchCategory.equalsIgnoreCase("All") && !service.get(1).equalsIgnoreCase(searchCategory)) {
                 continue;
             }
-            if (type != null && !type.equalsIgnoreCase("All") && !s.get(2).equalsIgnoreCase(type)) {
+            if (searchType != null && !searchType.equalsIgnoreCase("All") && !service.get(2).equalsIgnoreCase(searchType)) {
                 continue;
             }
-            if (!search.isEmpty() && !s.get(0).toLowerCase().contains(search)) {
+            if (!search.isEmpty() && !service.get(0).toLowerCase().contains(search)) {
                 continue;
             }
             double price = 0.0;
             try {
-                price = Double.parseDouble(s.get(3));
+                price = Double.parseDouble(service.get(3));
             } catch (Exception e) {
                 price = 0.0;
             }
-            rows.add(new Object[]{s.get(0), capitalize(s.get(1)), capitalize(s.get(2)), String.format("%.2f", price)});
+            rows.add(new Object[]{service.get(0), capitalize(service.get(1)), capitalize(service.get(2)), String.format("%.2f", price)});
             serviceResultIds.add(serviceId);
         }
         return rows;
@@ -1066,40 +1060,36 @@ public class Doctor extends User implements DoctorServices {
         return serviceResultIds.get(row);
     }
 
-    // Checks a free text field (request remarks). Returns null if valid.
-    public String checkText(String text) {
+    public String checkRemarkText(String text) {
         if (text != null && text.contains("`")) {
-            return "This field cannot contain a backtick (`) character.";
+            return "Remarks cannot contain a backtick (`) character.";
         }
         return null;
     }
 
-    // requests: {serviceId, remarks}
     public String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests) {
         if (!loadConsultation(consultId) || !canEditConsultation()) {
-            return "You cannot request diagnostic services for this consultation.";
+            return "Cannot request diagnostic services for this consultation.";
         }
         if (requests == null || requests.isEmpty()) {
             return "Please add at least one service to the request list.";
         }
 
         for (String[] request : requests) {
-            ArrayList<String> record = new ArrayList<>();
-            record.add(String.valueOf(FileHandling.getNextID("DiagnosticServiceRequests.txt")));
-            record.add(String.valueOf(consultId));
-            record.add(request[0]);
-            record.add(today());
-            record.add(request[1]);
-            record.add("");
-            record.add("");
-            record.add("0");
-            FileHandling.addRecord("DiagnosticServiceRequests.txt", record);
+            ArrayList<String> requestRecord = new ArrayList<>();
+            requestRecord.add(String.valueOf(FileHandling.getNextID("DiagnosticServiceRequests.txt")));
+            requestRecord.add(String.valueOf(consultId));
+            requestRecord.add(request[0]);
+            requestRecord.add(today());
+            requestRecord.add(request[1]);
+            requestRecord.add("");
+            requestRecord.add("");
+            requestRecord.add("0");
+            FileHandling.addRecord("DiagnosticServiceRequests.txt", requestRecord);
         }
         return null;
     }
 
-    // The diagnostic requests already on file for one consultation, for editing on the Consultation dialog:
-    // {requestId, serviceId, serviceName, requestDate, remarks}
     public ArrayList<Object[]> getDiagnosticRequestItems(int consultId) {
         ArrayList<Object[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
@@ -1108,24 +1098,26 @@ public class Doctor extends User implements DoctorServices {
             return rows;
         }
         for (Integer requestId : requests.keySet()) {
-            // r: 0 consultation_id, 1 service_id, 2 request_date, 3 remarks, 4 result_date, 5 results
-            ArrayList<String> r = requests.get(requestId);
-            if (!r.get(0).equals(String.valueOf(consultId))) {
+            ArrayList<String> requestValue = requests.get(requestId);
+            if (!requestValue.get(0).equals(String.valueOf(consultId))) {
                 continue;
             }
             String serviceName = "Unknown";
             if (services != null) {
-                ArrayList<String> s = services.get(Integer.parseInt(r.get(1)));
-                if (s != null) {
-                    serviceName = s.get(0);
+                ArrayList<String> serviceValue = services.get(Integer.parseInt(requestValue.get(1)));
+                if (serviceValue != null) {
+                    serviceName = serviceValue.get(0);
                 }
             }
-            rows.add(new Object[]{requestId, r.get(1), serviceName, r.get(2), r.get(3)});
+            rows.add(new Object[]{requestId, requestValue.get(1), serviceName, requestValue.get(2), requestValue.get(3)});
         }
         return rows;
     }
 
-    // Deletes one diagnostic request. Returns null if deleted, or the error message.
+    /* 
+    successful save: null
+    error: String error message
+    */    
     public String deleteDiagnosticRequest(int requestId) {
         ArrayList<String> record = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", requestId);
         if (record == null) {
@@ -1139,30 +1131,27 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // =====================================================================
-    // REVIEWS
-    // =====================================================================
-    // rows: {consultationId, patientName, rating, dateReviewed, comments}
+// REVIEWS
     public ArrayList<Object[]> getReviews() {
         ArrayList<Object[]> rows = new ArrayList<>();
         TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readAllRecords("Consultations.txt");
         TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
-        if (reviews == null || consults == null || cases == null) {
+        if (reviews == null || consultations == null || cases == null) {
             return rows;
         }
-        for (ArrayList<String> r : reviews.values()) { // 0 consultation_id, 1 rating, 2 comments, 3 date_reviewed
-            int consultId = Integer.parseInt(r.get(0));
-            ArrayList<String> c = consults.get(consultId); // 0 case_id, 1 doctor_id
-            if (c == null || !c.get(1).equals(String.valueOf(this.user_id))) {
+        for (ArrayList<String> reviewValue : reviews.values()) { 
+            int consultId = Integer.parseInt(reviewValue.get(0));
+            ArrayList<String> consultationValue = consultations.get(consultId); 
+            if (consultationValue == null || !consultationValue.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
             String patientName = "Unknown";
-            ArrayList<String> k = cases.get(Integer.parseInt(c.get(0))); // 0 patient_id
-            if (k != null) {
-                patientName = getPatientName(k.get(0));
+            ArrayList<String> caseValue = cases.get(Integer.parseInt(consultationValue.get(0)));
+            if (caseValue != null) {
+                patientName = getPatientName(caseValue.get(0));
             }
-            rows.add(new Object[]{consultId, patientName, r.get(1), r.get(3), r.get(2)});
+            rows.add(new Object[]{consultId, patientName, reviewValue.get(1), reviewValue.get(3), reviewValue.get(2)});
         }
         return rows;
     }
@@ -1177,7 +1166,6 @@ public class Doctor extends User implements DoctorServices {
             total += Integer.parseInt((String) row[2]);
         }
         double average = (double) total / reviews.size();
-        return String.format("Average rating: %.1f out of 5 (%d review%s).",
-                average, reviews.size(), reviews.size() == 1 ? "" : "s");
+        return String.format("Average rating: %.1f out of 5 (%d review%s).", average, reviews.size(), reviews.size() == 1 ? "" : "s");
     }
 }

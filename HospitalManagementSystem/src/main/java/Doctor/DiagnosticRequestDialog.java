@@ -310,7 +310,7 @@ public class DiagnosticRequestDialog extends javax.swing.JDialog {
             return;
         }
         String remarks = txtRemarks.getText();
-        String error = doctor.checkText(remarks);
+        String error = doctor.checkRemarkText(remarks);
         if (error != null) {
             JOptionPane.showMessageDialog(this, error);
             return;

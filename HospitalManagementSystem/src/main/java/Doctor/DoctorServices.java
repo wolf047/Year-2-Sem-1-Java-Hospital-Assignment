@@ -13,42 +13,13 @@ import java.util.ArrayList;
 
 public interface DoctorServices {
 
-    String getFullName();
-    String getFirst();
-    String getLast();
-    String getPhone();
-    String getEmail();
-    String getDoctorCode();
-    String getDepartmentName();
-    String getSpecialization();
-    String getOffDayText();
-    String saveProfile(String phone, String email, String currentPwd, String newPwd, String confirmPwd);
+    String today();
 
-    ArrayList<Object[]> getSchedule();
-
+    void finalizeAllConsultations();
     void loadWeek(int weekOffset);
     Object[][] getWeekRows();
-    String[] getWeekHeaders();
     String getWeekRange();
-    int getWeekConsultId(int row, int col);
-
-    ArrayList<Object[]> getCases();
-    int getCaseId(int row);
-
-    boolean loadCase(int caseId);
-    String getCaseTitle();
-    String getCaseMeta();
-    String getCaseRoleNote();
-    boolean isCaseOpen();
-    boolean isCaseInCharge();
-    String[] getCasePatient();
-    String getCaseSummary();
-    ArrayList<Object[]> getCaseConsultRows();
-    int getCaseConsultId(int row);
-    ArrayList<Object[]> getCaseTestRows();
-    String getCaseTestDetail(int row);
-    String saveCaseSummary(String summary);
-    String closeCase();
+    int getWeekConsultId(int row);
 
     boolean loadConsultation(int consultId);
     int getConsultCaseId();
@@ -75,14 +46,42 @@ public interface DoctorServices {
     ArrayList<String> getServiceTypes(String category);
     ArrayList<Object[]> searchServices(String category, String type, String text);
     int getServiceResultId(int row);
-    String checkText(String text);
-    // requests: {serviceId, remarks}
+    String checkRemarkText(String text);
     String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests);
-    // rows: {requestId, serviceId, serviceName, requestDate, remarks}
     ArrayList<Object[]> getDiagnosticRequestItems(int consultId);
     String deleteDiagnosticRequest(int requestId);
-    String today();
+
+    ArrayList<Object[]> getSchedule();
+
+    ArrayList<Object[]> getCases();
+    int getCaseId(int row);
+
+    boolean loadCase(int caseId);
+    String getCaseTitle();
+    String getCaseMeta();
+    String getCaseRoleNote();
+    boolean isCaseOpen();
+    boolean isCaseInCharge();
+    String[] getCasePatient();
+    String getCaseSummary();
+    ArrayList<Object[]> getCaseConsultRows();
+    int getCaseConsultId(int row);
+    ArrayList<Object[]> getCaseTestRows();
+    String getCaseTestDetail(int row);
+    String saveCaseSummary(String summary);
+    String closeCase();
 
     ArrayList<Object[]> getReviews();
     String getRatingSummary();
+
+    String getFullName();
+    String getFirst();
+    String getLast();
+    String getPhone();
+    String getEmail();
+    String getDoctorCode();
+    String getDepartmentName();
+    String getSpecialization();
+    String getOffDayText();
+    String saveProfile(String phone, String email, String currentPwd, String newPwd, String confirmPwd);
 }

@@ -52,6 +52,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
         });
 
         this.doctor = (Doctor) SessionUser.getCurrentUser();
+        doctor.finalizeAllConsultations();
 
         setLocationRelativeTo(null);
         lblWelcome.setText("Welcome, " + doctor.getFullName());
@@ -123,7 +124,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         DefaultTableModel model = (DefaultTableModel) tblCalendar.getModel();
         model.setRowCount(0);
-        model.setColumnIdentifiers(doctor.getWeekHeaders());
         for (Object[] row : doctor.getWeekRows()) {
             model.addRow(row);
         }
@@ -135,7 +135,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select a consultation from the calendar.");
             return;
         }
-        int consultId = doctor.getWeekConsultId(row, tblCalendar.getSelectedColumn());
+        int consultId = doctor.getWeekConsultId(row);
         if (consultId < 0) {
             return;
         }

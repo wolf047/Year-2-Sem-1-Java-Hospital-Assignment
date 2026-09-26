@@ -263,6 +263,7 @@
     <Component class="javax.swing.JButton" name="btnViewConsultation">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Details"/>
+        <Property name="focusPainted" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnViewConsultation"/>
@@ -367,6 +368,7 @@
     <Component class="javax.swing.JButton" name="btnViewDiagnosticResult">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Result"/>
+        <Property name="focusPainted" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnViewDiagnosticResult"/>

@@ -36,7 +36,7 @@
 36,45,35,24-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
 37,46,35,24-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
 38,47,35,24-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
-39,48,35,24-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+39,48,35,24-09-2026,25-09-2026,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
 40,49,35,24-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
 41,50,35,25-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
 42,51,35,25-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0

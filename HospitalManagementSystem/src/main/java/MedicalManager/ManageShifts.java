@@ -72,11 +72,11 @@ public class ManageShifts extends javax.swing.JFrame {
             if(deptID == selectedDeptID){
                 LocalDate shiftDate = LocalDate.parse(shift.get(2), formatter);
                 if(shiftDate.isBefore(today)){ // if shift has already passed
-                    continue; // skip this shfit record
+                    continue; // skip this shift record
                 }
                 
                 int shiftID = Integer.parseInt(shift.get(0));
-                String formattedShiftID = String.format("SHF%03d", shiftID);
+                String formattedShiftID = String.format("SHIFT%03d", shiftID);
                 
                 int numberofDoctors = manager.getAssignedDoctorCount(shiftID);
                 String countDisplay = numberofDoctors < 2 ?
@@ -151,8 +151,8 @@ public class ManageShifts extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -176,6 +176,7 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel6.setText("End Time");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 220, 130, -1));
 
+        createBtn.setBackground(new java.awt.Color(204, 255, 204));
         createBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         createBtn.setText("Create");
         createBtn.addActionListener(this::createBtnActionPerformed);
@@ -189,18 +190,20 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel8.setText("Start Time");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 180, -1));
 
+        updateBtn.setBackground(new java.awt.Color(255, 255, 204));
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         updateBtn.setText("Update");
         updateBtn.addActionListener(this::updateBtnActionPerformed);
         getContentPane().add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 290, -1, -1));
 
+        deleteBtn.setBackground(new java.awt.Color(255, 204, 204));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addActionListener(this::deleteBtnActionPerformed);
         getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, -1, -1));
 
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        assignBtn.setText("Assign");
+        assignBtn.setText("View / Assign Doctors");
         assignBtn.addActionListener(this::assignBtnActionPerformed);
         getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 290, -1, 30));
 
@@ -230,10 +233,12 @@ public class ManageShifts extends javax.swing.JFrame {
         getContentPane().add(deptCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 260, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("APU Medical Centre");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
         logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setForeground(new java.awt.Color(192, 57, 43));
         logoutBtn1.setText("Logout");
         logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
         getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
@@ -457,7 +462,7 @@ public class ManageShifts extends javax.swing.JFrame {
         int selectedRow = shiftsTable.getSelectedRow();
         if(selectedRow != -1){
             String shiftID = shiftsTable.getValueAt(selectedRow, 0).toString();
-            selectedShiftID = Integer.parseInt(shiftID.replace("SHF", ""));
+            selectedShiftID = Integer.parseInt(shiftID.replace("SHIFT", ""));
             try{
                 String shiftDate = shiftsTable.getValueAt(selectedRow, 1).toString();
                 String startTime = shiftsTable.getValueAt(selectedRow, 2).toString();

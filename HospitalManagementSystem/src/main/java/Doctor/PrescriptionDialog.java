@@ -146,7 +146,7 @@ public class PrescriptionDialog extends javax.swing.JDialog {
         setTitle("Write Prescription");
         setModal(true);
         setName("prescriptions"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(560, 795));
+        setPreferredSize(new java.awt.Dimension(570, 795));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

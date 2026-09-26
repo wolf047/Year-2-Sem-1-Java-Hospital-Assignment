@@ -1,15 +1,116 @@
 
 package MedicalManager;
 
+import HelperFunction.*;
+
 public class ViewReports extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ViewReports.class.getName());
+    MedicalManager manager = (MedicalManager)SessionUser.getCurrentUser();
 
     /**
      * Creates new form ManagerDashboard
      */
     public ViewReports() {
         initComponents();
+        loadSummaryMetrics();
+        loadRevenueTable();
+        loadCasesTable();
+        loadConsultationsTable();
+        loadWardsTable();
+        loadReviewsTable();
+    }
+    
+    private void loadSummaryMetrics(){
+        double[] rev = manager.getRevenueMetrics();
+        revenueLbl.setText(String.format("RM %,.2f", rev[0]));  // Total Invoiced
+        revenueLbl1.setText(String.format("RM %,.2f", rev[1])); // Total Collected
+        revenueLbl2.setText(String.format("RM %,.2f", rev[2])); // Outstanding
+        
+        int[] cases = manager.getNumberCases(); // [total, open, closed]
+        totalCasesLbl.setText(String.valueOf(cases[2]));
+        openCasesLbl.setText(String.valueOf(cases[0]));
+        closedCasesLbl.setText(String.valueOf(cases[1]));
+        
+        int[] beds = manager.getOccupancyMetrics(); // [total, occupied, available]
+        totalBedsLbl.setText(beds[0] + " Beds");
+        occupiedBedsLbl.setText(beds[1] + " Occupied");
+        availableBedsLbl.setText(beds[2] + " Available");
+        
+        double[] reviews = manager.getReviewMetrics(); // Returns [averageRating, totalCount]
+        averageRatingLbl.setText(String.format("%.1f / 5.0", reviews[0]));
+        totalReviewsLbl.setText(String.valueOf((int)reviews[1]));
+    }
+    
+    private void loadRevenueTable(){
+        String[] columns = {"Receipt ID", "Invoice ID", "Payment Method", "Amount Paid", "Date"};
+        javax.swing.table.DefaultTableModel table = new javax.swing.table.DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (String[] row : manager.getRevenueTableData()) {
+            table.addRow(row);
+        }
+        revenueTable.setModel(table);
+    }
+    
+    private void loadCasesTable(){
+        String[] columns = {"Case ID", "Patient ID", "Category", "Type", "Status"};
+        javax.swing.table.DefaultTableModel table = new javax.swing.table.DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (String[] row : manager.getCasesTableData()) {
+            table.addRow(row);
+        }
+        casesTable.setModel(table);
+    }
+    
+    private void loadConsultationsTable() {
+        String[] columns = {"Consult ID", "Case ID", "Doctor ID", "Date", "Status"};
+        javax.swing.table.DefaultTableModel table = new javax.swing.table.DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (String[] row : manager.getConsultationsTableData()) {
+            table.addRow(row);
+        }
+        consultationsTable.setModel(table);
+    }
+
+    private void loadWardsTable() {
+        String[] columns = {"Ward ID", "Department", "Total Beds", "Occupied", "Available"};
+        javax.swing.table.DefaultTableModel table = new javax.swing.table.DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (String[] row : manager.getWardTableData()) {
+            table.addRow(row);
+        }
+        wardBedsTable.setModel(table);
+    }
+
+    private void loadReviewsTable() {
+        String[] columns = {"Review ID", "Consult ID", "Rating", "Patient Feedback"};
+        javax.swing.table.DefaultTableModel table = new javax.swing.table.DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (String[] row : manager.getReviewsTableData()) {
+            table.addRow(row);
+        }
+        reviewsTable.setModel(table);
+        reviewsTable.getColumnModel().getColumn(3).setPreferredWidth(450);
     }
 
     /**
@@ -22,17 +123,12 @@ public class ViewReports extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel4 = new javax.swing.JLabel();
-        shiftBtn = new javax.swing.JButton();
-        departmentBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
-        profileBtn = new javax.swing.JButton();
-        dashboardBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        revenueTable = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
@@ -45,6 +141,22 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel12 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         revenueLbl1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        wardBedsTable = new javax.swing.JTable();
+        jPanel21 = new javax.swing.JPanel();
+        jPanel22 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        totalBedsLbl = new javax.swing.JLabel();
+        jPanel23 = new javax.swing.JPanel();
+        jPanel24 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        availableBedsLbl = new javax.swing.JLabel();
+        jPanel25 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        occupiedBedsLbl = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -52,49 +164,46 @@ public class ViewReports extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         casesTable = new javax.swing.JTable();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        wardBedsTable = new javax.swing.JTable();
+        jPanel13 = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        closedCasesLbl = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jPanel15 = new javax.swing.JPanel();
+        jPanel16 = new javax.swing.JPanel();
+        totalCasesLbl = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jPanel17 = new javax.swing.JPanel();
+        jPanel18 = new javax.swing.JPanel();
+        openCasesLbl = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        averageRatingLbl = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         reviewsTable = new javax.swing.JTable();
+        jPanel19 = new javax.swing.JPanel();
+        jPanel20 = new javax.swing.JPanel();
+        averageRatingLbl = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel27 = new javax.swing.JPanel();
+        jPanel28 = new javax.swing.JPanel();
+        totalReviewsLbl = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        logoutBtn1 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
+        dashboardBtn = new javax.swing.JButton();
+        departmentBtn = new javax.swing.JButton();
+        shiftBtn = new javax.swing.JButton();
+        reportBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
 
         jLabel4.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        shiftBtn.setText("Shift Rosters");
-        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
-        getContentPane().add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
-
-        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        departmentBtn.setText("Departments");
-        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
-        getContentPane().add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
-
-        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        reportBtn.setText("Reports");
-        getContentPane().add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, -1, -1));
-
-        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        profileBtn.setText("Profile");
-        profileBtn.addActionListener(this::profileBtnActionPerformed);
-        getContentPane().add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-
-        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        dashboardBtn.setText("Dashboard");
-        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
-        getContentPane().add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
         jLabel1.setText("Hospital Reports & Analytics");
@@ -104,11 +213,11 @@ public class ViewReports extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Revenue by Payment Method");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        revenueTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -119,9 +228,9 @@ public class ViewReports extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(revenueTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 750, 270));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 750, 230));
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -137,7 +246,7 @@ public class ViewReports extends javax.swing.JFrame {
         revenueLbl2.setText("RM 48,250.00");
         jPanel7.add(revenueLbl2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
-        jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, 230, 90));
+        jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 10, 190, 90));
 
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -153,7 +262,7 @@ public class ViewReports extends javax.swing.JFrame {
         revenueLbl.setText("RM 48,250.00");
         jPanel9.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
-        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 230, 90));
+        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 190, 90));
 
         jPanel11.setBackground(new java.awt.Color(255, 255, 255));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -169,57 +278,15 @@ public class ViewReports extends javax.swing.JFrame {
         revenueLbl1.setText("RM 48,250.00");
         jPanel11.add(revenueLbl1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
-        jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, 230, 90));
+        jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, 190, 90));
 
         jTabbedPane1.addTab("Financial Revenue", jPanel1);
 
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Consultation Status");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
-
-        consultationsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane2.setViewportView(consultationsTable);
-
-        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 660, 200));
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Clinical Activity Summary");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
-
-        casesTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(casesTable);
-
-        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 660, 190));
-
-        jTabbedPane1.addTab("Consultation Volume", jPanel2);
-
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("Ward & Bed Allocation Utilisation");
-        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         wardBedsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -234,19 +301,153 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane4.setViewportView(wardBedsTable);
 
-        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 750, 330));
+        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 730, 250));
+
+        jPanel21.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel21.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel22.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel21.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel7.setText("TOTAL CAPACITY");
+        jPanel21.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
+
+        totalBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        totalBedsLbl.setText("total beds");
+        jPanel21.add(totalBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, 30));
+
+        jPanel3.add(jPanel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, 70));
+
+        jPanel23.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel23.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel24.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel23.add(jPanel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel10.setText("AVAILABLE");
+        jPanel23.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
+
+        availableBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        availableBedsLbl.setText("available beds");
+        jPanel23.add(availableBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 160, 30));
+
+        jPanel3.add(jPanel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 20, 180, 70));
+
+        jPanel25.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel26.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel25.add(jPanel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel11.setText("CURRENTLY OCCUPIED");
+        jPanel25.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
+
+        occupiedBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        occupiedBedsLbl.setText("occupied beds");
+        jPanel25.add(occupiedBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 160, 30));
+
+        jPanel3.add(jPanel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 20, 180, 70));
 
         jTabbedPane1.addTab("Ward Occupancy", jPanel3);
 
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setText("Consultation Status");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
+
+        consultationsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(consultationsTable);
+
+        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 720, 160));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Clinical Activity Summary");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 190, -1));
+
+        casesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(casesTable);
+
+        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 720, 140));
+
+        jPanel13.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel14.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel13.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        closedCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        closedCasesLbl.setText("67");
+        jPanel13.add(closedCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, 40, 30));
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel14.setText("Resolved / Closed:");
+        jPanel13.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
+
+        jPanel2.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, 220, 50));
+
+        jPanel15.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel16.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel15.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        totalCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        totalCasesLbl.setText("67");
+        jPanel15.add(totalCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 40, 30));
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel18.setText("Total Cases:");
+        jPanel15.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
+
+        jPanel2.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 160, 50));
+
+        jPanel17.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel18.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel17.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        openCasesLbl.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        openCasesLbl.setText("67");
+        jPanel17.add(openCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 40, 30));
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel19.setText("Active / Open:");
+        jPanel17.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
+
+        jPanel2.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, 180, 50));
+
+        jTabbedPane1.addTab("Consultation Volume", jPanel2);
+
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        averageRatingLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        averageRatingLbl.setText("Average Rating: ??");
-        jPanel4.add(averageRatingLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel8.setText("Recent Patient Feedback");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
 
         reviewsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -261,20 +462,86 @@ public class ViewReports extends javax.swing.JFrame {
         ));
         jScrollPane5.setViewportView(reviewsTable);
 
-        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 760, 330));
+        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 740, 260));
+
+        jPanel19.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel19.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel20.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel19.add(jPanel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        averageRatingLbl.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        averageRatingLbl.setText("3.3 / 5.0");
+        jPanel19.add(averageRatingLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 10, 80, 40));
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 19)); // NOI18N
+        jLabel13.setText("Average Rating:");
+        jPanel19.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
+
+        jPanel4.add(jPanel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 20, 260, 60));
+
+        jPanel27.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel27.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel28.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel27.add(jPanel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 5, -1, -1));
+
+        totalReviewsLbl.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        totalReviewsLbl.setText("10");
+        jPanel27.add(totalReviewsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, 50, 40));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 19)); // NOI18N
+        jLabel12.setText("Total Feedback Received:");
+        jPanel27.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 16, -1, 30));
+
+        jPanel4.add(jPanel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 300, 60));
 
         jTabbedPane1.addTab("Patient Reviews", jPanel4);
 
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 780, 490));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("APU Medical Centre");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
+        logoutBtn1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn1.setForeground(new java.awt.Color(192, 57, 43));
+        logoutBtn1.setText("Logout");
+        logoutBtn1.addActionListener(this::logoutBtn1ActionPerformed);
+        getContentPane().add(logoutBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
+
         jPanel5.setBackground(new java.awt.Color(38, 117, 154));
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 50));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboardBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dashboardBtn.setText("Dashboard");
+        dashboardBtn.addActionListener(this::dashboardBtnActionPerformed);
+        jPanel5.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, -1, -1));
+
+        departmentBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        departmentBtn.setText("Departments");
+        departmentBtn.addActionListener(this::departmentBtnActionPerformed);
+        jPanel5.add(departmentBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, -1, -1));
+
+        shiftBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        shiftBtn.setText("Shift Rosters");
+        shiftBtn.addActionListener(this::shiftBtnActionPerformed);
+        jPanel5.add(shiftBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, -1, -1));
+
+        reportBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        reportBtn.setText("Reports");
+        jPanel5.add(reportBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        profileBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profileBtn.setText("Profile");
+        profileBtn.addActionListener(this::profileBtnActionPerformed);
+        jPanel5.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
+
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 50));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
@@ -305,6 +572,19 @@ public class ViewReports extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_profileBtnActionPerformed
 
+    private void logoutBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtn1ActionPerformed
+        // TODO add your handling code here:
+        int confirmLogout = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            javax.swing.JOptionPane.YES_NO_OPTION);
+        if(confirmLogout == javax.swing.JOptionPane.YES_OPTION) {
+            SessionUser.logout();
+            new Users.UserLogin().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_logoutBtn1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -331,27 +611,53 @@ public class ViewReports extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel availableBedsLbl;
     private javax.swing.JLabel averageRatingLbl;
     private javax.swing.JTable casesTable;
+    private javax.swing.JLabel closedCasesLbl;
     private javax.swing.JTable consultationsTable;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton departmentBtn;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -364,14 +670,20 @@ public class ViewReports extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JButton logoutBtn1;
+    private javax.swing.JLabel occupiedBedsLbl;
+    private javax.swing.JLabel openCasesLbl;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
     private javax.swing.JLabel revenueLbl;
     private javax.swing.JLabel revenueLbl1;
     private javax.swing.JLabel revenueLbl2;
+    private javax.swing.JTable revenueTable;
     private javax.swing.JTable reviewsTable;
     private javax.swing.JButton shiftBtn;
+    private javax.swing.JLabel totalBedsLbl;
+    private javax.swing.JLabel totalCasesLbl;
+    private javax.swing.JLabel totalReviewsLbl;
     private javax.swing.JTable wardBedsTable;
     // End of variables declaration//GEN-END:variables
 }

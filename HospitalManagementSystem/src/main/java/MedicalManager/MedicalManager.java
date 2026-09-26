@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MedicalManager extends User{
+public class MedicalManager extends User implements ReportGenerator{
     public MedicalManager(int user_id, String first_name, String last_name, String phone,
             String email, String password, String gender, LocalDate dob, Role role){
         super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
@@ -150,8 +150,19 @@ public class MedicalManager extends User{
     public boolean deleteShift(int shiftID) {
         try {
             FileHandling.removeRecord("Shifts.txt", shiftID);
+            TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
+            if (assignments != null) {
+                for (Map.Entry<Integer, ArrayList<String>> entry : assignments.entrySet()) {
+                    int assignID = entry.getKey();
+                    int assignedShiftID = Integer.parseInt(entry.getValue().get(0)); 
+                    
+                    if (assignedShiftID == shiftID) {
+                        removeDoctorShift(assignID);
+                    }
+                }
+            }
             return true;
-        }catch(Exception e) {
+        } catch(Exception e) {
             return false;
         }
     }
@@ -197,7 +208,7 @@ public class MedicalManager extends User{
     }
     
     public void assignDoctorToShift(int shiftID, int doctorID){
-        int newID = FileHandling.getNextID("ShiftDoctors");
+        int newID = FileHandling.getNextID("ShiftDoctors.txt");
         ArrayList<String> record = new ArrayList<>();
         record.add(String.valueOf(newID));
         record.add(String.valueOf(shiftID));
@@ -222,7 +233,7 @@ public class MedicalManager extends User{
         int count = 0;
         if(assignments != null){
             for(ArrayList<String> assignment : assignments.values()){
-                if(Integer.parseInt(assignment.get(1)) == shiftID){
+                if(Integer.parseInt(assignment.get(0)) == shiftID){
                     count++;
                 }
             }
@@ -324,7 +335,7 @@ public class MedicalManager extends User{
         for(String[] assignment : assigned){
             assignedDoctorIDs.add(Integer.parseInt(assignment[1]));
         }
-        TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readActiveRecords("Doctors.txt");
+        TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readAllRecords("Doctors.txt");
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readActiveRecords("Users.txt");
         if(doctors != null){
             for(Map.Entry<Integer, ArrayList<String>> entry : doctors.entrySet()){
@@ -350,30 +361,60 @@ public class MedicalManager extends User{
         return eligible;
     }
     
-    public double calculateTotalRevenue() {
-        TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readAllRecords("Invoices.txt");
-        double total = 0.0;
+    public double[] getRevenueMetrics(){
+        TreeMap<Integer, ArrayList<String>> invoices = FileHandling.readActiveRecords("Invoices.txt");
+        TreeMap<Integer, ArrayList<String>> receipts = FileHandling.readActiveRecords("Receipts.txt");
+        double totalInvoiced = 0.0, collected = 0.0;
+        
         if(invoices != null) {
             for(ArrayList<String> invoice : invoices.values()) {
-                if("0".equals(invoice.get(3))){
-                    total += Double.parseDouble(invoice.get(2));
-                }
+                totalInvoiced += Double.parseDouble(invoice.get(2)); 
             }
         }
-        return total;
+        if(receipts != null) {
+            for(ArrayList<String> receipt : receipts.values()) {
+                collected += Double.parseDouble(receipt.get(3)); 
+            }
+        }
+        double outstanding = totalInvoiced - collected;
+        return new double[]{totalInvoiced, collected, outstanding};
     }
     
-    public int getUsedBedsCount() {
-        TreeMap<Integer, ArrayList<String>> beds = FileHandling.readAllRecords("InpatientBeds.txt");
-        int totalBeds = 0;
+    public int[] getOccupancyMetrics(){
+        TreeMap<Integer, ArrayList<String>> beds = FileHandling.readActiveRecords("InpatientBeds.txt");
+        TreeMap<Integer, ArrayList<String>> admissions = FileHandling.readActiveRecords("Admissions.txt");
+        int total = 0, occupied = 0, available = 0;
+        
         if (beds != null) {
-            for(ArrayList<String> bed : beds.values()){
-                if("0".equals(bed.get(1))){
-                    totalBeds++;
+            total = beds.size();
+        }
+        if (admissions != null) {
+            for(ArrayList<String> admission : admissions.values()){
+                String dischargeDate = admission.size() > 3 ? admission.get(3) : "";
+                // If there is no discharge date, the patient is still in the bed
+                if(dischargeDate == null || dischargeDate.trim().isEmpty() || dischargeDate.equalsIgnoreCase("null")) {
+                    occupied++; 
                 }
             }
         }
-        return totalBeds;
+        
+        available = Math.max(0, total - occupied); // Prevent negative numbers just in case
+        return new int[]{total, occupied, available};
+    }
+    
+    public double[] getReviewMetrics() {
+        TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
+        int totalReviews = 0;
+        double sumRating = 0.0;
+        
+        if(reviews != null) {
+            for(ArrayList<String> review : reviews.values()){
+                totalReviews++;
+                sumRating += Double.parseDouble(review.get(1)); 
+            }
+        }
+        double avgRating = totalReviews == 0 ? 0.0 : (sumRating / totalReviews);
+        return new double[]{avgRating, totalReviews};
     }
     
     public int[] getNumberCases(){
@@ -383,7 +424,8 @@ public class MedicalManager extends User{
             if("0".equals(c.get(7))){ // if not deleted
                 total++;
                 String closeDate = c.get(3);
-                if(closeDate == null || closeDate.trim().isEmpty() || closeDate.equalsIgnoreCase("null")) { // check if there is no close date, means still open
+                // check if there is no close date, means still open
+                if(closeDate == null || closeDate.trim().isEmpty() || closeDate.equalsIgnoreCase("null")) { 
                     open++;
                 } else {
                     closed++;
@@ -393,6 +435,115 @@ public class MedicalManager extends User{
         }
         return new int[]{open, closed, total};
     }
+    
+    public List<String[]> getRevenueTableData(){
+        List<String[]> data = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> receipts = FileHandling.readActiveRecords("Receipts.txt");
+        if (receipts != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : receipts.entrySet()) {
+                String rcptId = String.format("RCPT%03d", entry.getKey());
+                String invId = String.format("INV%03d", Integer.parseInt(entry.getValue().get(0)));
+                String paymentMethod = entry.getValue().get(2).toUpperCase().replace("_", " "); 
+                String amount = String.format("RM %.2f", Double.parseDouble(entry.getValue().get(3)));
+                String date = entry.getValue().get(4);
+                
+                data.add(new String[]{rcptId, invId, paymentMethod, amount, date});
+            }
+        }
+        return data;
+    }
+    
+    public List<String[]> getCasesTableData(){
+        List<String[]> data = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> cases = FileHandling.readActiveRecords("Cases.txt");
+        if (cases != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : cases.entrySet()) {
+                String caseId = String.format("CASE%03d", entry.getKey());
+                String patientId = String.format("USER%03d", Integer.parseInt(entry.getValue().get(0)));
+                String category = entry.getValue().get(4).toUpperCase();
+                String type = entry.getValue().get(5).toUpperCase();
+                
+                String closeDate = entry.getValue().get(3);
+                String status = (closeDate == null || closeDate.trim().isEmpty() || closeDate.equalsIgnoreCase("null")) ? "OPEN" : "CLOSED";
+                
+                data.add(new String[]{caseId, patientId, category, type, status});
+            }
+        }
+        return data;
+    }
+    
+    public List<String[]> getConsultationsTableData(){
+        List<String[]> data = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
+        if (consults != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : consults.entrySet()) {
+                String consId = String.format("CONS%03d", entry.getKey());
+                String caseId = String.format("CASE%03d", Integer.parseInt(entry.getValue().get(0)));
+                String docId = String.format("USER%03d", Integer.parseInt(entry.getValue().get(1)));
+                String status = entry.getValue().get(5).toUpperCase(); // consultation_status
+                String date = entry.getValue().get(7);
+                
+                data.add(new String[]{consId, caseId, docId, date, status});
+            }
+        }
+        return data;
+    }
       
+    public List<String[]> getWardTableData(){
+        List<String[]> data = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> wards = FileHandling.readActiveRecords("InpatientWards.txt");
+        TreeMap<Integer, ArrayList<String>> beds = FileHandling.readActiveRecords("InpatientBeds.txt");
+        TreeMap<Integer, ArrayList<String>> admissions = FileHandling.readActiveRecords("Admissions.txt");
+
+        if (wards != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : wards.entrySet()) {
+                int wardId = entry.getKey();
+                String wardIdStr = String.format("WARD%02d", wardId);
+                String deptId = String.format("DEP%03d", Integer.parseInt(entry.getValue().get(0)));
+                int capacity = Integer.parseInt(entry.getValue().get(2));
+                
+                int occupied = 0;
+                // Count occupied beds physically located in this specific ward
+                if (beds != null && admissions != null) {
+                    for (Map.Entry<Integer, ArrayList<String>> bed : beds.entrySet()) {
+                        if (Integer.parseInt(bed.getValue().get(0)) == wardId) {
+                            int currentBedId = bed.getKey();
+                            // Check if this bed is currently assigned to an active admission
+                            for (ArrayList<String> adm : admissions.values()) {
+                                if (Integer.parseInt(adm.get(1)) == currentBedId) {
+                                    String disDate = adm.size() > 3 ? adm.get(3) : "";
+                                    if (disDate == null || disDate.trim().isEmpty() || disDate.equalsIgnoreCase("null")) {
+                                        occupied++;
+                                        break; 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                int available = Math.max(0, capacity - occupied);
+                data.add(new String[]{wardIdStr, deptId, String.valueOf(capacity), String.valueOf(occupied), String.valueOf(available)});
+            }
+        }
+        return data;
+    }
+    
+    public List<String[]> getReviewsTableData(){
+        List<String[]> data = new ArrayList<>();
+        TreeMap<Integer, ArrayList<String>> reviews = FileHandling.readActiveRecords("Reviews.txt");
+        if (reviews != null) {
+            for (Map.Entry<Integer, ArrayList<String>> entry : reviews.entrySet()) {
+                String revId = String.format("REV%03d", entry.getKey());
+                String consId = String.format("CONS%03d", Integer.parseInt(entry.getValue().get(0)));
+                String rating = entry.getValue().get(1) + " / 5";
+                
+                // Remove the backticks (`) from the text file strings
+                String comment = entry.getValue().get(2).replace("`", ""); 
+                
+                data.add(new String[]{revId, consId, rating, comment});
+            }
+        }
+        return data;
+    }
     
 }

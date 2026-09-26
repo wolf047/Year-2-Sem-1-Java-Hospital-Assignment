@@ -292,18 +292,13 @@ public class Doctor extends User implements DoctorServices {
     // Only today's and future shifts are shown; past shifts are left out.
     public ArrayList<Object[]> getSchedule() {
         ArrayList<Object[]> rows = new ArrayList<>();
-        // Some ShiftDoctors.txt rows are missing the trailing "deleted" column,
-        // so this reads every record and checks the flag only when it is present.
-        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readAllRecords("ShiftDoctors.txt");
+        TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
         if (assignments == null || shifts == null) {
             return rows;
         }
         LocalDate today = LocalDate.now();
-        for (ArrayList<String> a : assignments.values()) { // 0 shift_id, 1 doctor_id, 2 deleted (may be missing)
-            if (a.size() > 2 && a.get(2).equals("1")) {
-                continue;
-            }
+        for (ArrayList<String> a : assignments.values()) { // 0 shift_id, 1 doctor_id
             if (!a.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }

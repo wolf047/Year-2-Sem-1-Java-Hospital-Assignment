@@ -124,7 +124,6 @@ public class DoctorDashboard extends javax.swing.JFrame {
 
         DefaultTableModel model = (DefaultTableModel) tblCalendar.getModel();
         model.setRowCount(0);
-        model.setColumnIdentifiers(doctor.getWeekHeaders());
         for (Object[] row : doctor.getWeekRows()) {
             model.addRow(row);
         }

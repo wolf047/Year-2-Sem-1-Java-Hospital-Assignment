@@ -393,10 +393,6 @@ public class Doctor extends User implements DoctorServices {
         return weekRows.toArray(new Object[0][]);
     }
 
-    public String[] getWeekHeaders() {
-        return new String[]{"Date", "Case ID", "Time Slot", "Complaint", "Room ID", "Status"};
-    }
-
     public String getWeekRange() {
         if (this.weekStart == null) {
             return "Week of —";

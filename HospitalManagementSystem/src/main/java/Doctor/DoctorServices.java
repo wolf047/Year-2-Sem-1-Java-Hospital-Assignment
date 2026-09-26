@@ -29,7 +29,6 @@ public interface DoctorServices {
     void finalizeAllConsultations();
     void loadWeek(int weekOffset);
     Object[][] getWeekRows();
-    String[] getWeekHeaders();
     String getWeekRange();
     int getWeekConsultId(int row, int col);
 

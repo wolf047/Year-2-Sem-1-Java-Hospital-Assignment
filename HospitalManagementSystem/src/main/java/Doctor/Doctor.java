@@ -38,7 +38,7 @@ public class Doctor extends User implements DoctorServices {
 
     // CASE DIALOG
     private int currentCaseId = -1;
-    private String caseCatientId, caseDoctorInCharge, caseOpenDate, caseCloseDate, caseCategory, caseType, caseSummary;
+    private String casePatientId, caseDoctorInCharge, caseOpenDate, caseCloseDate, caseCategory, caseType, caseSummary;
     private ArrayList<Object[]> caseConsultRows = new ArrayList<>();
     private ArrayList<Integer> caseConsultIds = new ArrayList<>();
     private ArrayList<Object[]> caseTestRows = new ArrayList<>();
@@ -389,42 +389,40 @@ public class Doctor extends User implements DoctorServices {
         return weekConsultIds.get(row);
     }
 
-    // =====================================================================
-    // CASES PAGE
-    // =====================================================================
+// CASES
     public ArrayList<Object[]> getCases() {
         caseRows.clear();
         caseIds.clear();
 
         TreeMap<Integer, ArrayList<String>> cases = FileHandling.readActiveRecords("Cases.txt");
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
         if (cases == null) {
             return caseRows;
         }
 
-        // case ids where this doctor has conducted at least one consultation
         TreeSet<Integer> involvedCaseIds = new TreeSet<>();
-        if (consults != null) {
-            for (ArrayList<String> c : consults.values()) { // 0 case_id, 1 doctor_id
-                if (c.get(1).equals(String.valueOf(this.user_id))) {
-                    involvedCaseIds.add(Integer.parseInt(c.get(0)));
+        if (consultations != null) {
+            for (ArrayList<String> consultationValue : consultations.values()) { 
+                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+                if (consultationValue.get(1).equals(String.valueOf(this.user_id))) {
+                    involvedCaseIds.add(Integer.parseInt(consultationValue.get(0)));
                 }
             }
         }
 
         for (Integer caseId : cases.keySet()) {
-            // k: 0 patient_id, 1 doctor_in_charge, 2 open_date, 3 close_date, 4 category, 5 type, 6 summary
-            ArrayList<String> k = cases.get(caseId);
-            boolean inCharge = k.get(1).equals(String.valueOf(this.user_id));
+            // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
+            ArrayList<String> caseValue = cases.get(caseId);
+            boolean inCharge = caseValue.get(1).equals(String.valueOf(this.user_id));
             if (!inCharge && !involvedCaseIds.contains(caseId)) {
                 continue;
             }
             String status = "Open";
-            if (!k.get(3).isEmpty()) {
+            if (!caseValue.get(3).isEmpty()) { // close_date
                 status = "Closed";
             }
-            caseRows.add(new Object[]{caseId, getPatientName(k.get(0)), getDoctorName(k.get(1)),
-                capitalize(k.get(4)), capitalize(k.get(5)), k.get(2), k.get(3), status});
+            caseRows.add(new Object[]{caseId, getPatientName(caseValue.get(0)), getDoctorName(caseValue.get(1)),
+                capitalize(caseValue.get(4)), capitalize(caseValue.get(5)), caseValue.get(2), caseValue.get(3), status});
             caseIds.add(caseId);
         }
         return caseRows;
@@ -442,61 +440,63 @@ public class Doctor extends User implements DoctorServices {
         if (cases == null || !cases.containsKey(caseId)) {
             return false;
         }
-        // k: 0 patient_id, 1 doctor_in_charge, 2 open_date, 3 close_date, 4 category, 5 type, 6 summary, 7 deleted
-        ArrayList<String> k = cases.get(caseId);
-        if (k.get(7).equals("1")) {
+        
+        // Cases(case_id, patient_id, doctor_in_charge, open_date, close_date, category, type, case_summary, deleted)
+        ArrayList<String> caseValue = cases.get(caseId);
+        if (caseValue.get(7).equals("1")) {
             return false;
         }
         this.currentCaseId = caseId;
-        this.caseCatientId = k.get(0);
-        this.caseDoctorInCharge = k.get(1);
-        this.caseOpenDate = k.get(2);
-        this.caseCloseDate = k.get(3);
-        this.caseCategory = k.get(4);
-        this.caseType = k.get(5);
-        this.caseSummary = k.get(6);
+        this.casePatientId = caseValue.get(0);
+        this.caseDoctorInCharge = caseValue.get(1);
+        this.caseOpenDate = caseValue.get(2);
+        this.caseCloseDate = caseValue.get(3);
+        this.caseCategory = caseValue.get(4);
+        this.caseType = caseValue.get(5);
+        this.caseSummary = caseValue.get(6);
 
         caseConsultRows.clear();
         caseConsultIds.clear();
         caseTestRows.clear();
         caseTestDetails.clear();
 
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
         TreeMap<Integer, ArrayList<String>> requests = FileHandling.readActiveRecords("DiagnosticServiceRequests.txt");
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
 
-        if (consults != null) {
-            for (Integer consultId : consults.keySet()) {
-                // c: 0 case_id, 1 doctor_id, 2 complaint, 5 status, 7 date
-                ArrayList<String> c = consults.get(consultId);
-                if (!c.get(0).equals(String.valueOf(caseId))) {
+        if (consultations != null) {
+            for (Integer consultId : consultations.keySet()) {
+                // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+                ArrayList<String> consultationValue = consultations.get(consultId);
+                if (!consultationValue.get(0).equals(String.valueOf(caseId))) {
                     continue;
                 }
-                autoFinalizeConsultation(consultId, c);
-                caseConsultRows.add(new Object[]{c.get(7), getDoctorName(c.get(1)), c.get(2), capitalize(c.get(5))});
+                autoFinalizeConsultation(consultId, consultationValue);
+                caseConsultRows.add(new Object[]{consultationValue.get(7), getDoctorName(consultationValue.get(1)), consultationValue.get(2), capitalize(consultationValue.get(5))});
                 caseConsultIds.add(consultId);
 
                 if (requests != null && services != null) {
-                    for (ArrayList<String> r : requests.values()) {
-                        // r: 0 consultation_id, 1 service_id, 2 request_date, 3 remarks, 4 result_date, 5 results
-                        if (!r.get(0).equals(String.valueOf(consultId))) {
+                    for (ArrayList<String> requestValue : requests.values()) {
+                        // DiagnosticServiceRequests(request_id, consultation_id, service_id, request_date, request_remarks, result_date, results, deleted)
+                        // DiagnosticServiceCatalogue(service_id, service_name, category, type, price, deleted)
+                        if (!requestValue.get(0).equals(String.valueOf(consultId))) {
                             continue;
                         }
                         String serviceName = "Unknown";
-                        ArrayList<String> s = services.get(Integer.parseInt(r.get(1)));
-                        if (s != null) {
-                            serviceName = s.get(0);
+                        ArrayList<String> serviceValue = services.get(Integer.parseInt(requestValue.get(1)));
+                        if (serviceValue != null) {
+                            serviceName = serviceValue.get(0);
                         }
                         String status = "Pending";
                         String results = "Not available yet";
-                        if (!r.get(4).isEmpty()) {
+                        if (!requestValue.get(4).isEmpty()) {
                             status = "Ready";
-                            results = r.get(5);
+                            results = requestValue.get(5);
                         }
-                        caseTestRows.add(new Object[]{serviceName, r.get(2), status, r.get(4)});
+                        caseTestRows.add(new Object[]{serviceName, requestValue.get(2), status, requestValue.get(4)});
                         caseTestDetails.add(serviceName
-                                + "\n\nRequested by: " + getDoctorName(c.get(1)) + " on " + r.get(2)
-                                + "\n\nRemarks: " + r.get(3)
+                                + "\n\nRequested by: " + getDoctorName(consultationValue.get(1)) + " on " + requestValue.get(2)
+                                + "\n\nRemarks: " + requestValue.get(3)
                                 + "\n\nResults: " + results);
                     }
                 }
@@ -510,18 +510,17 @@ public class Doctor extends User implements DoctorServices {
     }
 
     public String getCaseMeta() {
-        return "Patient: " + getPatientName(this.caseCatientId) + "  |  Opened: " + this.caseOpenDate;
+        return "Patient: " + getPatientName(this.casePatientId) + "  |  Opened: " + this.caseOpenDate;
     }
 
     public String getCaseRoleNote() {
         if (!isCaseOpen()) {
-            return "This case is closed and can no longer be edited.";
+            return "Case is closed and cannot be edited.";
         }
         if (isCaseInCharge()) {
-            return "You are the doctor in charge of this case.";
+            return "Doctor-in-charge.";
         }
-        return "You are viewing this case as a contributing doctor. Only " + getDoctorName(this.caseDoctorInCharge)
-                + " can edit the summary or close this case.";
+        return "View-only as contributing doctor. Only " + getDoctorName(this.caseDoctorInCharge) + " can edit this case.";
     }
 
     public boolean isCaseOpen() {
@@ -535,15 +534,15 @@ public class Doctor extends User implements DoctorServices {
     public String[] getCasePatient() {
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         TreeMap<Integer, ArrayList<String>> patients = FileHandling.readAllRecords("Patients.txt");
-        int patientId = Integer.parseInt(this.caseCatientId);
+        int patientId = Integer.parseInt(this.casePatientId);
 
         String age = "-";
         String gender = "-";
         if (users != null && users.containsKey(patientId)) {
-            ArrayList<String> u = users.get(patientId); // 2 dob, 3 gender
-            gender = u.get(3);
+            ArrayList<String> userValue = users.get(patientId);
+            gender = userValue.get(3);
             try {
-                LocalDate dob = LocalDate.parse(u.get(2), DATE);
+                LocalDate dob = LocalDate.parse(userValue.get(2), DATE);
                 age = String.valueOf(Period.between(dob, LocalDate.now()).getYears());
             } catch (Exception e) {
                 age = "-";
@@ -552,9 +551,9 @@ public class Doctor extends User implements DoctorServices {
         String bloodType = "-";
         String allergies = "-";
         if (patients != null && patients.containsKey(patientId)) {
-            ArrayList<String> p = patients.get(patientId); // 0 blood_type, 1 allergies
-            bloodType = p.get(0);
-            allergies = p.get(1);
+            ArrayList<String> patientValue = patients.get(patientId);
+            bloodType = patientValue.get(0);
+            allergies = patientValue.get(1);
         }
         return new String[]{age, gender, bloodType, allergies};
     }
@@ -602,7 +601,7 @@ public class Doctor extends User implements DoctorServices {
 
         ArrayList<String> record = new ArrayList<>();
         record.add(String.valueOf(this.currentCaseId));
-        record.add(this.caseCatientId);
+        record.add(this.casePatientId);
         record.add(this.caseDoctorInCharge);
         record.add(this.caseOpenDate);
         record.add(this.caseCloseDate);
@@ -633,7 +632,7 @@ public class Doctor extends User implements DoctorServices {
 
         ArrayList<String> record = new ArrayList<>();
         record.add(String.valueOf(this.currentCaseId));
-        record.add(this.caseCatientId);
+        record.add(this.casePatientId);
         record.add(this.caseDoctorInCharge);
         record.add(this.caseOpenDate);
         record.add(today());
@@ -647,31 +646,29 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // =====================================================================
-    // CONSULTATION DIALOG
-    // =====================================================================
+// CONSULTATION DIALOG
     public boolean loadConsultation(int consultId) {
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readAllRecords("Consultations.txt");
-        if (consults == null || !consults.containsKey(consultId)) {
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readAllRecords("Consultations.txt");
+        if (consultations == null || !consultations.containsKey(consultId)) {
             return false;
         }
-        // c: 0 case_id, 1 doctor_id, 2 complaint, 3 vitals, 4 notes, 5 status, 6 room, 7 date, 8 start, 9 end, 10 deleted
-        ArrayList<String> c = consults.get(consultId);
-        if (c.get(10).equals("1")) {
+        // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+        ArrayList<String> consultationValue = consultations.get(consultId);
+        if (consultationValue.get(10).equals("1")) {
             return false;
         }
-        autoFinalizeConsultation(consultId, c);
+        autoFinalizeConsultation(consultId, consultationValue);
         this.currentConsultId = consultId;
-        this.consultCaseId = c.get(0);
-        this.consultDoctorId = c.get(1);
-        this.consultComplaint = c.get(2);
-        this.consultVitals = c.get(3);
-        this.consultNotes = c.get(4);
-        this.consultStatus = c.get(5);
-        this.consultRoom = c.get(6);
-        this.consultDate = c.get(7);
-        this.consultStart = c.get(8);
-        this.consultEnd = c.get(9);
+        this.consultCaseId = consultationValue.get(0);
+        this.consultDoctorId = consultationValue.get(1);
+        this.consultComplaint = consultationValue.get(2);
+        this.consultVitals = consultationValue.get(3);
+        this.consultNotes = consultationValue.get(4);
+        this.consultStatus = consultationValue.get(5);
+        this.consultRoom = consultationValue.get(6);
+        this.consultDate = consultationValue.get(7);
+        this.consultStart = consultationValue.get(8);
+        this.consultEnd = consultationValue.get(9);
         return true;
     }
 

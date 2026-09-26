@@ -1,33 +1,33 @@
-1,58,9,28-05-2026,02-06-2026,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
-2,61,9,20-05-2026,23-06-2026,diagnosis,scheduled,`Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given`,0
-3,56,27,16-06-2026,26-06-2026,diagnosis,scheduled,`Stable angina pectoris investigated with functional and structural cardiac assessment, medical therapy optimised`,0
-4,53,31,08-06-2026,24-06-2026,trauma,emergency,`Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union`,0
-5,46,35,02-06-2026,03-07-2026,diagnosis,walkin,`Dengue fever without warning signs monitored with serial blood counts until platelet recovery`,0
-6,45,32,18-06-2026,13-07-2026,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
-7,65,10,28-05-2026,13-06-2026,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
-8,59,20,21-05-2026,12-06-2026,trauma,emergency,`Minor head injury with soft tissue abrasions, observed for twenty four hours with no neurological deterioration`,0
-9,57,18,20-06-2026,02-08-2026,trauma,walkin,`Palmar laceration explored and sutured under local anaesthesia, healed without infection`,0
-10,52,28,16-06-2026,07-07-2026,diagnosis,scheduled,`Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy`,0
-11,63,11,21-06-2026,26-06-2026,immunization,walkin,`Seasonal influenza vaccination administered with no immediate adverse reaction reported`,0
-12,64,37,04-05-2026,17-05-2026,diagnosis,scheduled,`Symptomatic gallstones identified on ultrasound, managed medically with dietary advice and surgical referral`,0
-13,60,20,30-05-2026,23-06-2026,diagnosis,emergency,`Acute appendicitis confirmed on imaging and managed operatively with an uneventful postoperative recovery`,0
-14,48,28,19-06-2026,28-07-2026,trauma,walkin,`Mechanical lumbar strain without neurological deficit, resolved with analgesia and activity modification`,0
-15,55,9,13-05-2026,18-05-2026,diagnosis,scheduled,`Primary hypothyroidism confirmed biochemically and stabilised on thyroid hormone replacement`,0
-16,62,16,12-05-2026,17-05-2026,trauma,emergency,`Superficial partial thickness scald to the right forearm managed with dressings until complete epithelialisation`,0
-17,50,8,08-08-2026,13-08-2026,diagnosis,walkin,`Bacterial conjunctivitis treated with topical antibiotic and resolved without complication`,0
-18,40,35,19-08-2026,29-08-2026,healthcheck,scheduled,`Well child assessment with growth parameters and developmental milestones within expected range for age`,0
-19,54,8,18-08-2026,20-08-2026,immunization,scheduled,`Hepatitis B immunisation course commenced for occupational exposure with baseline liver function checked`,0
-20,51,25,17-08-2026,21-08-2026,healthcheck,scheduled,`Newly diagnosed essential hypertension with cardiovascular risk stratification and antihypertensive therapy started`,0
-21,49,37,08-08-2026,14-08-2026,healthcheck,scheduled,`Interval surveillance imaging of an incidental pulmonary nodule showing no growth over the follow up period`,0
-22,58,25,13-08-2026,,diagnosis,emergency,`Non ST elevation myocardial infarction managed with dual antiplatelet therapy and inpatient cardiac monitoring`,0
-23,61,8,08-08-2026,,diagnosis,walkin,`Deep vein thrombosis of the left popliteal vein confirmed on Doppler imaging and anticoagulated`,0
-24,41,33,25-07-2026,,diagnosis,walkin,`Childhood asthma with intermittent exacerbations, inhaled therapy commenced with written asthma action plan`,0
-25,56,8,21-07-2026,,diagnosis,scheduled,`Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given`,0
-26,53,31,02-08-2026,,diagnosis,scheduled,`Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy`,0
-27,65,31,06-08-2026,,trauma,emergency,`Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union`,0
-28,59,10,05-08-2026,,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
-29,57,10,16-08-2026,,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
-30,43,33,26-08-2026,,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
+1,58,9,21-09-2026,22-09-2026,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
+2,61,9,21-09-2026,22-09-2026,diagnosis,scheduled,`Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given`,0
+3,56,27,22-09-2026,23-09-2026,diagnosis,scheduled,`Stable angina pectoris investigated with functional and structural cardiac assessment, medical therapy optimised`,0
+4,53,31,22-09-2026,23-09-2026,trauma,emergency,`Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union`,0
+5,46,35,22-09-2026,23-09-2026,diagnosis,walkin,`Dengue fever without warning signs monitored with serial blood counts until platelet recovery`,0
+6,45,32,22-09-2026,23-09-2026,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
+7,65,10,21-09-2026,22-09-2026,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
+8,59,20,21-09-2026,22-09-2026,trauma,emergency,`Minor head injury with soft tissue abrasions, observed for twenty four hours with no neurological deterioration`,0
+9,57,18,22-09-2026,23-09-2026,trauma,walkin,`Palmar laceration explored and sutured under local anaesthesia, healed without infection`,0
+10,52,28,22-09-2026,22-09-2026,diagnosis,scheduled,`Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy`,0
+11,63,11,22-09-2026,23-09-2026,immunization,walkin,`Seasonal influenza vaccination administered with no immediate adverse reaction reported`,0
+12,64,37,21-09-2026,21-09-2026,diagnosis,scheduled,`Symptomatic gallstones identified on ultrasound, managed medically with dietary advice and surgical referral`,0
+13,60,20,21-09-2026,23-09-2026,diagnosis,emergency,`Acute appendicitis confirmed on imaging and managed operatively with an uneventful postoperative recovery`,0
+14,48,28,22-09-2026,23-09-2026,trauma,walkin,`Mechanical lumbar strain without neurological deficit, resolved with analgesia and activity modification`,0
+15,55,9,21-09-2026,21-09-2026,diagnosis,scheduled,`Primary hypothyroidism confirmed biochemically and stabilised on thyroid hormone replacement`,0
+16,62,16,21-09-2026,21-09-2026,trauma,emergency,`Superficial partial thickness scald to the right forearm managed with dressings until complete epithelialisation`,0
+17,50,8,24-09-2026,24-09-2026,diagnosis,walkin,`Bacterial conjunctivitis treated with topical antibiotic and resolved without complication`,0
+18,40,35,24-09-2026,24-09-2026,healthcheck,scheduled,`Well child assessment with growth parameters and developmental milestones within expected range for age`,0
+19,54,8,24-09-2026,24-09-2026,immunization,scheduled,`Hepatitis B immunisation course commenced for occupational exposure with baseline liver function checked`,0
+20,51,25,24-09-2026,24-09-2026,healthcheck,scheduled,`Newly diagnosed essential hypertension with cardiovascular risk stratification and antihypertensive therapy started`,0
+21,49,37,24-09-2026,24-09-2026,healthcheck,scheduled,`Interval surveillance imaging of an incidental pulmonary nodule showing no growth over the follow up period`,0
+22,58,25,24-09-2026,,diagnosis,emergency,`Non ST elevation myocardial infarction managed with dual antiplatelet therapy and inpatient cardiac monitoring`,0
+23,61,8,24-09-2026,,diagnosis,walkin,`Deep vein thrombosis of the left popliteal vein confirmed on Doppler imaging and anticoagulated`,0
+24,41,33,23-09-2026,,diagnosis,walkin,`Childhood asthma with intermittent exacerbations, inhaled therapy commenced with written asthma action plan`,0
+25,56,8,23-09-2026,,diagnosis,scheduled,`Type 2 diabetes mellitus with suboptimal control, oral hypoglycaemic regime adjusted and dietary counselling given`,0
+26,53,31,24-09-2026,,diagnosis,scheduled,`Primary osteoarthritis of the right knee managed conservatively with analgesia and supervised physiotherapy`,0
+27,65,31,24-09-2026,,trauma,emergency,`Closed fracture of the right distal radius treated with closed reduction and below elbow cast, followed to union`,0
+28,59,10,24-09-2026,,healthcheck,scheduled,`Comprehensive annual health screening completed with lifestyle counselling for borderline lipid results`,0
+29,57,10,24-09-2026,,diagnosis,walkin,`Community acquired pneumonia of the right lower lobe treated with oral antibiotics and reviewed to full radiological resolution`,0
+30,43,33,25-09-2026,,immunization,scheduled,`Routine childhood immunisation administered according to the national immunisation schedule with no adverse reaction`,0
 31,40,35,24-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
 32,41,35,24-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
 33,42,35,24-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
@@ -60,11 +60,42 @@
 60,42,35,26-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
 61,43,35,27-09-2026,,diagnosis,scheduled,`Follow up review of neurological symptoms in a paediatric neurology patient`,0
 62,44,35,27-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance in a paediatric neurology patient`,0
-63,45,35,27-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
-64,46,35,27-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
-65,47,35,27-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
-66,48,35,27-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
-67,49,35,27-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
-68,50,35,27-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
-69,51,35,27-09-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
-70,52,35,27-09-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
+63,45,35,28-09-2026,,diagnosis,scheduled,`New onset unsteady gait and clumsiness in a paediatric neurology patient`,0
+64,46,35,28-09-2026,,diagnosis,scheduled,`Review of electroencephalogram findings in a paediatric neurology patient`,0
+65,47,35,29-09-2026,,diagnosis,scheduled,`Scheduled review of ongoing management for childhood epilepsy in a paediatric neurology patient`,0
+66,48,35,29-09-2026,,diagnosis,scheduled,`Routine developmental assessment in a paediatric neurology patient`,0
+67,49,35,30-09-2026,,diagnosis,scheduled,`Follow up assessment of febrile seizure in a paediatric neurology patient`,0
+68,50,35,30-09-2026,,diagnosis,scheduled,`Review of progress since the previous visit in a paediatric neurology patient`,0
+69,51,35,01-10-2026,,diagnosis,scheduled,`Scheduled paediatric neurology developmental follow up in a paediatric neurology patient`,0
+70,52,35,01-10-2026,,diagnosis,scheduled,`Assessment of speech and motor developmental delay in a paediatric neurology patient`,0
+71,40,8,26-09-2026,26-09-2026,diagnosis,scheduled,`Annual employment health screening`,0
+72,43,9,27-09-2026,,diagnosis,scheduled,`Review of investigation results`,0
+73,46,10,28-09-2026,,diagnosis,scheduled,`Follow up for medication review and dose titration`,0
+74,49,11,29-09-2026,,diagnosis,scheduled,`Annual employment health screening`,0
+75,52,16,30-09-2026,,diagnosis,scheduled,`Road traffic accident with head injury and multiple abrasions`,0
+76,55,19,01-10-2026,,diagnosis,scheduled,`Deep laceration to the left palm from a kitchen knife`,0
+77,58,20,02-10-2026,,diagnosis,scheduled,`Road traffic accident with head injury and multiple abrasions`,0
+78,61,24,26-09-2026,26-09-2026,diagnosis,scheduled,`Cardiovascular risk assessment for newly detected hypertension`,0
+79,64,25,27-09-2026,,diagnosis,scheduled,`Chest tightness on exertion relieved by rest`,0
+80,41,26,28-09-2026,,diagnosis,scheduled,`Cardiovascular risk assessment for newly detected hypertension`,0
+81,44,27,29-09-2026,,diagnosis,scheduled,`Chest tightness on exertion relieved by rest`,0
+82,47,28,30-09-2026,,diagnosis,scheduled,`Lower back pain after lifting a heavy load at work`,0
+83,50,29,01-10-2026,,diagnosis,scheduled,`Chronic right knee pain worse on climbing stairs`,0
+84,53,30,02-10-2026,,diagnosis,scheduled,`Lower back pain after lifting a heavy load at work`,0
+85,56,31,26-09-2026,,diagnosis,scheduled,`Chronic right knee pain worse on climbing stairs`,0
+86,59,32,27-09-2026,,diagnosis,scheduled,`Scheduled childhood immunisation visit`,0
+87,62,33,28-09-2026,,diagnosis,scheduled,`High fever with widespread rash for three days`,0
+88,65,34,29-09-2026,,diagnosis,scheduled,`Scheduled childhood immunisation visit`,0
+89,42,37,30-09-2026,,diagnosis,scheduled,`Recurrent headaches with associated visual disturbance`,0
+90,45,39,01-10-2026,,diagnosis,scheduled,`Surveillance imaging review for an incidental pulmonary nodule`,0
+91,69,68,22-09-2026,,diagnosis,scheduled,`Recurrent upper respiratory symptoms under review by the family medicine team`,0
+92,47,12,29-09-2026,,trauma,emergency,`Road traffic accident with head injury and multiple abrasions`,0
+93,52,13,27-09-2026,,diagnosis,emergency,`Severe central chest pain radiating to the left arm with sweating`,0
+94,58,14,28-09-2026,,trauma,emergency,`Deep laceration to the left palm from a kitchen knife`,0
+95,61,15,30-09-2026,,diagnosis,emergency,`Severe right lower abdominal pain with vomiting`,0
+96,63,17,01-10-2026,,diagnosis,emergency,`Left calf swelling and pain after a long haul flight`,0
+97,65,21,25-09-2026,26-09-2026,diagnosis,emergency,`Severe central chest pain radiating to the left arm with sweating`,0
+98,46,22,02-10-2026,,trauma,emergency,`Fall from motorcycle with right forearm pain and visible deformity`,0
+99,49,23,26-09-2026,,trauma,emergency,`Superficial partial thickness scald to the right forearm`,0
+100,50,36,29-09-2026,,diagnosis,scheduled,`Surveillance imaging review for an incidental pulmonary nodule`,0
+101,55,38,01-10-2026,,diagnosis,scheduled,`Review of investigation results`,0

@@ -119,7 +119,6 @@ public abstract class User {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             String formattedDob = dob.format(formatter);
             details.set(2, formattedDob);
-            
             details.set(3, gender);
             details.set(4, phone);
             details.set(5, email);
@@ -133,6 +132,7 @@ public abstract class User {
             this.last_name = lastName;
             this.dob = dob;
             this.phone = phone;
+            this.email = email;
             this.password = password;
             this.gender = gender;
             

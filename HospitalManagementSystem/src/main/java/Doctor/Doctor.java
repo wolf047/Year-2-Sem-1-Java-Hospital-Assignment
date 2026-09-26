@@ -606,9 +606,6 @@ public class Doctor extends User implements DoctorServices {
 
     // Saves the case summary. Returns null if saved, or the error message.
     public String saveCaseSummary(String summary) {
-        if (this.currentCaseId == -1) {
-            return "No case loaded.";
-        }
         if (!isCaseInCharge()) {
             return "Only the doctor in charge can edit the case summary.";
         }
@@ -637,9 +634,6 @@ public class Doctor extends User implements DoctorServices {
 
     // Closes the case. Returns null if closed, or the error message.
     public String closeCase() {
-        if (this.currentCaseId == -1) {
-            return "No case loaded.";
-        }
         if (!isCaseInCharge()) {
             return "Only the doctor in charge can close this case.";
         }

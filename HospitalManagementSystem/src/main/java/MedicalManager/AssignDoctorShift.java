@@ -217,10 +217,14 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         String selectedDoctor = doctorsCmb.getSelectedItem().toString();
         int doctorID = Integer.parseInt(selectedDoctor.split(" - ")[0].replace("DOC", ""));
         
-        manager.assignDoctorToShift(shiftID, doctorID);
-        JOptionPane.showMessageDialog(this, "Doctor Assigned Successfully!",
+        boolean success = manager.assignDoctorToShift(shiftID, doctorID);
+        if(success){
+            JOptionPane.showMessageDialog(this, "Doctor Assigned Successfully!",
                 "Success", JOptionPane.INFORMATION_MESSAGE);
-        
+        }else{
+            JOptionPane.showMessageDialog(this, "Unable to assign doctor.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
         loadAssignedTable();
         loadDoctorsCombo();
     }//GEN-LAST:event_assignBtnActionPerformed

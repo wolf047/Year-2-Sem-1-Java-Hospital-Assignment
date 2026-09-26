@@ -274,9 +274,14 @@ public class ManageDepartments extends javax.swing.JFrame {
             return;
         }
         
-        manager.createDepartment(name, desc);
-        JOptionPane.showMessageDialog(this, "Department Created Successfully!",
+        boolean success = manager.createDepartment(name, desc);
+        if(success){
+            JOptionPane.showMessageDialog(this, "Department Created Successfully!",
                 "Success", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "Unable to create department.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
         clearFields();
         loadDepartmentsTable(); // reload table
     }//GEN-LAST:event_createBtnActionPerformed

@@ -391,10 +391,15 @@ public class ManageShifts extends javax.swing.JFrame {
                     "Duplicate Shift", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        manager.createShift(deptID, dateInput, startTime, endTime);
-        JOptionPane.showMessageDialog(this,
+        boolean success = manager.createShift(deptID, dateInput, startTime, endTime);
+        if(success){
+            JOptionPane.showMessageDialog(this,
                 "Shift Created Successfully!\nIMPORTANT: Please assign at least 2 doctors to the shift",
                 "Success", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "Unable to create shift.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
         loadShiftsTable();
     }//GEN-LAST:event_createBtnActionPerformed
 

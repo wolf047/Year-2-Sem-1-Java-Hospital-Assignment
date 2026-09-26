@@ -239,11 +239,11 @@ public class Doctor extends User implements DoctorServices {
         if (cases == null) {
             return false;
         }
-        ArrayList<String> caseCloseDate = cases.get(Integer.parseInt(caseId));
-        if (caseCloseDate == null) {
+        ArrayList<String> caseValue = cases.get(Integer.parseInt(caseId));
+        if (caseValue == null) {
             return false;
         }
-        return !caseCloseDate.get(3).isEmpty();
+        return !caseValue.get(3).isEmpty();
     }
 
     // updates consultation status with reference to date and consultation details 
@@ -812,8 +812,8 @@ public class Doctor extends User implements DoctorServices {
         TreeSet<String> catalogueForms = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> drugs = FileHandling.readActiveRecords("DrugCatalogue.txt");
         if (drugs != null) {
-            for (ArrayList<String> drug : drugs.values()) {
-                catalogueForms.add(drug.get(1));
+            for (ArrayList<String> drugValue : drugs.values()) {
+                catalogueForms.add(drugValue.get(1));
             }
         }
         selectionForms.addAll(catalogueForms);
@@ -834,20 +834,20 @@ public class Doctor extends User implements DoctorServices {
             search = searchText.trim().toLowerCase();
         }
         for (Integer drugId : drugs.keySet()) {
-            ArrayList<String> drug = drugs.get(drugId);
-            if (searchForm != null && !searchForm.equalsIgnoreCase("All") && !drug.get(1).equalsIgnoreCase(searchForm)) {
+            ArrayList<String> drugValue = drugs.get(drugId);
+            if (searchForm != null && !searchForm.equalsIgnoreCase("All") && !drugValue.get(1).equalsIgnoreCase(searchForm)) {
                 continue;
             }
-            if (!search.isEmpty() && !drug.get(0).toLowerCase().contains(search)) {
+            if (!search.isEmpty() && !drugValue.get(0).toLowerCase().contains(search)) {
                 continue;
             }
             double price = 0.0;
             try {
-                price = Double.parseDouble(drug.get(2));
+                price = Double.parseDouble(drugValue.get(2));
             } catch (Exception e) {
                 price = 0.0;
             }
-            rows.add(new Object[]{drug.get(0), drug.get(1), String.format("%.2f", price)});
+            rows.add(new Object[]{drugValue.get(0), drugValue.get(1), String.format("%.2f", price)});
             drugResultIds.add(drugId);
         }
         return rows;
@@ -1006,11 +1006,11 @@ public class Doctor extends User implements DoctorServices {
         TreeSet<String> catalogueTypes = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> service : services.values()) { 
-                if (category != null && !category.equalsIgnoreCase("All") && !service.get(1).equalsIgnoreCase(category)) {
+            for (ArrayList<String> serviceValue : services.values()) { 
+                if (category != null && !category.equalsIgnoreCase("All") && !serviceValue.get(1).equalsIgnoreCase(category)) {
                     continue;
                 }
-                catalogueTypes.add(service.get(2));
+                catalogueTypes.add(serviceValue.get(2));
             }
         }
         selectionTypes.addAll(catalogueTypes);
@@ -1031,23 +1031,23 @@ public class Doctor extends User implements DoctorServices {
             search = searchText.trim().toLowerCase();
         }
         for (Integer serviceId : services.keySet()) {
-            ArrayList<String> service = services.get(serviceId); 
-            if (searchCategory != null && !searchCategory.equalsIgnoreCase("All") && !service.get(1).equalsIgnoreCase(searchCategory)) {
+            ArrayList<String> serviceValue = services.get(serviceId); 
+            if (searchCategory != null && !searchCategory.equalsIgnoreCase("All") && !serviceValue.get(1).equalsIgnoreCase(searchCategory)) {
                 continue;
             }
-            if (searchType != null && !searchType.equalsIgnoreCase("All") && !service.get(2).equalsIgnoreCase(searchType)) {
+            if (searchType != null && !searchType.equalsIgnoreCase("All") && !serviceValue.get(2).equalsIgnoreCase(searchType)) {
                 continue;
             }
-            if (!search.isEmpty() && !service.get(0).toLowerCase().contains(search)) {
+            if (!search.isEmpty() && !serviceValue.get(0).toLowerCase().contains(search)) {
                 continue;
             }
             double price = 0.0;
             try {
-                price = Double.parseDouble(service.get(3));
+                price = Double.parseDouble(serviceValue.get(3));
             } catch (Exception e) {
                 price = 0.0;
             }
-            rows.add(new Object[]{service.get(0), capitalize(service.get(1)), capitalize(service.get(2)), String.format("%.2f", price)});
+            rows.add(new Object[]{serviceValue.get(0), capitalize(serviceValue.get(1)), capitalize(serviceValue.get(2)), String.format("%.2f", price)});
             serviceResultIds.add(serviceId);
         }
         return rows;

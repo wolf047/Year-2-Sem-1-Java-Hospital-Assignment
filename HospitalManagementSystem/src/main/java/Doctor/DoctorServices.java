@@ -76,9 +76,7 @@ public interface DoctorServices {
     ArrayList<Object[]> searchServices(String category, String type, String text);
     int getServiceResultId(int row);
     String checkRemarkText(String text);
-    // requests: {serviceId, remarks}
     String submitDiagnosticRequests(int consultId, ArrayList<String[]> requests);
-    // rows: {requestId, serviceId, serviceName, requestDate, remarks}
     ArrayList<Object[]> getDiagnosticRequestItems(int consultId);
     String deleteDiagnosticRequest(int requestId);
     String today();

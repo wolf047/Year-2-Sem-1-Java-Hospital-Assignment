@@ -189,13 +189,13 @@ public class Doctor extends User implements DoctorServices {
             newPassword = newPwd;
         }
 
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(this.user_id));
-        record.addAll(users.get(this.user_id));
-        record.set(5, phone);
-        record.set(6, newEmail);
-        record.set(7, newPassword);
-        FileHandling.editRecord("Users.txt", record);
+        ArrayList<String> userRecord = new ArrayList<>();
+        userRecord.add(String.valueOf(this.user_id));
+        userRecord.addAll(users.get(this.user_id));
+        userRecord.set(5, phone);
+        userRecord.set(6, newEmail);
+        userRecord.set(7, newPassword);
+        FileHandling.editRecord("Users.txt", userRecord);
 
         this.phone = phone;
         this.email = newEmail;
@@ -277,10 +277,10 @@ public class Doctor extends User implements DoctorServices {
         }
         consultationValue.set(5, newStatus);
 
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(consultId));
-        record.addAll(consultationValue);
-        FileHandling.editRecord("Consultations.txt", record);
+        ArrayList<String> consultationRecord = new ArrayList<>();
+        consultationRecord.add(String.valueOf(consultId));
+        consultationRecord.addAll(consultationValue);
+        FileHandling.editRecord("Consultations.txt", consultationRecord);
     }
 
     
@@ -992,8 +992,8 @@ public class Doctor extends User implements DoctorServices {
         TreeSet<String> catalogueCategories = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> services = FileHandling.readActiveRecords("DiagnosticServiceCatalogue.txt");
         if (services != null) {
-            for (ArrayList<String> service : services.values()) { // 1 category
-                catalogueCategories.add(service.get(1));
+            for (ArrayList<String> serviceValue : services.values()) { 
+                catalogueCategories.add(serviceValue.get(1));
             }
         }
         selectionCategories.addAll(catalogueCategories);
@@ -1119,11 +1119,11 @@ public class Doctor extends User implements DoctorServices {
     error: String error message
     */    
     public String deleteDiagnosticRequest(int requestId) {
-        ArrayList<String> record = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", requestId);
-        if (record == null) {
+        ArrayList<String> requestRecord = FileHandling.readSpecificRecord("DiagnosticServiceRequests.txt", requestId);
+        if (requestRecord == null) {
             return "This diagnostic request could not be found.";
         }
-        int consultId = Integer.parseInt(record.get(1)); // 1 consultation_id
+        int consultId = Integer.parseInt(requestRecord.get(1)); 
         if (!loadConsultation(consultId) || !canEditConsultation()) {
             return "You cannot delete diagnostic requests for this consultation.";
         }

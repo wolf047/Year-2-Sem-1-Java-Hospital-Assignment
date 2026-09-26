@@ -621,7 +621,7 @@ public class Doctor extends User implements DoctorServices {
     */
     public String closeCase() {
         if (!isCaseInCharge()) {
-            return "Only doctor in charge can close case.";
+            return "Only doctor-in-charge can close case.";
         }
         if (!isCaseOpen()) {
             return "Case is already closed.";
@@ -630,17 +630,17 @@ public class Doctor extends User implements DoctorServices {
             return "Please write a case summary before closing this case.";
         }
 
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(this.currentCaseId));
-        record.add(this.casePatientId);
-        record.add(this.caseDoctorInCharge);
-        record.add(this.caseOpenDate);
-        record.add(today());
-        record.add(this.caseCategory);
-        record.add(this.caseType);
-        record.add(this.caseSummary);
-        record.add("0");
-        FileHandling.editRecord("Cases.txt", record);
+        ArrayList<String> caseRecord = new ArrayList<>();
+        caseRecord.add(String.valueOf(this.currentCaseId));
+        caseRecord.add(this.casePatientId);
+        caseRecord.add(this.caseDoctorInCharge);
+        caseRecord.add(this.caseOpenDate);
+        caseRecord.add(today());
+        caseRecord.add(this.caseCategory);
+        caseRecord.add(this.caseType);
+        caseRecord.add(this.caseSummary);
+        caseRecord.add("0");
+        FileHandling.editRecord("Cases.txt", caseRecord);
 
         this.caseCloseDate = today();
         return null;
@@ -712,19 +712,8 @@ public class Doctor extends User implements DoctorServices {
         if (consultDateParsed.isAfter(today)) {
             return "Consultation not scheduled on this day.";
         }
-<<<<<<< Updated upstream
         if (consultDateParsed.equals(today) && LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
             return "This consultation has not started yet. Details can be added once it starts.";
-=======
-        if (consultDateParsed.equals(today)) {
-            try {
-                if (LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
-                    return "Consultation not scheduled to start yet.";
-                }
-            } catch (Exception e) {
-                // ignore
-            }
->>>>>>> Stashed changes
         }
         return "";
     }
@@ -741,11 +730,6 @@ public class Doctor extends User implements DoctorServices {
         return this.consultNotes;
     }
 
-    // Own, case-not-closed consultation that is either "booked" and its slot has started (no
-    // upper bound - autoFinalizeConsultation cancels it automatically once the slot ends with
-    // nothing ever saved, so a "booked" record reaching here past its end time just hasn't been
-    // swept yet), or "incomplete" on the same day it was saved (the day after, autoFinalize
-    // moves it to "completed").
     public boolean canEditConsultation() {
         if (this.currentConsultId == -1) {
             return false;
@@ -776,32 +760,35 @@ public class Doctor extends User implements DoctorServices {
         }
     }
 
-    // Saves the consultation's vitals, notes, and status. Returns null if saved, or the error message.
+    /* 
+    successful save: null
+    error: String error message
+    */
     private String saveConsultation(String vitals, String notes, String newStatus) {
         if (this.currentConsultId == -1) {
             return "No consultation loaded.";
         }
         if (!canEditConsultation()) {
-            return "You cannot edit this consultation.";
+            return "Consultation cannot be edited.";
         }
         if (vitals.contains("`") || notes.contains("`")) {
             return "Vital signs and notes cannot contain a backtick (`) character.";
         }
 
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(this.currentConsultId));
-        record.add(this.consultCaseId);
-        record.add(this.consultDoctorId);
-        record.add(this.consultComplaint);
-        record.add(vitals.trim());
-        record.add(notes.trim());
-        record.add(newStatus);
-        record.add(this.consultRoom);
-        record.add(this.consultDate);
-        record.add(this.consultStart);
-        record.add(this.consultEnd);
-        record.add("0");
-        FileHandling.editRecord("Consultations.txt", record);
+        ArrayList<String> consultationRecord = new ArrayList<>();
+        consultationRecord.add(String.valueOf(this.currentConsultId));
+        consultationRecord.add(this.consultCaseId);
+        consultationRecord.add(this.consultDoctorId);
+        consultationRecord.add(this.consultComplaint);
+        consultationRecord.add(vitals.trim());
+        consultationRecord.add(notes.trim());
+        consultationRecord.add(newStatus);
+        consultationRecord.add(this.consultRoom);
+        consultationRecord.add(this.consultDate);
+        consultationRecord.add(this.consultStart);
+        consultationRecord.add(this.consultEnd);
+        consultationRecord.add("0");
+        FileHandling.editRecord("Consultations.txt", consultationRecord);
 
         this.consultVitals = vitals.trim();
         this.consultNotes = notes.trim();
@@ -809,38 +796,35 @@ public class Doctor extends User implements DoctorServices {
         return null;
     }
 
-    // Saves vitals/notes and marks the consultation "incomplete": details saved but not yet
-    // marked complete, still editable for the rest of the day.
+
     public String saveConsultationProgress(String vitals, String notes) {
         return saveConsultation(vitals, notes, "incomplete");
     }
 
-    // Saves vitals/notes and marks the consultation "completed": no longer editable.
     public String completeConsultation(String vitals, String notes) {
         return saveConsultation(vitals, notes, "completed");
     }
 
-    // =====================================================================
-    // PRESCRIPTIONS
-    // =====================================================================
+// PRESCRIPTIONS
     public ArrayList<String> getDrugForms() {
-        ArrayList<String> forms = new ArrayList<>();
-        forms.add("All");
-        TreeSet<String> distinctForms = new TreeSet<>();
+        ArrayList<String> selectionForms = new ArrayList<>();
+        selectionForms.add("All");
+        TreeSet<String> catalogueForms = new TreeSet<>();
         TreeMap<Integer, ArrayList<String>> drugs = FileHandling.readActiveRecords("DrugCatalogue.txt");
         if (drugs != null) {
-            for (ArrayList<String> d : drugs.values()) { // 1 form
-                distinctForms.add(d.get(1));
+            for (ArrayList<String> drug : drugs.values()) {
+                catalogueForms.add(drug.get(1));
             }
         }
-        forms.addAll(distinctForms);
-        return forms;
+        selectionForms.addAll(catalogueForms);
+        return selectionForms;
     }
 
     public ArrayList<Object[]> searchDrugs(String form, String text) {
         ArrayList<Object[]> rows = new ArrayList<>();
         drugResultIds.clear();
 
+        // DrugCatalogue(drug_id, drug_name, form, price, deleted)
         TreeMap<Integer, ArrayList<String>> drugs = FileHandling.readActiveRecords("DrugCatalogue.txt");
         if (drugs == null) {
             return rows;
@@ -850,20 +834,20 @@ public class Doctor extends User implements DoctorServices {
             search = text.trim().toLowerCase();
         }
         for (Integer drugId : drugs.keySet()) {
-            ArrayList<String> d = drugs.get(drugId); // 0 name, 1 form, 2 price
-            if (form != null && !form.equalsIgnoreCase("All") && !d.get(1).equalsIgnoreCase(form)) {
+            ArrayList<String> drug = drugs.get(drugId);
+            if (form != null && !form.equalsIgnoreCase("All") && !drug.get(1).equalsIgnoreCase(form)) {
                 continue;
             }
-            if (!search.isEmpty() && !d.get(0).toLowerCase().contains(search)) {
+            if (!search.isEmpty() && !drug.get(0).toLowerCase().contains(search)) {
                 continue;
             }
             double price = 0.0;
             try {
-                price = Double.parseDouble(d.get(2));
+                price = Double.parseDouble(drug.get(2));
             } catch (Exception e) {
                 price = 0.0;
             }
-            rows.add(new Object[]{d.get(0), d.get(1), String.format("%.2f", price)});
+            rows.add(new Object[]{drug.get(0), drug.get(1), String.format("%.2f", price)});
             drugResultIds.add(drugId);
         }
         return rows;

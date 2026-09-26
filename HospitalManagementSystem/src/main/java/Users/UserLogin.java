@@ -166,8 +166,6 @@ public class UserLogin extends javax.swing.JFrame {
                             // new AdminDashboard().setVisible(true);
                             // this.dispose();
                             return;
-
-                        
                     }
                 }
             }

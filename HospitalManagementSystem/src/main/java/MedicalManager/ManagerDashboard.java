@@ -29,13 +29,13 @@ public class ManagerDashboard extends javax.swing.JFrame {
         userIDLbl.setText(String.format("USER%03d", manager.getUserID()));
         emailLbl.setText(manager.getEmail());
         phoneLbl.setText(manager.getPhone());
-        revenueLbl.setText(String.format("RM %.2f", manager.calculateTotalRevenue()));
+        revenueLbl.setText(String.format("RM %,.2f", manager.getRevenueMetrics()[0]));
         
         int[] cases = manager.getNumberCases();
         casesLbl.setText(String.valueOf(cases[2]));
         casesDesc.setText(String.valueOf(cases[0]) + " Open / " + String.valueOf(cases[1]) + " Closed");
         
-        usedBedsLbl.setText(manager.getUsedBedsCount() + " Beds In Use");
+        usedBedsLbl.setText(manager.getOccupancyMetrics()[1] + " Beds In Use");
         
         List<ArrayList<String>> myDepartments = manager.viewManagingDepartments();
         departmentsLbl.setText(myDepartments.size() + " Active");
@@ -135,8 +135,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(815, 600));
+        setPreferredSize(new java.awt.Dimension(815, 600));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -182,7 +182,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel18.setText("INPATIENT WARDS");
-        jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 120, -1));
+        jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, -1));
 
         usedBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         usedBedsLbl.setText("18 Beds In Use");
@@ -197,15 +197,15 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        jLabel15.setText("TOTAL REVENUE");
+        jLabel15.setText("BILLED REVENUE");
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
         revenueLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         revenueLbl.setText("RM 48,250.00");
         jPanel4.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
-        jLabel25.setText("Total invoiced from closed cases");
-        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 190, -1));
+        jLabel25.setText("Total invoiced");
+        jPanel4.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 160, -1));
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 210, 90));
 
@@ -254,13 +254,14 @@ public class ManagerDashboard extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(departmentsTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 760, 230));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 760, 200));
 
         jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel19.setText("All Hospital Departments Overview");
         getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 280, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("APU Medical Centre");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, -1, -1));
 
@@ -292,6 +293,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, -1));
 
         logoutBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        logoutBtn.setForeground(new java.awt.Color(192, 57, 43));
         logoutBtn.setText("Logout");
         logoutBtn.addActionListener(this::logoutBtnActionPerformed);
         jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));

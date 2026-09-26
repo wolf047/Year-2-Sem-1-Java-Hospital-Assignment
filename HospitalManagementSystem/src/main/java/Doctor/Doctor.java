@@ -11,29 +11,32 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-// One doctor: their details and everything they can do.
-// The screens talk to this class through the DoctorServices interface.
 public class Doctor extends User implements DoctorServices {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-    // =====================================================================
-    // FIELDS
-    // =====================================================================
+// FIELDS DECLARATION
+    
+    // DOCTOR DETAILS
     private String department_id, specialization, off_day;
     private int practice_start_year;
 
-    // Consultations calendar (Consultations page)
+    // CONSULTATION DASH TBL
     private int weekOffset = 0;
     private LocalDate weekStart;
     private ArrayList<Object[]> weekRows = new ArrayList<>();
     private ArrayList<Integer> weekConsultIds = new ArrayList<>();
+    
+    // CONSULTATION DIALOG
+    private int currentConsultId = -1;
+    private String consultCaseId, consultDoctorId, consultComplaint, consultVitals, consultNotes,
+            consultStatus, consultRoom, consultDate, consultStart, consultEnd;
 
-    // Cases list (Cases page)
+    // CASE DASH TBL
     private ArrayList<Object[]> caseRows = new ArrayList<>();
     private ArrayList<Integer> caseIds = new ArrayList<>();
 
-    // The currently opened case (Case dialog)
+    // CASE DIALOG
     private int currentCaseId = -1;
     private String caseCatientId, caseDoctorInCharge, caseOpenDate, caseCloseDate, caseCategory, caseType, caseSummary;
     private ArrayList<Object[]> caseConsultRows = new ArrayList<>();
@@ -41,18 +44,12 @@ public class Doctor extends User implements DoctorServices {
     private ArrayList<Object[]> caseTestRows = new ArrayList<>();
     private ArrayList<String> caseTestDetails = new ArrayList<>();
 
-    // The currently opened consultation (Consultation dialog)
-    private int currentConsultId = -1;
-    private String consultCaseId, consultDoctorId, consultComplaint, consultVitals, consultNotes,
-            consultStatus, consultRoom, consultDate, consultStart, consultEnd;
-
-    // Search results (Prescription and Diagnostic Request dialogs)
+    // PRESCRIPTION DIAGNOSTIC SEARCH RESULTS 
     private ArrayList<Integer> drugResultIds = new ArrayList<>();
     private ArrayList<Integer> serviceResultIds = new ArrayList<>();
 
-    // =====================================================================
-    // CONSTRUCTORS
-    // =====================================================================
+
+// CONSTRUCTOR
     // Builds a doctor straight from the files (used after login)
     public Doctor(int user_id) {
         this.user_id = user_id;
@@ -60,8 +57,7 @@ public class Doctor extends User implements DoctorServices {
         reload();
     }
 
-    // Used by UserLogin: the user details come from Users.txt,
-    // department, specialization and off day are read from Doctors.txt
+    // USERLOGIN
     public Doctor(int user_id, String first_name, String last_name, String phone, String email,
             String password, String gender, LocalDate dob, Role role) {
         super(user_id, first_name, last_name, phone, email, password, gender, dob, role);

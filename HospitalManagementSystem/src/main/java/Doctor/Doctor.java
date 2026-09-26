@@ -707,6 +707,16 @@ public class Doctor extends User implements DoctorServices {
         }
         if (consultDateParsed.equals(today) && LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
             return "This consultation has not started yet. Details can be added once it starts.";
+=======
+        if (consultDateParsed.equals(today)) {
+            try {
+                if (LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
+                    return "Consultation not scheduled to start yet.";
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+>>>>>>> Stashed changes
         }
         return "";
     }

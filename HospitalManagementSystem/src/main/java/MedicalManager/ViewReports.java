@@ -2,6 +2,8 @@
 package MedicalManager;
 
 import HelperFunction.*;
+import java.awt.Color;
+import javax.swing.BorderFactory;
 
 public class ViewReports extends javax.swing.JFrame {
     
@@ -19,6 +21,7 @@ public class ViewReports extends javax.swing.JFrame {
         loadConsultationsTable();
         loadWardsTable();
         loadReviewsTable();
+        
     }
     
     private void loadSummaryMetrics(){
@@ -214,7 +217,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Revenue by Payment Method");
+        jLabel2.setText("Transaction Logs");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, -1, -1));
 
         revenueTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -243,6 +246,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel7.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         revenueLbl2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        revenueLbl2.setForeground(new java.awt.Color(255, 102, 102));
         revenueLbl2.setText("RM 48,250.00");
         jPanel7.add(revenueLbl2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
@@ -259,6 +263,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel9.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 110, -1));
 
         revenueLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        revenueLbl.setForeground(new java.awt.Color(38, 117, 154));
         revenueLbl.setText("RM 48,250.00");
         jPanel9.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
@@ -275,6 +280,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel11.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 140, -1));
 
         revenueLbl1.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        revenueLbl1.setForeground(new java.awt.Color(102, 255, 102));
         revenueLbl1.setText("RM 48,250.00");
         jPanel11.add(revenueLbl1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 150, -1));
 
@@ -314,6 +320,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel21.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
         totalBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        totalBedsLbl.setForeground(new java.awt.Color(38, 117, 154));
         totalBedsLbl.setText("total beds");
         jPanel21.add(totalBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, 30));
 
@@ -330,10 +337,11 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel23.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
         availableBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        availableBedsLbl.setForeground(new java.awt.Color(102, 255, 102));
         availableBedsLbl.setText("available beds");
         jPanel23.add(availableBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 160, 30));
 
-        jPanel3.add(jPanel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 20, 180, 70));
+        jPanel3.add(jPanel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 20, 180, 70));
 
         jPanel25.setBackground(new java.awt.Color(255, 255, 255));
         jPanel25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -346,10 +354,11 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel25.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
         occupiedBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        occupiedBedsLbl.setForeground(new java.awt.Color(255, 102, 102));
         occupiedBedsLbl.setText("occupied beds");
         jPanel25.add(occupiedBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 160, 30));
 
-        jPanel3.add(jPanel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 20, 180, 70));
+        jPanel3.add(jPanel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 20, 180, 70));
 
         jTabbedPane1.addTab("Ward Occupancy", jPanel3);
 
@@ -375,7 +384,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 720, 160));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel5.setText("Clinical Activity Summary");
+        jLabel5.setText("Clinical Cases ");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 190, -1));
 
         casesTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -404,6 +413,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel13.add(closedCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 10, 40, 30));
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 102, 102));
         jLabel14.setText("Resolved / Closed:");
         jPanel13.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
 
@@ -420,6 +430,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel15.add(totalCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 40, 30));
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(38, 117, 154));
         jLabel18.setText("Total Cases:");
         jPanel15.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
 
@@ -436,6 +447,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel17.add(openCasesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 40, 30));
 
         jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(102, 255, 102));
         jLabel19.setText("Active / Open:");
         jPanel17.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
 
@@ -475,6 +487,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel19.add(averageRatingLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 10, 80, 40));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 19)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 204, 102));
         jLabel13.setText("Average Rating:");
         jPanel19.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
 
@@ -491,6 +504,7 @@ public class ViewReports extends javax.swing.JFrame {
         jPanel27.add(totalReviewsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, 50, 40));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 19)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(38, 117, 154));
         jLabel12.setText("Total Feedback Received:");
         jPanel27.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 16, -1, 30));
 

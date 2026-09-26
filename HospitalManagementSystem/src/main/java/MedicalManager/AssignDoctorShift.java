@@ -142,10 +142,11 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         jLabel8.setText("Assign New Doctor");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
+        assignBtn.setBackground(new java.awt.Color(204, 255, 204));
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         assignBtn.setText("Assign");
         assignBtn.addActionListener(this::assignBtnActionPerformed);
-        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
+        getContentPane().add(assignBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
         assignedTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -165,16 +166,17 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(assignedTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 740, 220));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 670, 220));
 
         doctorsCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         doctorsCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         getContentPane().add(doctorsCmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 500, -1));
 
+        deleteBtn.setBackground(new java.awt.Color(255, 204, 204));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addActionListener(this::deleteBtnActionPerformed);
-        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 230, -1, -1));
+        getContentPane().add(deleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, -1, -1));
 
         backBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         backBtn.setText("Back");
@@ -216,7 +218,7 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         int doctorID = Integer.parseInt(selectedDoctor.split(" - ")[0].replace("DOC", ""));
         
         manager.assignDoctorToShift(shiftID, doctorID);
-        JOptionPane.showMessageDialog(this, "Doctor assigned successfully!",
+        JOptionPane.showMessageDialog(this, "Doctor Assigned Successfully!",
                 "Success", JOptionPane.INFORMATION_MESSAGE);
         
         loadAssignedTable();

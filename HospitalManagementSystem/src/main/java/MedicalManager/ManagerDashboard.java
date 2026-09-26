@@ -147,7 +147,8 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        nameLbl.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        nameLbl.setFont(new java.awt.Font("Segoe UI", 1, 19)); // NOI18N
+        nameLbl.setForeground(new java.awt.Color(38, 117, 154));
         nameLbl.setText("Zainab Abdul Karim");
         jPanel1.add(nameLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 280, -1));
 
@@ -163,14 +164,20 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jLabel11.setText("Phone");
         jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 110, -1));
 
+        userIDLbl.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        userIDLbl.setForeground(new java.awt.Color(38, 117, 154));
         userIDLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         userIDLbl.setText("USER001");
         jPanel1.add(userIDLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 80, 180, -1));
 
+        emailLbl.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        emailLbl.setForeground(new java.awt.Color(38, 117, 154));
         emailLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         emailLbl.setText("zainab@sejahtera.my");
         jPanel1.add(emailLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 190, -1));
 
+        phoneLbl.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        phoneLbl.setForeground(new java.awt.Color(38, 117, 154));
         phoneLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         phoneLbl.setText("012-345 8877");
         jPanel1.add(phoneLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 180, -1));
@@ -185,6 +192,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, -1));
 
         usedBedsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        usedBedsLbl.setForeground(new java.awt.Color(255, 102, 102));
         usedBedsLbl.setText("18 Beds In Use");
         jPanel3.add(usedBedsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
@@ -201,6 +209,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
         revenueLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        revenueLbl.setForeground(new java.awt.Color(38, 117, 154));
         revenueLbl.setText("RM 48,250.00");
         jPanel4.add(revenueLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
@@ -217,6 +226,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel5.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 150, -1));
 
         departmentsLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        departmentsLbl.setForeground(new java.awt.Color(102, 255, 102));
         departmentsLbl.setText("3 Active");
         jPanel5.add(departmentsLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 
@@ -233,6 +243,7 @@ public class ManagerDashboard extends javax.swing.JFrame {
         jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
         casesLbl.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        casesLbl.setForeground(new java.awt.Color(38, 117, 154));
         casesLbl.setText("24 Cases");
         jPanel6.add(casesLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 150, -1));
 

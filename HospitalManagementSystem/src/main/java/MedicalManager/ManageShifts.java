@@ -393,8 +393,8 @@ public class ManageShifts extends javax.swing.JFrame {
         }
         manager.createShift(deptID, dateInput, startTime, endTime);
         JOptionPane.showMessageDialog(this,
-                "Shift Created Sucesfuly!\nIMPORTANT: Please assign at least 2 doctors to the shift",
-                "Sucess", JOptionPane.INFORMATION_MESSAGE);
+                "Shift Created Successfully!\nIMPORTANT: Please assign at least 2 doctors to the shift",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
         loadShiftsTable();
     }//GEN-LAST:event_createBtnActionPerformed
 

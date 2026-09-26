@@ -701,24 +701,13 @@ public class Doctor extends User implements DoctorServices {
         if (isCaseClosed(this.consultCaseId)) {
             return "This case is closed. Consultation details can no longer be edited.";
         }
-        LocalDate consultDateParsed;
-        try {
-            consultDateParsed = LocalDate.parse(this.consultDate, DATE);
-        } catch (Exception e) {
-            return "";
-        }
+        LocalDate consultDateParsed = LocalDate.parse(this.consultDate, DATE);
         LocalDate today = LocalDate.now();
         if (consultDateParsed.isAfter(today)) {
             return "This consultation has not taken place yet. Details can be added once it starts, on the day of the consultation.";
         }
-        if (consultDateParsed.equals(today)) {
-            try {
-                if (LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
-                    return "This consultation has not started yet. Details can be added once it starts.";
-                }
-            } catch (Exception e) {
-                // ignore
-            }
+        if (consultDateParsed.equals(today) && LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
+            return "This consultation has not started yet. Details can be added once it starts.";
         }
         return "";
     }

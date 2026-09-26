@@ -247,13 +247,19 @@ public class Doctor extends User implements DoctorServices {
         return !k.get(3).isEmpty();
     }
 
-    // A consultation stays "booked" or "incomplete" until the day it happened is over. Once
-    // that day has passed: a still-"booked" consultation (the doctor never saved anything)
-    // becomes "completed" if details were somehow entered or "cancelled" if not; an
-    // "incomplete" one (details saved but not manually marked complete) becomes "completed".
+    // "booked" and "incomplete" are both provisional: this brings either one to its finalized
+    // status once the relevant deadline has passed, and writes the change back to file.
+    //   - "booked", same day, slot end time reached: becomes "cancelled" (no details were ever
+    //     saved during the slot - if they had been, saveConsultationProgress() would already
+    //     have moved it to "incomplete").
+    //   - "booked" or "incomplete", the day after: "incomplete" always becomes "completed";
+    //     a still-"booked" consultation becomes "completed" if it somehow has details, else
+    //     "cancelled" (this is the same-day rule's fallback, for a day the doctor never opened
+    //     the app on).
     // c is the consultation's field list (without its id).
     private void autoFinalizeConsultation(int consultId, ArrayList<String> c) {
-        if (!c.get(5).equals("booked") && !c.get(5).equals("incomplete")) {
+        String status = c.get(5);
+        if (!status.equals("booked") && !status.equals("incomplete")) {
             return;
         }
         LocalDate consultDate;
@@ -262,14 +268,28 @@ public class Doctor extends User implements DoctorServices {
         } catch (Exception e) {
             return;
         }
-        if (!LocalDate.now().isAfter(consultDate)) {
+        LocalDate today = LocalDate.now();
+        boolean hasDetails = !c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty();
+
+        String newStatus;
+        if (today.isAfter(consultDate)) {
+            newStatus = status.equals("incomplete") ? "completed" : (hasDetails ? "completed" : "cancelled");
+        } else if (today.equals(consultDate) && status.equals("booked")) {
+            LocalTime slotEnd;
+            try {
+                slotEnd = LocalTime.parse(c.get(9));
+            } catch (Exception e) {
+                return;
+            }
+            if (LocalTime.now().isBefore(slotEnd)) {
+                return;
+            }
+            newStatus = hasDetails ? "completed" : "cancelled";
+        } else {
             return;
         }
-        String newStatus;
-        if (c.get(5).equals("incomplete")) {
-            newStatus = "completed";
-        } else {
-            newStatus = (!c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty()) ? "completed" : "cancelled";
+        if (newStatus.equals(status)) {
+            return;
         }
         c.set(5, newStatus);
 
@@ -731,8 +751,9 @@ public class Doctor extends User implements DoctorServices {
         return this.consultNotes;
     }
 
-    // Own, same-day, case-not-closed consultation that is either "booked" with its start time
-    // already passed, or "incomplete" (which by definition only exists on the day it started).
+    // Own, same-day, case-not-closed consultation that is either "booked" and currently within
+    // its slot (start time reached, end time not yet reached - autoFinalizeConsultation cancels
+    // it the moment the slot ends), or "incomplete" (editable for the rest of that day).
     public boolean canEditConsultation() {
         if (this.currentConsultId == -1) {
             return false;
@@ -759,7 +780,8 @@ public class Doctor extends User implements DoctorServices {
             return true;
         }
         try {
-            return !LocalTime.now().isBefore(LocalTime.parse(this.consultStart));
+            LocalTime now = LocalTime.now();
+            return !now.isBefore(LocalTime.parse(this.consultStart)) && now.isBefore(LocalTime.parse(this.consultEnd));
         } catch (Exception e) {
             return false;
         }

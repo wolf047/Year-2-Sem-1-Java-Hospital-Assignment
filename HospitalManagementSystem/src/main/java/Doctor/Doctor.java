@@ -401,7 +401,7 @@ public class Doctor extends User implements DoctorServices {
         return this.weekStart.format(label) + " - " + this.weekStart.plusDays(6).format(label);
     }
 
-    public int getWeekConsultId(int row, int col) {
+    public int getWeekConsultId(int row) {
         if (row < 0 || row >= weekConsultIds.size()) {
             return -1;
         }

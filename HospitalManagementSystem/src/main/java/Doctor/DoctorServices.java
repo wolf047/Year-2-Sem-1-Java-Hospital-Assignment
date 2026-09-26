@@ -30,7 +30,7 @@ public interface DoctorServices {
     void loadWeek(int weekOffset);
     Object[][] getWeekRows();
     String getWeekRange();
-    int getWeekConsultId(int row, int col);
+    int getWeekConsultId(int row);
 
     ArrayList<Object[]> getCases();
     int getCaseId(int row);

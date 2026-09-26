@@ -135,7 +135,7 @@ public class DoctorDashboard extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select a consultation from the calendar.");
             return;
         }
-        int consultId = doctor.getWeekConsultId(row, tblCalendar.getSelectedColumn());
+        int consultId = doctor.getWeekConsultId(row);
         if (consultId < 0) {
             return;
         }

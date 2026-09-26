@@ -7,3 +7,23 @@
 7,24,33,25-07-2026,29-07-2026,`Admitted for postoperative recovery and wound care`,0
 8,27,27,21-08-2026,,`Admitted for close cardiac monitoring`,0
 9,29,7,16-08-2026,18-08-2026,`Admitted for observation and intravenous therapy`,0
+10,2,28,20-05-2026,23-05-2026,`Admitted for diabetes stabilisation and education`,0
+11,3,14,16-06-2026,18-06-2026,`Admitted for cardiac assessment and optimisation`,0
+12,5,29,02-06-2026,07-06-2026,`Admitted for dengue monitoring and serial blood counts`,0
+13,9,30,20-06-2026,20-06-2026,`Day surgery admission for wound exploration and suturing`,0
+14,12,15,04-05-2026,06-05-2026,`Admitted for pain control and surgical referral`,0
+15,16,16,12-05-2026,15-05-2026,`Admitted for burns dressing and wound care`,0
+16,20,31,17-08-2026,18-08-2026,`Admitted for hypertension risk stratification and treatment initiation`,0
+17,25,21,21-07-2026,24-07-2026,`Admitted for diabetes stabilisation and dietary counselling`,0
+18,31,7,24-09-2026,,`Admitted for paediatric neurology review and investigations`,0
+19,33,8,24-09-2026,,`Admitted for investigation of unsteady gait and clumsiness`,0
+20,34,9,24-09-2026,,`Admitted for EEG monitoring and review`,0
+21,35,10,24-09-2026,,`Admitted for epilepsy management review`,0
+22,37,11,24-09-2026,,`Admitted for febrile seizure assessment`,0
+23,40,12,24-09-2026,,`Admitted for developmental delay assessment`,0
+24,43,1,25-09-2026,,`Admitted for investigation of unsteady gait and clumsiness`,0
+25,45,2,25-09-2026,,`Admitted for epilepsy management review`,0
+26,47,3,25-09-2026,,`Admitted for febrile seizure assessment`,0
+27,51,4,26-09-2026,,`Admitted for neurological symptom review`,0
+28,53,5,26-09-2026,,`Admitted for investigation of unsteady gait and clumsiness`,0
+29,55,6,26-09-2026,,`Admitted for epilepsy management review`,0

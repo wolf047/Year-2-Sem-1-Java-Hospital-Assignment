@@ -130,17 +130,17 @@ public class AssignDoctorShift extends javax.swing.JFrame {
         shiftLbl.setText("Managing Doctors for SHIFT001");
         getContentPane().add(shiftLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Currently Assigned Doctors");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, -1, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         departmentLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         departmentLbl.setText("Department: bla bla");
         getContentPane().add(departmentLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 310, -1));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel8.setText("Assign New Doctor");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 120, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
         assignBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         assignBtn.setText("Assign");

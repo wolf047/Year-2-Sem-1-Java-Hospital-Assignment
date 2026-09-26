@@ -4,3 +4,8 @@
 4,Orthopedics,`Musculoskeletal trauma, joint and spine surgical care`,5,0
 5,Pediatrics,`Medical care for infants, children and adolescents`,7,0
 6,Radiology,`Diagnostic imaging and image-guided procedures`,4,0
+7,Nephrology,`Specialises treament for complex kidney diseases and manage dialysis care`,5,0
+8,`Maxillofacial Surgery`,`Treat complex diseases and injuries of the jaw, face and mouth`,5,0
+9,Hematology,`Specialises on blood disorders, including clotting issues, leukemia and anaemia`,6,0
+10,`Forensic Pathology`,`Perform autopsies and investigate deaths for legal and medical reasons`,6,0
+11,`Outpatient Clinic`,`Provide medical diagnosis, consultations and treatments for non-overnight hospital stays`,5,0

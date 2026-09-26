@@ -69,7 +69,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         deptNameTf = new javax.swing.JTextField();
         descTf = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        saveBtn = new javax.swing.JButton();
+        createBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         departmentsTable = new javax.swing.JTable();
         updateBtn = new javax.swing.JButton();
@@ -100,13 +100,13 @@ public class ManageDepartments extends javax.swing.JFrame {
         jLabel2.setText("Create / Edit Department");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("DESCRIPTION");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setText("Description");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 160, 140, -1));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("MANAGING DEPARTMENTS");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Managing Departments");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, -1, -1));
 
         deptNameTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         getContentPane().add(deptNameTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 250, -1));
@@ -114,15 +114,15 @@ public class ManageDepartments extends javax.swing.JFrame {
         descTf.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         getContentPane().add(descTf, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 450, -1));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("DEPARTMENT NAME");
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setText("Department Name");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 170, -1));
 
-        saveBtn.setBackground(new java.awt.Color(204, 255, 204));
-        saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        saveBtn.setText("Save");
-        saveBtn.addActionListener(this::saveBtnActionPerformed);
-        getContentPane().add(saveBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
+        createBtn.setBackground(new java.awt.Color(204, 255, 204));
+        createBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        createBtn.setText("Create");
+        createBtn.addActionListener(this::createBtnActionPerformed);
+        getContentPane().add(createBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
         departmentsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -257,7 +257,7 @@ public class ManageDepartments extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_departmentsTableMouseClicked
 
-    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+    private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
         // TODO add your handling code here:
         String name = deptNameTf.getText().trim();
         String desc = descTf.getText().trim();
@@ -279,7 +279,7 @@ public class ManageDepartments extends javax.swing.JFrame {
                 "Success", JOptionPane.INFORMATION_MESSAGE);
         clearFields();
         loadDepartmentsTable(); // reload table
-    }//GEN-LAST:event_saveBtnActionPerformed
+    }//GEN-LAST:event_createBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         // TODO add your handling code here:
@@ -372,6 +372,7 @@ public class ManageDepartments extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearBtn;
+    private javax.swing.JButton createBtn;
     private javax.swing.JButton dashboardBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton departmentBtn;
@@ -390,7 +391,6 @@ public class ManageDepartments extends javax.swing.JFrame {
     private javax.swing.JButton logoutBtn1;
     private javax.swing.JButton profileBtn;
     private javax.swing.JButton reportBtn;
-    private javax.swing.JButton saveBtn;
     private javax.swing.JButton shiftBtn;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables

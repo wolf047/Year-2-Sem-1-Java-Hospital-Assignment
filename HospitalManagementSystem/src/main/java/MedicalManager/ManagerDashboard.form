@@ -69,7 +69,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="10" y="50" width="-1" height="-1"/>
+          <AbsoluteConstraints x="10" y="60" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -399,7 +399,7 @@
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="20" y="330" width="760" height="200"/>
+          <AbsoluteConstraints x="20" y="330" width="760" height="210"/>
         </Constraint>
       </Constraints>
 
@@ -422,7 +422,7 @@
     <Component class="javax.swing.JLabel" name="jLabel19">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI" size="14" style="0"/>
+          <Font name="Segoe UI" size="14" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="All Hospital Departments Overview"/>
       </Properties>

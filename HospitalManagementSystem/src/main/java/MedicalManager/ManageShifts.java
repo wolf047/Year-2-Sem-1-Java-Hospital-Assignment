@@ -164,15 +164,15 @@ public class ManageShifts extends javax.swing.JFrame {
         jLabel2.setText("Create / Edit Shift");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Date");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Scheduled Shifts");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, -1, -1));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("End Time");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 220, 130, -1));
 
@@ -182,11 +182,11 @@ public class ManageShifts extends javax.swing.JFrame {
         createBtn.addActionListener(this::createBtnActionPerformed);
         getContentPane().add(createBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel7.setText("Department");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 110, -1));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel8.setText("Start Time");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 180, -1));
 

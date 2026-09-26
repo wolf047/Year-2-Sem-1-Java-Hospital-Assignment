@@ -355,6 +355,7 @@ public class ConsultationsDialog extends javax.swing.JDialog {
             return;
         }
         JOptionPane.showMessageDialog(this, "Progress saved.");
+        dispose();
     }//GEN-LAST:event_btnSaveProgress
 
     private void btnAddPrescription(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPrescription
@@ -417,6 +418,11 @@ public class ConsultationsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancel
 
     private void btnCompleteConsultation(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteConsultation
+        int confirm = JOptionPane.showConfirmDialog(this, "Complete this consultation? This cannot be undone.",
+                "Confirm Complete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
         if (!saveEverything(true)) {
             return;
         }

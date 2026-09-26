@@ -296,8 +296,7 @@ public class CasesDialog extends javax.swing.JDialog {
             return;
         }
         JOptionPane.showMessageDialog(this, "Case closed.");
-        doctor.loadCase(caseId);
-        refresh();
+        dispose();
     }//GEN-LAST:event_btnCloseCase
 
     private void btnCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel

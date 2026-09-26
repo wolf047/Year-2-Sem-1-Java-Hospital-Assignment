@@ -584,7 +584,10 @@ public class Doctor extends User implements DoctorServices {
         return caseTestDetails.get(row);
     }
 
-    
+    /* 
+    successful save: null
+    error: String error message
+    */
     public String saveCaseSummary(String summary) {
         if (!isCaseInCharge()) {
             return "Only doctor-in-charge can edit case summary.";
@@ -596,22 +599,26 @@ public class Doctor extends User implements DoctorServices {
             return "Summary cannot contain a backtick (`) character.";
         }
 
-        ArrayList<String> record = new ArrayList<>();
-        record.add(String.valueOf(this.currentCaseId));
-        record.add(this.casePatientId);
-        record.add(this.caseDoctorInCharge);
-        record.add(this.caseOpenDate);
-        record.add(this.caseCloseDate);
-        record.add(this.caseCategory);
-        record.add(this.caseType);
-        record.add(summary.trim());
-        record.add("0");
-        FileHandling.editRecord("Cases.txt", record);
+        ArrayList<String> caseRecord = new ArrayList<>();
+        caseRecord.add(String.valueOf(this.currentCaseId));
+        caseRecord.add(this.casePatientId);
+        caseRecord.add(this.caseDoctorInCharge);
+        caseRecord.add(this.caseOpenDate);
+        caseRecord.add(this.caseCloseDate);
+        caseRecord.add(this.caseCategory);
+        caseRecord.add(this.caseType);
+        caseRecord.add(summary.trim());
+        caseRecord.add("0");
+        FileHandling.editRecord("Cases.txt", caseRecord);
 
         this.caseSummary = summary.trim();
         return null;
     }
 
+    /* 
+    successful save: null
+    error: String error message
+    */
     public String closeCase() {
         if (!isCaseInCharge()) {
             return "Only doctor in charge can close case.";
@@ -691,20 +698,21 @@ public class Doctor extends User implements DoctorServices {
 
     public String getConsultRoleNote() {
         if (!this.consultDoctorId.equals(String.valueOf(this.user_id))) {
-            return "This consultation was conducted by " + getDoctorName(this.consultDoctorId)
-                    + ". You may view it but cannot make changes.";
+            return "Consultation conducted by " + getDoctorName(this.consultDoctorId)
+                    + ". View-only.";
         }
         if (!this.consultStatus.equals("booked") && !this.consultStatus.equals("incomplete")) {
-            return "This consultation is " + this.consultStatus + " and can no longer be edited.";
+            return "Consultation is " + this.consultStatus + " and cannot be edited.";
         }
         if (isCaseClosed(this.consultCaseId)) {
-            return "This case is closed. Consultation details can no longer be edited.";
+            return "Case is closed. Consultation details cannot be edited.";
         }
         LocalDate consultDateParsed = LocalDate.parse(this.consultDate, DATE);
         LocalDate today = LocalDate.now();
         if (consultDateParsed.isAfter(today)) {
-            return "This consultation has not taken place yet. Details can be added once it starts, on the day of the consultation.";
+            return "Consultation not scheduled on this day.";
         }
+<<<<<<< Updated upstream
         if (consultDateParsed.equals(today) && LocalTime.now().isBefore(LocalTime.parse(this.consultStart))) {
             return "This consultation has not started yet. Details can be added once it starts.";
 =======

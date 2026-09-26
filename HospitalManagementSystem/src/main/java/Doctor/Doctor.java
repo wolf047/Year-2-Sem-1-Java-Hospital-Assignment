@@ -15,8 +15,7 @@ public class Doctor extends User implements DoctorServices {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-// FIELDS DECLARATION
-    
+// FIELDS DECLARATION   
     // DOCTOR DETAILS
     private String department_id, specialization, off_day;
     private int practice_start_year;
@@ -54,53 +53,51 @@ public class Doctor extends User implements DoctorServices {
     public Doctor(int user_id) {
         this.user_id = user_id;
         this.role = Role.Doctor;
-        reload();
+        constructorLoadDetails();
     }
 
     // USERLOGIN
     public Doctor(int user_id, String first_name, String last_name, String phone, String email,
             String password, String gender, LocalDate dob, Role role) {
         super(user_id, first_name, last_name, phone, email, password, gender, dob, role);
-        reload();
+        constructorLoadDetails();
     }
 
-    // =====================================================================
-    // PROFILE
-    // =====================================================================
-    // Reads this doctor's details from Users.txt and Doctors.txt
-    private void reload() {
+// PROFILE
+    private void constructorLoadDetails() {
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         if (users == null || !users.containsKey(this.user_id)) {
             return;
         }
-        // u: 0 first, 1 last, 2 dob, 3 gender, 4 phone, 5 email, 6 password, 7 role, 8 deleted
-        ArrayList<String> u = users.get(this.user_id);
-        this.first_name = u.get(0);
-        this.last_name = u.get(1);
-        this.gender = u.get(3);
-        this.phone = u.get(4);
-        this.email = u.get(5);
-        this.password = u.get(6);
+        
+        // Users(user_id, first_name, last_name, dob, gender, phone, email, password, role, deleted)
+        ArrayList<String> userValue = users.get(this.user_id);
+        this.first_name = userValue.get(0);
+        this.last_name = userValue.get(1);
+        this.gender = userValue.get(3);
+        this.phone = userValue.get(4);
+        this.email = userValue.get(5);
+        this.password = userValue.get(6);
 
         try {
-            this.dob = LocalDate.parse(u.get(2), DATE);
+            this.dob = LocalDate.parse(userValue.get(2), DATE);
         } catch (Exception e) {
             this.dob = null;
         }
 
+        // Doctors(doctor_id, department_id, specialization, practice_start_year, off_day)
         this.department_id = "";
         this.specialization = "";
-        this.off_day = "";
         this.practice_start_year = 0;
+        this.off_day = "";
         TreeMap<Integer, ArrayList<String>> doctors = FileHandling.readAllRecords("Doctors.txt");
         if (doctors != null && doctors.containsKey(this.user_id)) {
-            // d: 0 department_id, 1 specialization, 2 practice_start_year, 3 off_day
-            ArrayList<String> d = doctors.get(this.user_id);
-            this.department_id = d.get(0);
-            this.specialization = d.get(1);
-            this.off_day = d.get(3);
+            ArrayList<String> doctorValue = doctors.get(this.user_id);
+            this.department_id = doctorValue.get(0);
+            this.specialization = doctorValue.get(1);
+            this.off_day = doctorValue.get(3);
             try {
-                this.practice_start_year = Integer.parseInt(d.get(2));
+                this.practice_start_year = Integer.parseInt(doctorValue.get(2));
             } catch (Exception e) {
                 this.practice_start_year = 0;
             }
@@ -127,7 +124,7 @@ public class Doctor extends User implements DoctorServices {
         return this.email;
     }
 
-    // "8" -> "DOC008"
+    // prepend prefix
     public String getDoctorCode() {
         return String.format("DOC%03d", this.user_id);
     }
@@ -148,7 +145,6 @@ public class Doctor extends User implements DoctorServices {
         return this.specialization;
     }
 
-    // "MONDAY" -> "Monday"
     public String getOffDayText() {
         if (this.off_day == null || this.off_day.isEmpty()) {
             return "";

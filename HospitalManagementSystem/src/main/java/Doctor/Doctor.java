@@ -50,7 +50,6 @@ public class Doctor extends User implements DoctorServices {
 
 
 // CONSTRUCTOR
-    // Builds a doctor straight from the files (used after login)
     public Doctor(int user_id) {
         this.user_id = user_id;
         this.role = Role.Doctor;
@@ -64,7 +63,6 @@ public class Doctor extends User implements DoctorServices {
         constructorLoadDetails();
     }
 
-// PROFILE
     private void constructorLoadDetails() {
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         if (users == null || !users.containsKey(this.user_id)) {
@@ -131,15 +129,16 @@ public class Doctor extends User implements DoctorServices {
     }
 
     public String getDepartmentName() {
-        TreeMap<Integer, ArrayList<String>> depts = FileHandling.readAllRecords("Departments.txt");
-        if (depts == null || this.department_id.isEmpty()) {
+        TreeMap<Integer, ArrayList<String>> departments = FileHandling.readAllRecords("Departments.txt");
+        if (departments == null || this.department_id.isEmpty()) {
             return "";
         }
-        ArrayList<String> d = depts.get(Integer.parseInt(this.department_id));
-        if (d == null) {
+        // Departments(department_id, department_name, description, manager_id, deleted)
+        ArrayList<String> departmentValue = departments.get(Integer.parseInt(this.department_id));
+        if (departmentValue == null) {
             return "";
         }
-        return d.get(0);
+        return departmentValue.get(0);
     }
 
     public String getSpecialization() {
@@ -153,7 +152,11 @@ public class Doctor extends User implements DoctorServices {
         return capitalize(this.off_day);
     }
 
-    // Checks and saves the profile. Returns null if saved, or the error message.
+// PROFILE
+    /* 
+    successful save: null
+    error: String error message
+    */
     public String saveProfile(String phone, String newEmail, String current, String newPwd, String confirm) {
         if (!phone.matches("01\\d-\\d{7,8}")) {
             return "Phone must look like 012-3456789.";
@@ -186,7 +189,6 @@ public class Doctor extends User implements DoctorServices {
             newPassword = newPwd;
         }
 
-        // editRecord needs the id at position 0, so every field moves one place right
         ArrayList<String> record = new ArrayList<>();
         record.add(String.valueOf(this.user_id));
         record.addAll(users.get(this.user_id));
@@ -198,12 +200,10 @@ public class Doctor extends User implements DoctorServices {
         this.phone = phone;
         this.email = newEmail;
         this.password = newPassword;
-        return null;   // null means success
+        return null;
     }
 
-    // =====================================================================
-    // SHARED LITTLE HELPERS
-    // =====================================================================
+// HELPER FUNCTIONS
     private String capitalize(String text) {
         if (text == null || text.isEmpty()) {
             return text;
@@ -215,7 +215,6 @@ public class Doctor extends User implements DoctorServices {
         return LocalDate.now().format(DATE);
     }
 
-    // "9" -> "Dr. Kavitha a/p Rajendran"
     private String getDoctorName(String doctorId) {
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         int id = Integer.parseInt(doctorId);
@@ -225,7 +224,6 @@ public class Doctor extends User implements DoctorServices {
         return "Dr. " + users.get(id).get(0) + " " + users.get(id).get(1);
     }
 
-    // "40" -> "Farah Hidayah binti Hassan"
     private String getPatientName(String patientId) {
         TreeMap<Integer, ArrayList<String>> users = FileHandling.readAllRecords("Users.txt");
         int id = Integer.parseInt(patientId);
@@ -235,47 +233,35 @@ public class Doctor extends User implements DoctorServices {
         return users.get(id).get(0) + " " + users.get(id).get(1);
     }
 
-    // true if the case has already been closed (has a close date)
+    // case has close_date: true
     private boolean isCaseClosed(String caseId) {
         TreeMap<Integer, ArrayList<String>> cases = FileHandling.readAllRecords("Cases.txt");
         if (cases == null) {
             return false;
         }
-        ArrayList<String> k = cases.get(Integer.parseInt(caseId)); // 3 close_date
-        if (k == null) {
+        ArrayList<String> caseCloseDate = cases.get(Integer.parseInt(caseId));
+        if (caseCloseDate == null) {
             return false;
         }
-        return !k.get(3).isEmpty();
+        return !caseCloseDate.get(3).isEmpty();
     }
 
-    // "booked" and "incomplete" are both provisional: this brings either one to its finalized
-    // status once the relevant deadline has passed, and writes the change back to file. Safe to
-    // call repeatedly (idempotent) - called on every load of a consultation or its containing
-    // week, and meant to also be run as a standalone sweep (see finalizeAllConsultations()) as a
-    // stand-in for a daily job, since this desktop app has no background scheduler.
-    //   - "booked": becomes "cancelled" once the slot's end time has passed, but only if no
-    //     details were ever saved - if they had been, saveConsultationProgress() would already
-    //     have moved it to "incomplete" the moment it was saved. A "booked" consultation that
-    //     somehow has details (should not happen through normal app usage) is left alone; no
-    //     transition is defined for that case.
-    //   - "incomplete": becomes "completed" once the calendar day has rolled over since the slot
-    //     date - it remains editable for the rest of that same day regardless of the slot's end
-    //     time.
-    // c is the consultation's field list (without its id).
-    private void autoFinalizeConsultation(int consultId, ArrayList<String> c) {
-        String status = c.get(5);
+    // updates consultation status with reference to date and consultation details 
+    private void autoFinalizeConsultation(int consultId, ArrayList<String> consultationValue) {
+        // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+        String status = consultationValue.get(5); // consultation_status
         if (!status.equals("booked") && !status.equals("incomplete")) {
             return;
         }
         LocalDate consultDate;
         LocalTime slotEnd;
         try {
-            consultDate = LocalDate.parse(c.get(7), DATE);
-            slotEnd = LocalTime.parse(c.get(9));
+            consultDate = LocalDate.parse(consultationValue.get(7), DATE); // date
+            slotEnd = LocalTime.parse(consultationValue.get(9)); // end_time
         } catch (Exception e) {
             return;
         }
-        boolean hasDetails = !c.get(3).trim().isEmpty() || !c.get(4).trim().isEmpty();
+        boolean hasDetails = !consultationValue.get(3).trim().isEmpty() || !consultationValue.get(4).trim().isEmpty(); // vital_signs, notes
 
         String newStatus;
         if (status.equals("incomplete")) {
@@ -289,71 +275,66 @@ public class Doctor extends User implements DoctorServices {
             }
             newStatus = "cancelled";
         }
-        c.set(5, newStatus);
+        consultationValue.set(5, newStatus);
 
         ArrayList<String> record = new ArrayList<>();
         record.add(String.valueOf(consultId));
-        record.addAll(c);
+        record.addAll(consultationValue);
         FileHandling.editRecord("Consultations.txt", record);
     }
 
-    // Runs autoFinalizeConsultation over every one of this doctor's own active consultations,
-    // not just the ones in a currently-visible week - a practical proxy for the spec's "daily
-    // job", since this desktop app has no background scheduler. Meant to be called once at
-    // dashboard start-up.
+    
     public void finalizeAllConsultations() {
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
-        if (consults == null) {
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
+        if (consultations == null) {
             return;
         }
-        for (Integer consultId : consults.keySet()) {
-            ArrayList<String> c = consults.get(consultId);
-            if (!c.get(1).equals(String.valueOf(this.user_id))) {
+        for (Integer consultId : consultations.keySet()) {
+            ArrayList<String> consultationValue = consultations.get(consultId);
+            if (!consultationValue.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
-            autoFinalizeConsultation(consultId, c);
+            autoFinalizeConsultation(consultId, consultationValue);
         }
     }
 
-    // =====================================================================
-    // SCHEDULE (doctor's own shift assignments)
-    // =====================================================================
-    // Only today's and future shifts are shown; past shifts are left out.
+
+// SCHEDULE
     public ArrayList<Object[]> getSchedule() {
         ArrayList<Object[]> rows = new ArrayList<>();
+        // ShiftDoctors(assignment_id, shift_id, doctor_id, deleted)
+        // Shifts(shift_id, department_id, date, start_time, end_time, deleted)
         TreeMap<Integer, ArrayList<String>> assignments = FileHandling.readActiveRecords("ShiftDoctors.txt");
         TreeMap<Integer, ArrayList<String>> shifts = FileHandling.readActiveRecords("Shifts.txt");
         if (assignments == null || shifts == null) {
             return rows;
         }
         LocalDate today = LocalDate.now();
-        for (ArrayList<String> a : assignments.values()) { // 0 shift_id, 1 doctor_id
-            if (!a.get(1).equals(String.valueOf(this.user_id))) {
+        for (ArrayList<String> assignmentValue : assignments.values()) {
+            if (!assignmentValue.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
-            ArrayList<String> s = shifts.get(Integer.parseInt(a.get(0))); // 1 date, 2 start, 3 end
-            if (s == null) {
+            ArrayList<String> shiftValue = shifts.get(Integer.parseInt(assignmentValue.get(0)));
+            if (shiftValue == null) {
                 continue;
             }
             LocalDate shiftDate;
             try {
-                shiftDate = LocalDate.parse(s.get(1), DATE);
+                shiftDate = LocalDate.parse(shiftValue.get(1), DATE);
             } catch (Exception e) {
                 continue;
             }
             if (shiftDate.isBefore(today)) {
                 continue;
             }
-            rows.add(new Object[]{s.get(1), s.get(2), s.get(3)});
+            rows.add(new Object[]{shiftValue.get(1), shiftValue.get(2), shiftValue.get(3)});
         }
         return rows;
     }
 
-    // =====================================================================
-    // CONSULTATIONS PAGE - weekly calendar
-    // =====================================================================
-    // delta = -1 previous week, 0 stay on current week, +1 next week
+// CONSULTATION
     public void loadWeek(int weekOffset) {
+        // weekOffset = -1 previous week, 0 stay on current week, +1 next week
         this.weekOffset += weekOffset;
 
         LocalDate today = LocalDate.now();
@@ -364,27 +345,27 @@ public class Doctor extends User implements DoctorServices {
         weekRows.clear();
         weekConsultIds.clear();
 
-        TreeMap<Integer, ArrayList<String>> consults = FileHandling.readActiveRecords("Consultations.txt");
-        if (consults == null) {
+        TreeMap<Integer, ArrayList<String>> consultations = FileHandling.readActiveRecords("Consultations.txt");
+        if (consultations == null) {
             return;
         }
-        for (Integer consultId : consults.keySet()) {
-            // c: 0 case_id, 1 doctor_id, 2 complaint, 6 room, 7 date, 8 start, 9 end, 5 status
-            ArrayList<String> c = consults.get(consultId);
-            if (!c.get(1).equals(String.valueOf(this.user_id))) {
+        for (Integer consultId : consultations.keySet()) {
+            // Consultations(consultation_id, case_id, doctor_id, complaint, vital_signs, notes, consultation_status, consult_room_id, date, start_time, end_time, deleted)
+            ArrayList<String> consultationValue = consultations.get(consultId);
+            if (!consultationValue.get(1).equals(String.valueOf(this.user_id))) {
                 continue;
             }
             LocalDate consultDate;
             try {
-                consultDate = LocalDate.parse(c.get(7), DATE);
+                consultDate = LocalDate.parse(consultationValue.get(7), DATE);
             } catch (Exception e) {
                 continue;
             }
             if (consultDate.isBefore(this.weekStart) || consultDate.isAfter(weekEnd)) {
                 continue;
             }
-            autoFinalizeConsultation(consultId, c);
-            weekRows.add(new Object[]{c.get(7), c.get(0), c.get(8) + " - " + c.get(9), c.get(2), c.get(6), capitalize(c.get(5))});
+            autoFinalizeConsultation(consultId, consultationValue);
+            weekRows.add(new Object[]{consultationValue.get(7), consultationValue.get(0), consultationValue.get(8) + " - " + consultationValue.get(9), consultationValue.get(2), consultationValue.get(6), capitalize(consultationValue.get(5))});
             weekConsultIds.add(consultId);
         }
     }

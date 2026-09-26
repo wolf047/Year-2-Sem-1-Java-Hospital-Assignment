@@ -203,6 +203,7 @@ public class CasesDialog extends javax.swing.JDialog {
         getContentPane().add(scrCaseDiagnostics, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 496, 520, 120));
 
         btnViewConsultation.setText("View Details");
+        btnViewConsultation.setFocusPainted(false);
         btnViewConsultation.addActionListener(this::btnViewConsultation);
         getContentPane().add(btnViewConsultation, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 438, 160, 30));
 
@@ -235,6 +236,7 @@ public class CasesDialog extends javax.swing.JDialog {
         getContentPane().add(lblPatientAllergies, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 134, 520, 20));
 
         btnViewDiagnosticResult.setText("View Result");
+        btnViewDiagnosticResult.setFocusPainted(false);
         btnViewDiagnosticResult.addActionListener(this::btnViewDiagnosticResult);
         getContentPane().add(btnViewDiagnosticResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 622, 160, 30));
 

@@ -8,9 +8,6 @@ import HelperFunction.SessionUser;
 import Users.UserLogin;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -22,29 +19,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AdminDashboard extends javax.swing.JFrame {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
     private final Color NAV_BG = new Color(30, 95, 125);
     private final Color BLUE = new Color(38, 117, 154);
 
     private AdminServices admin;
-
-    // combo selections are matched back to ids by list index
-    private final ArrayList<Integer> deptAssignIds = new ArrayList<>();
-    private final ArrayList<Integer> wardDeptIds = new ArrayList<>();
-    private final ArrayList<Integer> caseIds = new ArrayList<>();
-    private final ArrayList<Integer> bedIds = new ArrayList<>();
-    private final ArrayList<Integer> imagingRoomIds = new ArrayList<>();
-
-    private void populateCombo(javax.swing.JComboBox<String> combo, ArrayList<Integer> idsOut, ArrayList<Object[]> rows) {
-        idsOut.clear();
-        ArrayList<String> labels = new ArrayList<>();
-        for (Object[] row : rows) {
-            idsOut.add((Integer) row[0]);
-            labels.add((String) row[1]);
-        }
-        combo.setModel(new DefaultComboBoxModel<>(labels.toArray(new String[0])));
-    }
 
     private void showPage(String cardName, JButton activeButton) {
         CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
@@ -96,9 +74,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         lblWelcome.setText("Welcome, " + admin.getFullName());
 
         cmbRoleFilter.setModel(new DefaultComboBoxModel<>(new String[]{"All", "Admin", "Medical Manager", "Doctor", "Patient"}));
-        cmbWardGender.setModel(new DefaultComboBoxModel<>(new String[]{"male", "female"}));
-        cmbServiceCategory.setModel(new DefaultComboBoxModel<>(new String[]{"laboratory", "imaging"}));
-        cmbDrugForm.setModel(new DefaultComboBoxModel<>(admin.getDrugForms().toArray(new String[0])));
 
         loadUsers();
         loadAssignPage();
@@ -112,27 +87,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         showPage("users", btnNavUsers);
         showDiagSubPage("lab", btnDiagSubLab);
         showCatSubPage("drugs", btnCatSubDrugs);
-
-        tblWards.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                refreshBedsTable();
-            }
-        });
-        tblImagingRequests.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                refreshImagingRoomCombo();
-            }
-        });
-        tblDrugs.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                fillDrugFieldsFromSelection();
-            }
-        });
-        tblServices.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                fillServiceFieldsFromSelection();
-            }
-        });
     }
 
     // =====================================================================
@@ -201,31 +155,29 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getDoctorAssignments()) {
             model.addRow(row);
         }
-        populateCombo(cmbDeptAssign, deptAssignIds, admin.getAssignableDepartments());
     }
 
-    private void btnAssignDeptActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnReassignDeptActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblAssignments.getSelectedRow();
-        int deptIndex = cmbDeptAssign.getSelectedIndex();
-        if (row < 0 || deptIndex < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a doctor and a department.");
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a doctor from the list.");
             return;
         }
         int doctorId = (Integer) tblAssignments.getValueAt(row, 0);
-        String result = admin.assignDoctorToDepartment(doctorId, deptAssignIds.get(deptIndex));
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        String doctorName = (String) tblAssignments.getValueAt(row, 1);
+        String currentDept = (String) tblAssignments.getValueAt(row, 2);
+        DepartmentAssignDialog dialog = new DepartmentAssignDialog(this, admin, doctorId, doctorName, currentDept);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadAssignPage();
         }
-        loadAssignPage();
     }
 
     // =====================================================================
     // HOSPITAL ASSETS PAGE
     // =====================================================================
     private void loadAssets() {
-        ArrayList<String> categories = admin.getAssetCategories();
-        cmbAssetCategory.setModel(new DefaultComboBoxModel<>(categories.toArray(new String[0])));
+        cmbAssetCategory.setModel(new DefaultComboBoxModel<>(admin.getAssetCategories().toArray(new String[0])));
         refreshAssetsTable();
     }
 
@@ -239,9 +191,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getAssets(category)) {
             model.addRow(row);
         }
-        ArrayList<String> types = admin.getAssetTypes(category);
-        cmbNewAssetType.setModel(new DefaultComboBoxModel<>(types.toArray(new String[0])));
-        cmbNewAssetType.setEnabled(!types.isEmpty());
     }
 
     private void cmbAssetCategoryActionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,13 +199,11 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private void btnAddAssetActionPerformed(java.awt.event.ActionEvent evt) {
         String category = (String) cmbAssetCategory.getSelectedItem();
-        String type = (String) cmbNewAssetType.getSelectedItem();
-        String result = admin.addAsset(category, type);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        AddAssetDialog dialog = new AddAssetDialog(this, admin, category);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            refreshAssetsTable();
         }
-        refreshAssetsTable();
     }
 
     private void btnToggleAssetStatusActionPerformed(java.awt.event.ActionEvent evt) {
@@ -284,97 +231,40 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getWards()) {
             model.addRow(row);
         }
-        populateCombo(cmbWardDept, wardDeptIds, admin.getDepartments());
-        refreshBedsTable();
-    }
-
-    private void refreshBedsTable() {
-        DefaultTableModel model = (DefaultTableModel) tblBeds.getModel();
-        model.setRowCount(0);
-        int row = tblWards.getSelectedRow();
-        if (row < 0) {
-            return;
-        }
-        int wardId = (Integer) tblWards.getValueAt(row, 0);
-        for (Object[] r : admin.getBeds(wardId)) {
-            model.addRow(r);
-        }
     }
 
     private void btnAddWardActionPerformed(java.awt.event.ActionEvent evt) {
-        int deptIndex = cmbWardDept.getSelectedIndex();
-        if (deptIndex < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a department.");
-            return;
+        WardEditDialog dialog = new WardEditDialog(this, admin, null);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadWardsPage();
         }
-        String gender = (String) cmbWardGender.getSelectedItem();
-        int capacity;
-        try {
-            capacity = Integer.parseInt(txtWardCapacity.getText().trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid capacity.");
-            return;
-        }
-        String result = admin.addWard(wardDeptIds.get(deptIndex), gender, capacity);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
-        txtWardCapacity.setText("");
-        loadWardsPage();
     }
 
-    private void btnUpdateWardActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = tblWards.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a ward from the list.");
-            return;
-        }
-        String gender = (String) cmbWardGender.getSelectedItem();
-        int capacity;
-        try {
-            capacity = Integer.parseInt(txtWardCapacity.getText().trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid capacity.");
-            return;
-        }
-        int wardId = (Integer) tblWards.getValueAt(row, 0);
-        String result = admin.updateWard(wardId, gender, capacity);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
-        txtWardCapacity.setText("");
-        loadWardsPage();
-    }
-
-    private void btnAddBedActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnEditWardActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblWards.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a ward from the list.");
             return;
         }
         int wardId = (Integer) tblWards.getValueAt(row, 0);
-        String result = admin.addBed(wardId);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        WardEditDialog dialog = new WardEditDialog(this, admin, wardId);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadWardsPage();
         }
-        loadWardsPage();
     }
 
-    private void btnRemoveBedActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = tblBeds.getSelectedRow();
+    private void btnManageBedsActionPerformed(java.awt.event.ActionEvent evt) {
+        int row = tblWards.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a bed from the list.");
+            JOptionPane.showMessageDialog(this, "Please select a ward from the list.");
             return;
         }
-        int bedId = (Integer) tblBeds.getValueAt(row, 0);
-        String result = admin.removeBed(bedId);
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
+        int wardId = (Integer) tblWards.getValueAt(row, 0);
+        String wardLabel = tblWards.getValueAt(row, 1) + " Ward #" + wardId + " (" + tblWards.getValueAt(row, 2) + ")";
+        BedsDialog dialog = new BedsDialog(this, admin, wardId, wardLabel);
+        dialog.setVisible(true);
         loadWardsPage();
     }
 
@@ -387,40 +277,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getAdmissions()) {
             model.addRow(row);
         }
-        populateCombo(cmbCase, caseIds, admin.getCasesForAdmission());
-        refreshAvailableBedsCombo();
-        txtAdmissionDate.setText(LocalDate.now().format(DATE_FORMAT));
-        txtAdmissionRemarks.setText("");
     }
 
-    private void refreshAvailableBedsCombo() {
-        int caseIndex = cmbCase.getSelectedIndex();
-        if (caseIndex < 0) {
-            cmbBed.setModel(new DefaultComboBoxModel<>(new String[]{}));
-            bedIds.clear();
-            return;
+    private void btnNewAdmissionActionPerformed(java.awt.event.ActionEvent evt) {
+        AdmissionDialog dialog = new AdmissionDialog(this, admin);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadAdmissionsPage();
         }
-        populateCombo(cmbBed, bedIds, admin.getAvailableBeds(caseIds.get(caseIndex)));
-    }
-
-    private void cmbCaseActionPerformed(java.awt.event.ActionEvent evt) {
-        refreshAvailableBedsCombo();
-    }
-
-    private void btnAdmitActionPerformed(java.awt.event.ActionEvent evt) {
-        int caseIndex = cmbCase.getSelectedIndex();
-        int bedIndex = cmbBed.getSelectedIndex();
-        if (caseIndex < 0 || bedIndex < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a case and an available bed.");
-            return;
-        }
-        String result = admin.createAdmission(caseIds.get(caseIndex), bedIds.get(bedIndex),
-                txtAdmissionDate.getText(), txtAdmissionRemarks.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
-        loadAdmissionsPage();
     }
 
     private void btnDischargeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -431,7 +295,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         }
         int admissionId = (Integer) tblAdmissions.getValueAt(row, 0);
         String input = JOptionPane.showInputDialog(this, "Discharge date (dd-MM-yyyy):",
-                LocalDate.now().format(DATE_FORMAT));
+                java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         if (input == null) {
             return;
         }
@@ -457,22 +321,24 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getPendingLabRequests()) {
             model.addRow(row);
         }
-        txtLabResult.setText("");
     }
 
-    private void btnSubmitLabResultActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnEnterLabResultActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblLabRequests.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a pending lab request.");
             return;
         }
         int requestId = (Integer) tblLabRequests.getValueAt(row, 0);
-        String result = admin.submitLabResult(requestId, txtLabResult.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        String serviceName = (String) tblLabRequests.getValueAt(row, 1);
+        String patientName = (String) tblLabRequests.getValueAt(row, 2);
+        String requestDate = (String) tblLabRequests.getValueAt(row, 3);
+        String remarks = (String) tblLabRequests.getValueAt(row, 4);
+        LabResultDialog dialog = new LabResultDialog(this, admin, requestId, serviceName, patientName, requestDate, remarks);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadLabRequests();
         }
-        loadLabRequests();
     }
 
     private void loadImagingRequests() {
@@ -481,38 +347,23 @@ public class AdminDashboard extends javax.swing.JFrame {
         for (Object[] row : admin.getPendingImagingRequests()) {
             model.addRow(row);
         }
-        refreshImagingRoomCombo();
-        txtImagingDate.setText(LocalDate.now().format(DATE_FORMAT));
-        txtImagingStart.setText("");
-        txtImagingEnd.setText("");
     }
 
-    private void refreshImagingRoomCombo() {
+    private void btnScheduleSelectedActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblImagingRequests.getSelectedRow();
         if (row < 0) {
-            cmbImagingRoom.setModel(new DefaultComboBoxModel<>(new String[]{}));
-            imagingRoomIds.clear();
+            JOptionPane.showMessageDialog(this, "Please select a pending imaging request.");
             return;
         }
         int requestId = (Integer) tblImagingRequests.getValueAt(row, 0);
-        populateCombo(cmbImagingRoom, imagingRoomIds, admin.getImagingRoomsForRequest(requestId));
-    }
-
-    private void btnScheduleImagingActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = tblImagingRequests.getSelectedRow();
-        int roomIndex = cmbImagingRoom.getSelectedIndex();
-        if (row < 0 || roomIndex < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a pending request and an imaging room.");
-            return;
+        String serviceName = (String) tblImagingRequests.getValueAt(row, 1);
+        String patientName = (String) tblImagingRequests.getValueAt(row, 2);
+        String requestDate = (String) tblImagingRequests.getValueAt(row, 3);
+        ImagingScheduleDialog dialog = new ImagingScheduleDialog(this, admin, requestId, serviceName, patientName, requestDate);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadImagingRequests();
         }
-        int requestId = (Integer) tblImagingRequests.getValueAt(row, 0);
-        String result = admin.scheduleImaging(requestId, imagingRoomIds.get(roomIndex),
-                txtImagingDate.getText(), txtImagingStart.getText(), txtImagingEnd.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
-        }
-        loadImagingRequests();
     }
 
     private void btnDiagSubLabActionPerformed(java.awt.event.ActionEvent evt) {
@@ -528,8 +379,6 @@ public class AdminDashboard extends javax.swing.JFrame {
     // =====================================================================
     private void loadCataloguesPage() {
         loadDrugs();
-        cmbServiceCategory.setSelectedIndex(0);
-        refreshServiceTypeCombo();
         loadServices();
     }
 
@@ -541,40 +390,29 @@ public class AdminDashboard extends javax.swing.JFrame {
         }
     }
 
-    private void fillDrugFieldsFromSelection() {
-        int row = tblDrugs.getSelectedRow();
-        if (row < 0) {
-            return;
-        }
-        txtDrugName.setText((String) tblDrugs.getValueAt(row, 1));
-        cmbDrugForm.setSelectedItem(tblDrugs.getValueAt(row, 2));
-        txtDrugPrice.setText(String.valueOf(tblDrugs.getValueAt(row, 3)));
-    }
-
     private void btnAddDrugActionPerformed(java.awt.event.ActionEvent evt) {
-        String result = admin.addDrug(txtDrugName.getText(), (String) cmbDrugForm.getSelectedItem(), txtDrugPrice.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        CatalogueItemDialog dialog = new CatalogueItemDialog(this, admin, "drug", null);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadDrugs();
         }
-        txtDrugName.setText("");
-        txtDrugPrice.setText("");
-        loadDrugs();
     }
 
-    private void btnUpdateDrugActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnEditDrugActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblDrugs.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a drug from the list.");
             return;
         }
-        int drugId = (Integer) tblDrugs.getValueAt(row, 0);
-        String result = admin.updateDrug(drugId, txtDrugName.getText(), (String) cmbDrugForm.getSelectedItem(), txtDrugPrice.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        Object[] existing = new Object[]{
+            tblDrugs.getValueAt(row, 0), tblDrugs.getValueAt(row, 1),
+            tblDrugs.getValueAt(row, 2), tblDrugs.getValueAt(row, 3)
+        };
+        CatalogueItemDialog dialog = new CatalogueItemDialog(this, admin, "drug", existing);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadDrugs();
         }
-        loadDrugs();
     }
 
     private void btnToggleDrugActionPerformed(java.awt.event.ActionEvent evt) {
@@ -592,16 +430,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         loadDrugs();
     }
 
-    private void refreshServiceTypeCombo() {
-        String category = (String) cmbServiceCategory.getSelectedItem();
-        ArrayList<String> types = admin.getServiceTypes(category);
-        cmbServiceType.setModel(new DefaultComboBoxModel<>(types.toArray(new String[0])));
-    }
-
-    private void cmbServiceCategoryActionPerformed(java.awt.event.ActionEvent evt) {
-        refreshServiceTypeCombo();
-    }
-
     private void loadServices() {
         DefaultTableModel model = (DefaultTableModel) tblServices.getModel();
         model.setRowCount(0);
@@ -610,43 +438,29 @@ public class AdminDashboard extends javax.swing.JFrame {
         }
     }
 
-    private void fillServiceFieldsFromSelection() {
-        int row = tblServices.getSelectedRow();
-        if (row < 0) {
-            return;
-        }
-        txtServiceName.setText((String) tblServices.getValueAt(row, 1));
-        cmbServiceCategory.setSelectedItem(tblServices.getValueAt(row, 2));
-        cmbServiceType.setSelectedItem(tblServices.getValueAt(row, 3));
-        txtServicePrice.setText(String.valueOf(tblServices.getValueAt(row, 4)));
-    }
-
     private void btnAddServiceActionPerformed(java.awt.event.ActionEvent evt) {
-        String result = admin.addService(txtServiceName.getText(), (String) cmbServiceCategory.getSelectedItem(),
-                (String) cmbServiceType.getSelectedItem(), txtServicePrice.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        CatalogueItemDialog dialog = new CatalogueItemDialog(this, admin, "service", null);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadServices();
         }
-        txtServiceName.setText("");
-        txtServicePrice.setText("");
-        loadServices();
     }
 
-    private void btnUpdateServiceActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnEditServiceActionPerformed(java.awt.event.ActionEvent evt) {
         int row = tblServices.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a service from the list.");
             return;
         }
-        int serviceId = (Integer) tblServices.getValueAt(row, 0);
-        String result = admin.updateService(serviceId, txtServiceName.getText(), (String) cmbServiceCategory.getSelectedItem(),
-                (String) cmbServiceType.getSelectedItem(), txtServicePrice.getText());
-        if (result != null) {
-            JOptionPane.showMessageDialog(this, result);
-            return;
+        Object[] existing = new Object[]{
+            tblServices.getValueAt(row, 0), tblServices.getValueAt(row, 1),
+            tblServices.getValueAt(row, 2), tblServices.getValueAt(row, 3), tblServices.getValueAt(row, 4)
+        };
+        CatalogueItemDialog dialog = new CatalogueItemDialog(this, admin, "service", existing);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadServices();
         }
-        loadServices();
     }
 
     private void btnToggleServiceActionPerformed(java.awt.event.ActionEvent evt) {
@@ -804,9 +618,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         lblAssignTitle = new javax.swing.JLabel();
         scrAssignments = new javax.swing.JScrollPane();
         tblAssignments = new javax.swing.JTable();
-        lblAssignNew = new javax.swing.JLabel();
-        cmbDeptAssign = new javax.swing.JComboBox<>();
-        btnAssignDept = new javax.swing.JButton();
+        btnReassignDept = new javax.swing.JButton();
 
         pnlAssets = new javax.swing.JPanel();
         lblAssetsTitle = new javax.swing.JLabel();
@@ -814,8 +626,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         cmbAssetCategory = new javax.swing.JComboBox<>();
         scrAssets = new javax.swing.JScrollPane();
         tblAssets = new javax.swing.JTable();
-        lblNewAssetType = new javax.swing.JLabel();
-        cmbNewAssetType = new javax.swing.JComboBox<>();
         btnAddAsset = new javax.swing.JButton();
         btnToggleAssetStatus = new javax.swing.JButton();
 
@@ -823,30 +633,15 @@ public class AdminDashboard extends javax.swing.JFrame {
         lblWardsTitle = new javax.swing.JLabel();
         scrWards = new javax.swing.JScrollPane();
         tblWards = new javax.swing.JTable();
-        lblNewWard = new javax.swing.JLabel();
-        cmbWardDept = new javax.swing.JComboBox<>();
-        cmbWardGender = new javax.swing.JComboBox<>();
-        txtWardCapacity = new javax.swing.JTextField();
         btnAddWard = new javax.swing.JButton();
-        btnUpdateWard = new javax.swing.JButton();
-        lblBedsHeader = new javax.swing.JLabel();
-        scrBeds = new javax.swing.JScrollPane();
-        tblBeds = new javax.swing.JTable();
-        btnAddBed = new javax.swing.JButton();
-        btnRemoveBed = new javax.swing.JButton();
+        btnEditWard = new javax.swing.JButton();
+        btnManageBeds = new javax.swing.JButton();
 
         pnlAdmissions = new javax.swing.JPanel();
         lblAdmissionsTitle = new javax.swing.JLabel();
         scrAdmissions = new javax.swing.JScrollPane();
         tblAdmissions = new javax.swing.JTable();
-        lblNewAdmission = new javax.swing.JLabel();
-        cmbCase = new javax.swing.JComboBox<>();
-        cmbBed = new javax.swing.JComboBox<>();
-        lblAdmDate = new javax.swing.JLabel();
-        txtAdmissionDate = new javax.swing.JTextField();
-        lblAdmRemarks = new javax.swing.JLabel();
-        txtAdmissionRemarks = new javax.swing.JTextField();
-        btnAdmit = new javax.swing.JButton();
+        btnNewAdmission = new javax.swing.JButton();
         btnDischarge = new javax.swing.JButton();
 
         pnlDiagnostics = new javax.swing.JPanel();
@@ -857,20 +652,11 @@ public class AdminDashboard extends javax.swing.JFrame {
         pnlDiagLab = new javax.swing.JPanel();
         scrLabRequests = new javax.swing.JScrollPane();
         tblLabRequests = new javax.swing.JTable();
-        lblLabResult = new javax.swing.JLabel();
-        scrLabResult = new javax.swing.JScrollPane();
-        txtLabResult = new javax.swing.JTextArea();
-        btnSubmitLabResult = new javax.swing.JButton();
+        btnEnterLabResult = new javax.swing.JButton();
         pnlDiagImaging = new javax.swing.JPanel();
         scrImagingRequests = new javax.swing.JScrollPane();
         tblImagingRequests = new javax.swing.JTable();
-        lblScheduleImaging = new javax.swing.JLabel();
-        cmbImagingRoom = new javax.swing.JComboBox<>();
-        txtImagingDate = new javax.swing.JTextField();
-        txtImagingStart = new javax.swing.JTextField();
-        txtImagingEnd = new javax.swing.JTextField();
-        btnScheduleImaging = new javax.swing.JButton();
-        lblImagingHint = new javax.swing.JLabel();
+        btnScheduleSelected = new javax.swing.JButton();
 
         pnlCatalogues = new javax.swing.JPanel();
         lblCatTitle = new javax.swing.JLabel();
@@ -880,21 +666,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         pnlCatDrugs = new javax.swing.JPanel();
         scrDrugs = new javax.swing.JScrollPane();
         tblDrugs = new javax.swing.JTable();
-        txtDrugName = new javax.swing.JTextField();
-        cmbDrugForm = new javax.swing.JComboBox<>();
-        txtDrugPrice = new javax.swing.JTextField();
         btnAddDrug = new javax.swing.JButton();
-        btnUpdateDrug = new javax.swing.JButton();
+        btnEditDrug = new javax.swing.JButton();
         btnToggleDrug = new javax.swing.JButton();
         pnlCatServices = new javax.swing.JPanel();
         scrServices = new javax.swing.JScrollPane();
         tblServices = new javax.swing.JTable();
-        txtServiceName = new javax.swing.JTextField();
-        cmbServiceCategory = new javax.swing.JComboBox<>();
-        cmbServiceType = new javax.swing.JComboBox<>();
-        txtServicePrice = new javax.swing.JTextField();
         btnAddService = new javax.swing.JButton();
-        btnUpdateService = new javax.swing.JButton();
+        btnEditService = new javax.swing.JButton();
         btnToggleService = new javax.swing.JButton();
 
         pnlBilling = new javax.swing.JPanel();
@@ -1158,23 +937,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblAssignments.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrAssignments.setViewportView(tblAssignments);
         pnlAssign.add(scrAssignments);
-        scrAssignments.setBounds(20, 60, 580, 290);
+        scrAssignments.setBounds(20, 60, 580, 420);
 
-        lblAssignNew.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblAssignNew.setText("Reassign selected doctor to department:");
-        pnlAssign.add(lblAssignNew);
-        lblAssignNew.setBounds(20, 365, 400, 20);
-
-        cmbDeptAssign.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlAssign.add(cmbDeptAssign);
-        cmbDeptAssign.setBounds(20, 390, 400, 26);
-
-        btnAssignDept.setBackground(new java.awt.Color(38, 117, 154));
-        btnAssignDept.setForeground(new java.awt.Color(255, 255, 255));
-        btnAssignDept.setText("Assign");
-        btnAssignDept.addActionListener(this::btnAssignDeptActionPerformed);
-        pnlAssign.add(btnAssignDept);
-        btnAssignDept.setBounds(430, 390, 150, 30);
+        btnReassignDept.setBackground(new java.awt.Color(38, 117, 154));
+        btnReassignDept.setForeground(new java.awt.Color(255, 255, 255));
+        btnReassignDept.setText("Reassign Selected");
+        btnReassignDept.addActionListener(this::btnReassignDeptActionPerformed);
+        pnlAssign.add(btnReassignDept);
+        btnReassignDept.setBounds(20, 490, 200, 36);
 
         pnlContent.add(pnlAssign, "assign");
 
@@ -1214,29 +984,21 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblAssets.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrAssets.setViewportView(tblAssets);
         pnlAssets.add(scrAssets);
-        scrAssets.setBounds(20, 100, 580, 270);
-
-        lblNewAssetType.setText("Type (if applicable):");
-        pnlAssets.add(lblNewAssetType);
-        lblNewAssetType.setBounds(20, 385, 160, 26);
-
-        cmbNewAssetType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlAssets.add(cmbNewAssetType);
-        cmbNewAssetType.setBounds(190, 385, 200, 26);
+        scrAssets.setBounds(20, 96, 580, 384);
 
         btnAddAsset.setBackground(new java.awt.Color(38, 117, 154));
         btnAddAsset.setForeground(new java.awt.Color(255, 255, 255));
         btnAddAsset.setText("Add New");
         btnAddAsset.addActionListener(this::btnAddAssetActionPerformed);
         pnlAssets.add(btnAddAsset);
-        btnAddAsset.setBounds(400, 385, 120, 30);
+        btnAddAsset.setBounds(20, 490, 120, 36);
 
         btnToggleAssetStatus.setBackground(new java.awt.Color(38, 117, 154));
         btnToggleAssetStatus.setForeground(new java.awt.Color(255, 255, 255));
         btnToggleAssetStatus.setText("Toggle Status (OK / Maintenance)");
         btnToggleAssetStatus.addActionListener(this::btnToggleAssetStatusActionPerformed);
         pnlAssets.add(btnToggleAssetStatus);
-        btnToggleAssetStatus.setBounds(20, 430, 280, 36);
+        btnToggleAssetStatus.setBounds(150, 490, 280, 36);
 
         pnlContent.add(pnlAssets, "assets");
 
@@ -1267,77 +1029,28 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblWards.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrWards.setViewportView(tblWards);
         pnlWards.add(scrWards);
-        scrWards.setBounds(20, 55, 580, 150);
-
-        lblNewWard.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblNewWard.setText("Add / Update Ward:");
-        pnlWards.add(lblNewWard);
-        lblNewWard.setBounds(20, 215, 200, 20);
-
-        cmbWardDept.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlWards.add(cmbWardDept);
-        cmbWardDept.setBounds(20, 238, 200, 26);
-
-        cmbWardGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlWards.add(cmbWardGender);
-        cmbWardGender.setBounds(230, 238, 80, 26);
-
-        txtWardCapacity.setToolTipText("Capacity");
-        pnlWards.add(txtWardCapacity);
-        txtWardCapacity.setBounds(320, 238, 70, 26);
+        scrWards.setBounds(20, 60, 580, 420);
 
         btnAddWard.setBackground(new java.awt.Color(38, 117, 154));
         btnAddWard.setForeground(new java.awt.Color(255, 255, 255));
-        btnAddWard.setText("Add");
+        btnAddWard.setText("Add Ward");
         btnAddWard.addActionListener(this::btnAddWardActionPerformed);
         pnlWards.add(btnAddWard);
-        btnAddWard.setBounds(400, 238, 70, 26);
+        btnAddWard.setBounds(20, 490, 110, 36);
 
-        btnUpdateWard.setBackground(new java.awt.Color(38, 117, 154));
-        btnUpdateWard.setForeground(new java.awt.Color(255, 255, 255));
-        btnUpdateWard.setText("Update");
-        btnUpdateWard.addActionListener(this::btnUpdateWardActionPerformed);
-        pnlWards.add(btnUpdateWard);
-        btnUpdateWard.setBounds(480, 238, 110, 26);
+        btnEditWard.setBackground(new java.awt.Color(38, 117, 154));
+        btnEditWard.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditWard.setText("Edit Selected Ward");
+        btnEditWard.addActionListener(this::btnEditWardActionPerformed);
+        pnlWards.add(btnEditWard);
+        btnEditWard.setBounds(140, 490, 170, 36);
 
-        lblBedsHeader.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblBedsHeader.setText("Beds in Selected Ward:");
-        pnlWards.add(lblBedsHeader);
-        lblBedsHeader.setBounds(20, 280, 250, 20);
-
-        tblBeds.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] {
-                "Bed ID", "Ward ID"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblBeds.getTableHeader().setReorderingAllowed(false);
-        tblBeds.setSelectionBackground(new java.awt.Color(38, 117, 154));
-        tblBeds.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        scrBeds.setViewportView(tblBeds);
-        pnlWards.add(scrBeds);
-        scrBeds.setBounds(20, 305, 350, 155);
-
-        btnAddBed.setBackground(new java.awt.Color(38, 117, 154));
-        btnAddBed.setForeground(new java.awt.Color(255, 255, 255));
-        btnAddBed.setText("Add Bed to Selected Ward");
-        btnAddBed.addActionListener(this::btnAddBedActionPerformed);
-        pnlWards.add(btnAddBed);
-        btnAddBed.setBounds(375, 305, 220, 30);
-
-        btnRemoveBed.setBackground(new java.awt.Color(38, 117, 154));
-        btnRemoveBed.setForeground(new java.awt.Color(255, 255, 255));
-        btnRemoveBed.setText("Remove Selected Bed");
-        btnRemoveBed.addActionListener(this::btnRemoveBedActionPerformed);
-        pnlWards.add(btnRemoveBed);
-        btnRemoveBed.setBounds(375, 345, 220, 30);
+        btnManageBeds.setBackground(new java.awt.Color(38, 117, 154));
+        btnManageBeds.setForeground(new java.awt.Color(255, 255, 255));
+        btnManageBeds.setText("Manage Beds");
+        btnManageBeds.addActionListener(this::btnManageBedsActionPerformed);
+        pnlWards.add(btnManageBeds);
+        btnManageBeds.setBounds(320, 490, 150, 36);
 
         pnlContent.add(pnlWards, "wards");
 
@@ -1368,49 +1081,21 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblAdmissions.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrAdmissions.setViewportView(tblAdmissions);
         pnlAdmissions.add(scrAdmissions);
-        scrAdmissions.setBounds(20, 55, 580, 260);
+        scrAdmissions.setBounds(20, 60, 580, 420);
 
-        lblNewAdmission.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblNewAdmission.setText("New Admission:");
-        pnlAdmissions.add(lblNewAdmission);
-        lblNewAdmission.setBounds(20, 325, 200, 20);
-
-        cmbCase.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        cmbCase.addActionListener(this::cmbCaseActionPerformed);
-        pnlAdmissions.add(cmbCase);
-        cmbCase.setBounds(20, 348, 280, 26);
-
-        cmbBed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlAdmissions.add(cmbBed);
-        cmbBed.setBounds(310, 348, 180, 26);
-
-        lblAdmDate.setText("Date (dd-MM-yyyy):");
-        pnlAdmissions.add(lblAdmDate);
-        lblAdmDate.setBounds(20, 380, 130, 20);
-
-        pnlAdmissions.add(txtAdmissionDate);
-        txtAdmissionDate.setBounds(150, 378, 100, 26);
-
-        lblAdmRemarks.setText("Remarks:");
-        pnlAdmissions.add(lblAdmRemarks);
-        lblAdmRemarks.setBounds(260, 380, 70, 20);
-
-        pnlAdmissions.add(txtAdmissionRemarks);
-        txtAdmissionRemarks.setBounds(330, 378, 170, 26);
-
-        btnAdmit.setBackground(new java.awt.Color(38, 117, 154));
-        btnAdmit.setForeground(new java.awt.Color(255, 255, 255));
-        btnAdmit.setText("Admit");
-        btnAdmit.addActionListener(this::btnAdmitActionPerformed);
-        pnlAdmissions.add(btnAdmit);
-        btnAdmit.setBounds(510, 378, 90, 26);
+        btnNewAdmission.setBackground(new java.awt.Color(38, 117, 154));
+        btnNewAdmission.setForeground(new java.awt.Color(255, 255, 255));
+        btnNewAdmission.setText("New Admission");
+        btnNewAdmission.addActionListener(this::btnNewAdmissionActionPerformed);
+        pnlAdmissions.add(btnNewAdmission);
+        btnNewAdmission.setBounds(20, 490, 150, 36);
 
         btnDischarge.setBackground(new java.awt.Color(38, 117, 154));
         btnDischarge.setForeground(new java.awt.Color(255, 255, 255));
         btnDischarge.setText("Discharge Selected");
         btnDischarge.addActionListener(this::btnDischargeActionPerformed);
         pnlAdmissions.add(btnDischarge);
-        btnDischarge.setBounds(20, 420, 200, 30);
+        btnDischarge.setBounds(180, 490, 200, 36);
 
         pnlContent.add(pnlAdmissions, "admissions");
 
@@ -1457,25 +1142,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblLabRequests.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrLabRequests.setViewportView(tblLabRequests);
         pnlDiagLab.add(scrLabRequests);
-        scrLabRequests.setBounds(0, 0, 580, 260);
+        scrLabRequests.setBounds(0, 0, 580, 390);
 
-        lblLabResult.setText("Result:");
-        pnlDiagLab.add(lblLabResult);
-        lblLabResult.setBounds(0, 270, 60, 20);
-
-        txtLabResult.setLineWrap(true);
-        txtLabResult.setWrapStyleWord(true);
-        txtLabResult.setRows(3);
-        scrLabResult.setViewportView(txtLabResult);
-        pnlDiagLab.add(scrLabResult);
-        scrLabResult.setBounds(0, 292, 580, 70);
-
-        btnSubmitLabResult.setBackground(new java.awt.Color(38, 117, 154));
-        btnSubmitLabResult.setForeground(new java.awt.Color(255, 255, 255));
-        btnSubmitLabResult.setText("Submit Result");
-        btnSubmitLabResult.addActionListener(this::btnSubmitLabResultActionPerformed);
-        pnlDiagLab.add(btnSubmitLabResult);
-        btnSubmitLabResult.setBounds(0, 372, 150, 30);
+        btnEnterLabResult.setBackground(new java.awt.Color(38, 117, 154));
+        btnEnterLabResult.setForeground(new java.awt.Color(255, 255, 255));
+        btnEnterLabResult.setText("Enter Result");
+        btnEnterLabResult.addActionListener(this::btnEnterLabResultActionPerformed);
+        pnlDiagLab.add(btnEnterLabResult);
+        btnEnterLabResult.setBounds(0, 400, 150, 36);
 
         pnlDiagContent.add(pnlDiagLab, "lab");
 
@@ -1499,45 +1173,19 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblImagingRequests.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrImagingRequests.setViewportView(tblImagingRequests);
         pnlDiagImaging.add(scrImagingRequests);
-        scrImagingRequests.setBounds(0, 0, 580, 200);
+        scrImagingRequests.setBounds(0, 0, 580, 390);
 
-        lblScheduleImaging.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        lblScheduleImaging.setText("Schedule Appointment:");
-        pnlDiagImaging.add(lblScheduleImaging);
-        lblScheduleImaging.setBounds(0, 210, 250, 20);
-
-        cmbImagingRoom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlDiagImaging.add(cmbImagingRoom);
-        cmbImagingRoom.setBounds(0, 235, 190, 26);
-
-        txtImagingDate.setToolTipText("dd-MM-yyyy");
-        pnlDiagImaging.add(txtImagingDate);
-        txtImagingDate.setBounds(200, 235, 90, 26);
-
-        txtImagingStart.setToolTipText("HH:mm");
-        pnlDiagImaging.add(txtImagingStart);
-        txtImagingStart.setBounds(300, 235, 70, 26);
-
-        txtImagingEnd.setToolTipText("HH:mm");
-        pnlDiagImaging.add(txtImagingEnd);
-        txtImagingEnd.setBounds(380, 235, 70, 26);
-
-        btnScheduleImaging.setBackground(new java.awt.Color(38, 117, 154));
-        btnScheduleImaging.setForeground(new java.awt.Color(255, 255, 255));
-        btnScheduleImaging.setText("Schedule");
-        btnScheduleImaging.addActionListener(this::btnScheduleImagingActionPerformed);
-        pnlDiagImaging.add(btnScheduleImaging);
-        btnScheduleImaging.setBounds(460, 235, 110, 26);
-
-        lblImagingHint.setFont(new java.awt.Font("Segoe UI", 2, 11)); // NOI18N
-        lblImagingHint.setText("Room / Date dd-MM-yyyy / Start HH:mm / End HH:mm (30-min increments)");
-        pnlDiagImaging.add(lblImagingHint);
-        lblImagingHint.setBounds(0, 268, 580, 20);
+        btnScheduleSelected.setBackground(new java.awt.Color(38, 117, 154));
+        btnScheduleSelected.setForeground(new java.awt.Color(255, 255, 255));
+        btnScheduleSelected.setText("Schedule Selected");
+        btnScheduleSelected.addActionListener(this::btnScheduleSelectedActionPerformed);
+        pnlDiagImaging.add(btnScheduleSelected);
+        btnScheduleSelected.setBounds(0, 400, 170, 36);
 
         pnlDiagContent.add(pnlDiagImaging, "imaging");
 
         pnlDiagnostics.add(pnlDiagContent);
-        pnlDiagContent.setBounds(20, 90, 580, 420);
+        pnlDiagContent.setBounds(20, 90, 580, 440);
 
         pnlContent.add(pnlDiagnostics, "diagnostics");
 
@@ -1584,40 +1232,28 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblDrugs.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrDrugs.setViewportView(tblDrugs);
         pnlCatDrugs.add(scrDrugs);
-        scrDrugs.setBounds(0, 0, 580, 260);
-
-        txtDrugName.setToolTipText("Drug name");
-        pnlCatDrugs.add(txtDrugName);
-        txtDrugName.setBounds(0, 270, 230, 26);
-
-        cmbDrugForm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlCatDrugs.add(cmbDrugForm);
-        cmbDrugForm.setBounds(240, 270, 160, 26);
-
-        txtDrugPrice.setToolTipText("Price");
-        pnlCatDrugs.add(txtDrugPrice);
-        txtDrugPrice.setBounds(410, 270, 80, 26);
+        scrDrugs.setBounds(0, 0, 580, 390);
 
         btnAddDrug.setBackground(new java.awt.Color(38, 117, 154));
         btnAddDrug.setForeground(new java.awt.Color(255, 255, 255));
         btnAddDrug.setText("Add New");
         btnAddDrug.addActionListener(this::btnAddDrugActionPerformed);
         pnlCatDrugs.add(btnAddDrug);
-        btnAddDrug.setBounds(0, 305, 100, 30);
+        btnAddDrug.setBounds(0, 400, 100, 36);
 
-        btnUpdateDrug.setBackground(new java.awt.Color(38, 117, 154));
-        btnUpdateDrug.setForeground(new java.awt.Color(255, 255, 255));
-        btnUpdateDrug.setText("Update Selected");
-        btnUpdateDrug.addActionListener(this::btnUpdateDrugActionPerformed);
-        pnlCatDrugs.add(btnUpdateDrug);
-        btnUpdateDrug.setBounds(105, 305, 165, 30);
+        btnEditDrug.setBackground(new java.awt.Color(38, 117, 154));
+        btnEditDrug.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditDrug.setText("Edit Selected");
+        btnEditDrug.addActionListener(this::btnEditDrugActionPerformed);
+        pnlCatDrugs.add(btnEditDrug);
+        btnEditDrug.setBounds(110, 400, 140, 36);
 
         btnToggleDrug.setBackground(new java.awt.Color(38, 117, 154));
         btnToggleDrug.setForeground(new java.awt.Color(255, 255, 255));
         btnToggleDrug.setText("Toggle Active / Inactive");
         btnToggleDrug.addActionListener(this::btnToggleDrugActionPerformed);
         pnlCatDrugs.add(btnToggleDrug);
-        btnToggleDrug.setBounds(280, 305, 220, 30);
+        btnToggleDrug.setBounds(260, 400, 220, 36);
 
         pnlCatContent.add(pnlCatDrugs, "drugs");
 
@@ -1641,50 +1277,33 @@ public class AdminDashboard extends javax.swing.JFrame {
         tblServices.setSelectionForeground(new java.awt.Color(255, 255, 255));
         scrServices.setViewportView(tblServices);
         pnlCatServices.add(scrServices);
-        scrServices.setBounds(0, 0, 580, 260);
-
-        txtServiceName.setToolTipText("Service name");
-        pnlCatServices.add(txtServiceName);
-        txtServiceName.setBounds(0, 270, 190, 26);
-
-        cmbServiceCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        cmbServiceCategory.addActionListener(this::cmbServiceCategoryActionPerformed);
-        pnlCatServices.add(cmbServiceCategory);
-        cmbServiceCategory.setBounds(200, 270, 110, 26);
-
-        cmbServiceType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
-        pnlCatServices.add(cmbServiceType);
-        cmbServiceType.setBounds(320, 270, 140, 26);
-
-        txtServicePrice.setToolTipText("Price");
-        pnlCatServices.add(txtServicePrice);
-        txtServicePrice.setBounds(470, 270, 80, 26);
+        scrServices.setBounds(0, 0, 580, 390);
 
         btnAddService.setBackground(new java.awt.Color(38, 117, 154));
         btnAddService.setForeground(new java.awt.Color(255, 255, 255));
         btnAddService.setText("Add New");
         btnAddService.addActionListener(this::btnAddServiceActionPerformed);
         pnlCatServices.add(btnAddService);
-        btnAddService.setBounds(0, 305, 100, 30);
+        btnAddService.setBounds(0, 400, 100, 36);
 
-        btnUpdateService.setBackground(new java.awt.Color(38, 117, 154));
-        btnUpdateService.setForeground(new java.awt.Color(255, 255, 255));
-        btnUpdateService.setText("Update Selected");
-        btnUpdateService.addActionListener(this::btnUpdateServiceActionPerformed);
-        pnlCatServices.add(btnUpdateService);
-        btnUpdateService.setBounds(105, 305, 165, 30);
+        btnEditService.setBackground(new java.awt.Color(38, 117, 154));
+        btnEditService.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditService.setText("Edit Selected");
+        btnEditService.addActionListener(this::btnEditServiceActionPerformed);
+        pnlCatServices.add(btnEditService);
+        btnEditService.setBounds(110, 400, 140, 36);
 
         btnToggleService.setBackground(new java.awt.Color(38, 117, 154));
         btnToggleService.setForeground(new java.awt.Color(255, 255, 255));
         btnToggleService.setText("Toggle Active / Inactive");
         btnToggleService.addActionListener(this::btnToggleServiceActionPerformed);
         pnlCatServices.add(btnToggleService);
-        btnToggleService.setBounds(280, 305, 220, 30);
+        btnToggleService.setBounds(260, 400, 220, 36);
 
         pnlCatContent.add(pnlCatServices, "services");
 
         pnlCatalogues.add(pnlCatContent);
-        pnlCatContent.setBounds(20, 90, 580, 420);
+        pnlCatContent.setBounds(20, 90, 580, 440);
 
         pnlContent.add(pnlCatalogues, "catalogues");
 
@@ -1880,20 +1499,22 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddAsset;
-    private javax.swing.JButton btnAddBed;
     private javax.swing.JButton btnAddDrug;
     private javax.swing.JButton btnAddInsurance;
     private javax.swing.JButton btnAddService;
     private javax.swing.JButton btnAddWard;
-    private javax.swing.JButton btnAdmit;
-    private javax.swing.JButton btnAssignDept;
     private javax.swing.JButton btnCatSubDrugs;
     private javax.swing.JButton btnCatSubServices;
     private javax.swing.JButton btnDiagSubImaging;
     private javax.swing.JButton btnDiagSubLab;
     private javax.swing.JButton btnDischarge;
+    private javax.swing.JButton btnEditDrug;
+    private javax.swing.JButton btnEditService;
     private javax.swing.JButton btnEditUser;
+    private javax.swing.JButton btnEditWard;
+    private javax.swing.JButton btnEnterLabResult;
     private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnManageBeds;
     private javax.swing.JButton btnNavAdmissions;
     private javax.swing.JButton btnNavAssets;
     private javax.swing.JButton btnNavAssign;
@@ -1902,57 +1523,34 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnNavDiagnostics;
     private javax.swing.JButton btnNavUsers;
     private javax.swing.JButton btnNavWards;
+    private javax.swing.JButton btnNewAdmission;
     private javax.swing.JButton btnNewUser;
-    private javax.swing.JButton btnRemoveBed;
+    private javax.swing.JButton btnReassignDept;
     private javax.swing.JButton btnRemoveInsurance;
     private javax.swing.JButton btnSaveFees;
-    private javax.swing.JButton btnScheduleImaging;
+    private javax.swing.JButton btnScheduleSelected;
     private javax.swing.JButton btnSearchUsers;
-    private javax.swing.JButton btnSubmitLabResult;
     private javax.swing.JButton btnToggleAssetStatus;
     private javax.swing.JButton btnToggleDrug;
     private javax.swing.JButton btnToggleService;
     private javax.swing.JButton btnToggleUserStatus;
-    private javax.swing.JButton btnUpdateDrug;
     private javax.swing.JButton btnUpdateMultiplier;
-    private javax.swing.JButton btnUpdateService;
-    private javax.swing.JButton btnUpdateWard;
     private javax.swing.JComboBox<String> cmbAssetCategory;
-    private javax.swing.JComboBox<String> cmbBed;
-    private javax.swing.JComboBox<String> cmbCase;
-    private javax.swing.JComboBox<String> cmbDeptAssign;
-    private javax.swing.JComboBox<String> cmbDrugForm;
-    private javax.swing.JComboBox<String> cmbImagingRoom;
-    private javax.swing.JComboBox<String> cmbNewAssetType;
     private javax.swing.JComboBox<String> cmbRoleFilter;
-    private javax.swing.JComboBox<String> cmbServiceCategory;
-    private javax.swing.JComboBox<String> cmbServiceType;
-    private javax.swing.JComboBox<String> cmbWardDept;
-    private javax.swing.JComboBox<String> cmbWardGender;
-    private javax.swing.JLabel lblAdmDate;
-    private javax.swing.JLabel lblAdmRemarks;
     private javax.swing.JLabel lblAdmissionsTitle;
     private javax.swing.JLabel lblAssetCategory;
     private javax.swing.JLabel lblAssetsTitle;
-    private javax.swing.JLabel lblAssignNew;
     private javax.swing.JLabel lblAssignTitle;
-    private javax.swing.JLabel lblBedsHeader;
     private javax.swing.JLabel lblBillingTitle;
     private javax.swing.JLabel lblCatTitle;
     private javax.swing.JLabel lblConsultFee;
     private javax.swing.JLabel lblDiagTitle;
     private javax.swing.JLabel lblFeesHeader;
     private javax.swing.JLabel lblHospFee;
-    private javax.swing.JLabel lblImagingHint;
     private javax.swing.JLabel lblInsuranceHeader;
-    private javax.swing.JLabel lblLabResult;
-    private javax.swing.JLabel lblNewAdmission;
-    private javax.swing.JLabel lblNewAssetType;
     private javax.swing.JLabel lblNewMultiplier;
-    private javax.swing.JLabel lblNewWard;
     private javax.swing.JLabel lblPortalTitle;
     private javax.swing.JLabel lblRoleFilter;
-    private javax.swing.JLabel lblScheduleImaging;
     private javax.swing.JLabel lblTiersHeader;
     private javax.swing.JLabel lblUserSearch;
     private javax.swing.JLabel lblUsersTitle;
@@ -1978,12 +1576,10 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrAdmissions;
     private javax.swing.JScrollPane scrAssets;
     private javax.swing.JScrollPane scrAssignments;
-    private javax.swing.JScrollPane scrBeds;
     private javax.swing.JScrollPane scrDrugs;
     private javax.swing.JScrollPane scrImagingRequests;
     private javax.swing.JScrollPane scrInsurance;
     private javax.swing.JScrollPane scrLabRequests;
-    private javax.swing.JScrollPane scrLabResult;
     private javax.swing.JScrollPane scrServices;
     private javax.swing.JScrollPane scrTiers;
     private javax.swing.JScrollPane scrUsers;
@@ -1991,7 +1587,6 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JTable tblAdmissions;
     private javax.swing.JTable tblAssets;
     private javax.swing.JTable tblAssignments;
-    private javax.swing.JTable tblBeds;
     private javax.swing.JTable tblDrugs;
     private javax.swing.JTable tblImagingRequests;
     private javax.swing.JTable tblInsurance;
@@ -2000,21 +1595,10 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JTable tblTiers;
     private javax.swing.JTable tblUsers;
     private javax.swing.JTable tblWards;
-    private javax.swing.JTextArea txtLabResult;
-    private javax.swing.JTextField txtAdmissionDate;
-    private javax.swing.JTextField txtAdmissionRemarks;
     private javax.swing.JTextField txtConsultFee;
-    private javax.swing.JTextField txtDrugName;
-    private javax.swing.JTextField txtDrugPrice;
     private javax.swing.JTextField txtHospFee;
-    private javax.swing.JTextField txtImagingDate;
-    private javax.swing.JTextField txtImagingEnd;
-    private javax.swing.JTextField txtImagingStart;
     private javax.swing.JTextField txtInsuranceName;
     private javax.swing.JTextField txtMultiplier;
-    private javax.swing.JTextField txtServiceName;
-    private javax.swing.JTextField txtServicePrice;
     private javax.swing.JTextField txtUserSearch;
-    private javax.swing.JTextField txtWardCapacity;
     // End of variables declaration//GEN-END:variables
 }

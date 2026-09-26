@@ -59,6 +59,8 @@ public interface AdminServices {
     // =====================================================================
     // rows: {wardId, departmentName, gender, capacity, bedCount}
     ArrayList<Object[]> getWards();
+    // {departmentId, gender, capacity} or null
+    String[] getWardDetail(int wardId);
     String addWard(int departmentId, String gender, int capacity);
     String updateWard(int wardId, String gender, int capacity);
     // rows: {bedId, wardId}

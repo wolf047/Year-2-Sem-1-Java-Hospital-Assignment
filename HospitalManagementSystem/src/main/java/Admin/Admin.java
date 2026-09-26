@@ -596,6 +596,16 @@ public class Admin extends User implements AdminServices {
     }
 
     @Override
+    public String[] getWardDetail(int wardId) {
+        TreeMap<Integer, ArrayList<String>> wards = FileHandling.readAllRecords("InpatientWards.txt");
+        if (wards == null || !wards.containsKey(wardId)) {
+            return null;
+        }
+        ArrayList<String> w = wards.get(wardId);
+        return new String[]{w.get(0), w.get(1), w.get(2)};
+    }
+
+    @Override
     public String addWard(int departmentId, String gender, int capacity) {
         if (gender == null || (!gender.equals("male") && !gender.equals("female"))) {
             return "Please select a gender.";

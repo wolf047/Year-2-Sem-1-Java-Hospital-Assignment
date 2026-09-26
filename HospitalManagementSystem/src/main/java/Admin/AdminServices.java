@@ -124,4 +124,19 @@ public interface AdminServices {
     ArrayList<Object[]> getInsuranceNetworks();
     String addInsuranceNetwork(String name);
     String removeInsuranceNetwork(int insuranceId);
+
+    // =====================================================================
+    // INVOICES & PAYMENTS
+    // =====================================================================
+    // rows: {caseId, "Case #X - PatientName", closeDate}
+    ArrayList<Object[]> getClosedCasesForInvoicing();
+    // rows: {itemName, quantity, amountCharged} - computed preview, nothing saved yet
+    ArrayList<Object[]> previewInvoiceItems(int caseId);
+    String generateInvoice(int caseId);
+
+    // rows: {invoiceId, "Case #X - PatientName", dateIssued, totalAmount, "Paid"/"Unpaid"}
+    ArrayList<Object[]> getInvoices();
+    // rows: {itemName, quantity, amountCharged} - the items already saved for this invoice
+    ArrayList<Object[]> getInvoiceItems(int invoiceId);
+    String recordPayment(int invoiceId, String paymentMethod, Integer insuranceId);
 }

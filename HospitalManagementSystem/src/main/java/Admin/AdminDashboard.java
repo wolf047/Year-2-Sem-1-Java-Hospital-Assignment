@@ -29,7 +29,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         cardLayout.show(pnlContent, cardName);
 
         JButton[] menu = {btnNavUsers, btnNavAssign, btnNavAssets, btnNavWards, btnNavAdmissions,
-            btnNavDiagnostics, btnNavCatalogues, btnNavBilling};
+            btnNavDiagnostics, btnNavCatalogues, btnNavBilling, btnNavInvoices};
         for (JButton b : menu) {
             b.setBackground(NAV_BG);
             b.setForeground(Color.WHITE);
@@ -62,6 +62,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         activeButton.setForeground(BLUE);
     }
 
+    private void showInvSubPage(String cardName, JButton activeButton) {
+        CardLayout cardLayout = (CardLayout) pnlInvContent.getLayout();
+        cardLayout.show(pnlInvContent, cardName);
+        JButton[] tabs = {btnInvSubGenerate, btnInvSubPayments};
+        for (JButton b : tabs) {
+            b.setBackground(NAV_BG);
+            b.setForeground(Color.WHITE);
+        }
+        activeButton.setBackground(Color.WHITE);
+        activeButton.setForeground(BLUE);
+    }
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
 
     /**
@@ -83,10 +95,12 @@ public class AdminDashboard extends javax.swing.JFrame {
         loadDiagnosticsPage();
         loadCataloguesPage();
         loadBilling();
+        loadInvoicesPage();
 
         showPage("users", btnNavUsers);
         showDiagSubPage("lab", btnDiagSubLab);
         showCatSubPage("drugs", btnCatSubDrugs);
+        showInvSubPage("generate", btnInvSubGenerate);
     }
 
     // =====================================================================
@@ -577,6 +591,73 @@ public class AdminDashboard extends javax.swing.JFrame {
         loadBilling();
     }
 
+    // =====================================================================
+    // INVOICES & PAYMENTS PAGE
+    // =====================================================================
+    private void loadInvoicesPage() {
+        loadCasesForInvoicing();
+        loadInvoiceLedger();
+    }
+
+    private void loadCasesForInvoicing() {
+        DefaultTableModel model = (DefaultTableModel) tblCasesForInvoicing.getModel();
+        model.setRowCount(0);
+        for (Object[] row : admin.getClosedCasesForInvoicing()) {
+            model.addRow(row);
+        }
+    }
+
+    private void btnGenerateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {
+        int row = tblCasesForInvoicing.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a closed case from the list.");
+            return;
+        }
+        int caseId = (Integer) tblCasesForInvoicing.getValueAt(row, 0);
+        String caseLabel = (String) tblCasesForInvoicing.getValueAt(row, 1);
+        InvoiceDetailDialog dialog = new InvoiceDetailDialog(this, admin, caseId, caseLabel);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadInvoicesPage();
+        }
+    }
+
+    private void loadInvoiceLedger() {
+        DefaultTableModel model = (DefaultTableModel) tblInvoices.getModel();
+        model.setRowCount(0);
+        for (Object[] row : admin.getInvoices()) {
+            model.addRow(row);
+        }
+    }
+
+    private void btnRecordPaymentActionPerformed(java.awt.event.ActionEvent evt) {
+        int row = tblInvoices.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select an invoice from the list.");
+            return;
+        }
+        if (tblInvoices.getValueAt(row, 4).equals("Paid")) {
+            JOptionPane.showMessageDialog(this, "This invoice has already been paid.");
+            return;
+        }
+        int invoiceId = (Integer) tblInvoices.getValueAt(row, 0);
+        String caseLabel = (String) tblInvoices.getValueAt(row, 1);
+        String totalAmount = (String) tblInvoices.getValueAt(row, 3);
+        ReceiptDialog dialog = new ReceiptDialog(this, admin, invoiceId, caseLabel, totalAmount);
+        dialog.setVisible(true);
+        if (dialog.isSaved()) {
+            loadInvoiceLedger();
+        }
+    }
+
+    private void btnInvSubGenerateActionPerformed(java.awt.event.ActionEvent evt) {
+        showInvSubPage("generate", btnInvSubGenerate);
+    }
+
+    private void btnInvSubPaymentsActionPerformed(java.awt.event.ActionEvent evt) {
+        showInvSubPage("payments", btnInvSubPayments);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -598,6 +679,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnNavDiagnostics = new javax.swing.JButton();
         btnNavCatalogues = new javax.swing.JButton();
         btnNavBilling = new javax.swing.JButton();
+        btnNavInvoices = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
         pnlContent = new javax.swing.JPanel();
 
@@ -696,6 +778,20 @@ public class AdminDashboard extends javax.swing.JFrame {
         txtInsuranceName = new javax.swing.JTextField();
         btnAddInsurance = new javax.swing.JButton();
         btnRemoveInsurance = new javax.swing.JButton();
+
+        pnlInvoices = new javax.swing.JPanel();
+        lblInvTitle = new javax.swing.JLabel();
+        btnInvSubGenerate = new javax.swing.JButton();
+        btnInvSubPayments = new javax.swing.JButton();
+        pnlInvContent = new javax.swing.JPanel();
+        pnlInvGenerate = new javax.swing.JPanel();
+        scrCasesForInvoicing = new javax.swing.JScrollPane();
+        tblCasesForInvoicing = new javax.swing.JTable();
+        btnGenerateInvoice = new javax.swing.JButton();
+        pnlInvPayments = new javax.swing.JPanel();
+        scrInvoices = new javax.swing.JScrollPane();
+        tblInvoices = new javax.swing.JTable();
+        btnRecordPayment = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HMS Admin Portal");
@@ -817,6 +913,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnNavBilling.addActionListener(this::btnNavBillingActionPerformed);
         pnlNav.add(btnNavBilling);
         btnNavBilling.setBounds(10, 314, 160, 36);
+
+        btnNavInvoices.setBackground(new java.awt.Color(30, 95, 125));
+        btnNavInvoices.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        btnNavInvoices.setForeground(new java.awt.Color(255, 255, 255));
+        btnNavInvoices.setText("Invoices");
+        btnNavInvoices.setContentAreaFilled(false);
+        btnNavInvoices.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnNavInvoices.setFocusPainted(false);
+        btnNavInvoices.setRolloverEnabled(false);
+        btnNavInvoices.addActionListener(this::btnNavInvoicesActionPerformed);
+        pnlNav.add(btnNavInvoices);
+        btnNavInvoices.setBounds(10, 356, 160, 36);
 
         btnLogout.setBackground(new java.awt.Color(30, 95, 125));
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -1425,6 +1533,96 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         pnlContent.add(pnlBilling, "billing");
 
+        // ---------------- Invoices & Payments ----------------
+        pnlInvoices.setBackground(new java.awt.Color(255, 255, 255));
+        pnlInvoices.setLayout(null);
+
+        lblInvTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblInvTitle.setText("Invoices & Payments");
+        pnlInvoices.add(lblInvTitle);
+        lblInvTitle.setBounds(20, 15, 400, 30);
+
+        btnInvSubGenerate.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        btnInvSubGenerate.setText("Generate Invoice");
+        btnInvSubGenerate.addActionListener(this::btnInvSubGenerateActionPerformed);
+        pnlInvoices.add(btnInvSubGenerate);
+        btnInvSubGenerate.setBounds(20, 50, 170, 30);
+
+        btnInvSubPayments.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        btnInvSubPayments.setText("Payments");
+        btnInvSubPayments.addActionListener(this::btnInvSubPaymentsActionPerformed);
+        pnlInvoices.add(btnInvSubPayments);
+        btnInvSubPayments.setBounds(200, 50, 170, 30);
+
+        pnlInvContent.setLayout(new java.awt.CardLayout());
+
+        pnlInvGenerate.setLayout(null);
+
+        tblCasesForInvoicing.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {},
+            new String [] {
+                "Case ID", "Case", "Closed On"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCasesForInvoicing.getTableHeader().setReorderingAllowed(false);
+        tblCasesForInvoicing.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblCasesForInvoicing.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        scrCasesForInvoicing.setViewportView(tblCasesForInvoicing);
+        pnlInvGenerate.add(scrCasesForInvoicing);
+        scrCasesForInvoicing.setBounds(0, 0, 580, 390);
+
+        btnGenerateInvoice.setBackground(new java.awt.Color(38, 117, 154));
+        btnGenerateInvoice.setForeground(new java.awt.Color(255, 255, 255));
+        btnGenerateInvoice.setText("Generate Invoice");
+        btnGenerateInvoice.addActionListener(this::btnGenerateInvoiceActionPerformed);
+        pnlInvGenerate.add(btnGenerateInvoice);
+        btnGenerateInvoice.setBounds(0, 400, 170, 36);
+
+        pnlInvContent.add(pnlInvGenerate, "generate");
+
+        pnlInvPayments.setLayout(null);
+
+        tblInvoices.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {},
+            new String [] {
+                "Invoice ID", "Case", "Date Issued", "Total (RM)", "Status"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblInvoices.getTableHeader().setReorderingAllowed(false);
+        tblInvoices.setSelectionBackground(new java.awt.Color(38, 117, 154));
+        tblInvoices.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        scrInvoices.setViewportView(tblInvoices);
+        pnlInvPayments.add(scrInvoices);
+        scrInvoices.setBounds(0, 0, 580, 390);
+
+        btnRecordPayment.setBackground(new java.awt.Color(38, 117, 154));
+        btnRecordPayment.setForeground(new java.awt.Color(255, 255, 255));
+        btnRecordPayment.setText("Record Payment");
+        btnRecordPayment.addActionListener(this::btnRecordPaymentActionPerformed);
+        pnlInvPayments.add(btnRecordPayment);
+        btnRecordPayment.setBounds(0, 400, 170, 36);
+
+        pnlInvContent.add(pnlInvPayments, "payments");
+
+        pnlInvoices.add(pnlInvContent);
+        pnlInvContent.setBounds(20, 90, 580, 440);
+
+        pnlContent.add(pnlInvoices, "invoices");
+
         getContentPane().add(pnlContent);
         pnlContent.setBounds(180, 50, 620, 550);
 
@@ -1462,6 +1660,10 @@ public class AdminDashboard extends javax.swing.JFrame {
     private void btnNavBillingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNavBillingActionPerformed
         showPage("billing", btnNavBilling);
     }//GEN-LAST:event_btnNavBillingActionPerformed
+
+    private void btnNavInvoicesActionPerformed(java.awt.event.ActionEvent evt) {
+        showPage("invoices", btnNavInvoices);
+    }
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {
         int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
@@ -1513,6 +1715,9 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnEditUser;
     private javax.swing.JButton btnEditWard;
     private javax.swing.JButton btnEnterLabResult;
+    private javax.swing.JButton btnGenerateInvoice;
+    private javax.swing.JButton btnInvSubGenerate;
+    private javax.swing.JButton btnInvSubPayments;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnManageBeds;
     private javax.swing.JButton btnNavAdmissions;
@@ -1521,11 +1726,13 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnNavBilling;
     private javax.swing.JButton btnNavCatalogues;
     private javax.swing.JButton btnNavDiagnostics;
+    private javax.swing.JButton btnNavInvoices;
     private javax.swing.JButton btnNavUsers;
     private javax.swing.JButton btnNavWards;
     private javax.swing.JButton btnNewAdmission;
     private javax.swing.JButton btnNewUser;
     private javax.swing.JButton btnReassignDept;
+    private javax.swing.JButton btnRecordPayment;
     private javax.swing.JButton btnRemoveInsurance;
     private javax.swing.JButton btnSaveFees;
     private javax.swing.JButton btnScheduleSelected;
@@ -1548,6 +1755,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblFeesHeader;
     private javax.swing.JLabel lblHospFee;
     private javax.swing.JLabel lblInsuranceHeader;
+    private javax.swing.JLabel lblInvTitle;
     private javax.swing.JLabel lblNewMultiplier;
     private javax.swing.JLabel lblPortalTitle;
     private javax.swing.JLabel lblRoleFilter;
@@ -1570,15 +1778,21 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JPanel pnlDiagLab;
     private javax.swing.JPanel pnlDiagnostics;
     private javax.swing.JPanel pnlHeader;
+    private javax.swing.JPanel pnlInvContent;
+    private javax.swing.JPanel pnlInvGenerate;
+    private javax.swing.JPanel pnlInvPayments;
+    private javax.swing.JPanel pnlInvoices;
     private javax.swing.JPanel pnlNav;
     private javax.swing.JPanel pnlUsers;
     private javax.swing.JPanel pnlWards;
     private javax.swing.JScrollPane scrAdmissions;
     private javax.swing.JScrollPane scrAssets;
     private javax.swing.JScrollPane scrAssignments;
+    private javax.swing.JScrollPane scrCasesForInvoicing;
     private javax.swing.JScrollPane scrDrugs;
     private javax.swing.JScrollPane scrImagingRequests;
     private javax.swing.JScrollPane scrInsurance;
+    private javax.swing.JScrollPane scrInvoices;
     private javax.swing.JScrollPane scrLabRequests;
     private javax.swing.JScrollPane scrServices;
     private javax.swing.JScrollPane scrTiers;
@@ -1587,9 +1801,11 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JTable tblAdmissions;
     private javax.swing.JTable tblAssets;
     private javax.swing.JTable tblAssignments;
+    private javax.swing.JTable tblCasesForInvoicing;
     private javax.swing.JTable tblDrugs;
     private javax.swing.JTable tblImagingRequests;
     private javax.swing.JTable tblInsurance;
+    private javax.swing.JTable tblInvoices;
     private javax.swing.JTable tblLabRequests;
     private javax.swing.JTable tblServices;
     private javax.swing.JTable tblTiers;
